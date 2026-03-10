@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
+import { signIn, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
@@ -24,6 +25,7 @@ export function Navbar() {
         { href: '/explorer', label: 'Budget Explorer' },
         { href: '/analytics', label: 'Analytics' },
         { href: '/intelligence', label: 'Intelligence' },
+        { href: '/ingestion', label: 'Data Hub' },
         { href: '/community', label: 'Community' },
     ];
 
@@ -70,7 +72,7 @@ export function Navbar() {
                     <div className="flex items-center gap-3">
                         <ThemeToggle />
                         {isAdmin && (
-                            <Link href="/dashboard">
+                            <Link href="/admin/dashboard">
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -82,11 +84,11 @@ export function Navbar() {
                         )}
 
                         {session ? (
-                            <div className="w-8 h-8 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center text-accent-blue">
+                            <div className="w-8 h-8 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center text-accent-blue cursor-pointer" onClick={() => signOut()}>
                                 <User size={18} />
                             </div>
                         ) : (
-                            <Button size="sm" className="bg-accent-saffron text-white hover:bg-accent-saffron/90">
+                            <Button size="sm" className="bg-accent-saffron text-white hover:bg-accent-saffron/90" onClick={() => signIn()}>
                                 Join / Login
                             </Button>
                         )}

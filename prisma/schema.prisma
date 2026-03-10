@@ -105,6 +105,7 @@ model Department {
   schemes  Scheme[]
 
   @@unique([name, ministryId])
+  @@index([ministryId])
 }
 
 model Scheme {
@@ -124,6 +125,8 @@ model Scheme {
   outputData        OutputData[]
   outcomeData       OutcomeData[]
   feedbackItems     FeedbackItem[]
+
+  @@index([departmentId])
 }
 
 model BudgetAllocation {
@@ -143,6 +146,7 @@ model BudgetAllocation {
   expenditureQ4        Decimal  @db.Decimal(18, 2)
   surrendered          Decimal  @db.Decimal(18, 2)
   supplementaryDemands Int      @default(0)
+  anomalyFlag          Boolean  @default(false)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
@@ -150,6 +154,9 @@ model BudgetAllocation {
   ministry Ministry? @relation(fields: [ministryId], references: [id], onDelete: Cascade)
 
   @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([ministryId])
+  @@index([fiscalYear])
 }
 
 model OutputData {
@@ -171,6 +178,8 @@ model OutputData {
   scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
 
   @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
 }
 
 model OutcomeData {
@@ -193,6 +202,8 @@ model OutcomeData {
   scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
 
   @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
 }
 
 model SchemeScore {
@@ -214,6 +225,8 @@ model SchemeScore {
   scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
 
   @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
 }
 
 model User {
@@ -237,6 +250,9 @@ model User {
   feedbackVotes FeedbackVote[]
   uploadLogs    UploadLog[]
   reallocPlans  ReallocPlan[]
+
+  @@index([email])
+  @@index([ministryId])
 }
 
 model FeedbackItem {
@@ -256,6 +272,11 @@ model FeedbackItem {
   scheme Scheme?        @relation(fields: [schemeId], references: [id], onDelete: SetNull)
   author User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   votes  FeedbackVote[]
+
+  @@index([schemeId])
+  @@index([authorId])
+  @@index([status])
+  @@index([category])
 }
 
 model FeedbackVote {
@@ -268,6 +289,8 @@ model FeedbackVote {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([feedbackItemId, userId])
+  @@index([feedbackItemId])
+  @@index([userId])
 }
 
 model UploadLog {
@@ -285,6 +308,9 @@ model UploadLog {
   updatedAt        DateTime     @updatedAt
 
   uploader User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([uploadedBy])
+  @@index([status])
 }
 
 model ReallocPlan {
@@ -302,4 +328,17 @@ model ReallocPlan {
   updatedAt               DateTime   @updatedAt
 
   creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+  @@index([fiscalYear])
+  @@index([status])
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

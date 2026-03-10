@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { Prisma, FeedbackStatus } from '@prisma/client';
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function PATCH(
     request: Request,
@@ -57,6 +59,6 @@ export async function PATCH(
         return NextResponse.json(updatedFeedback);
     } catch (error) {
         console.error('[FEEDBACK_ID_PATCH]', error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

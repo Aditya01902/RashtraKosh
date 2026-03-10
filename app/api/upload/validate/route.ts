@@ -28,16 +28,31 @@ export async function POST(req: Request) {
             return new NextResponse("File required", { status: 400 });
         }
 
-        let parsedRows: Record<string, unknown>[] = [];
+        if (file.size > 10 * 1024 * 1024) {
+            return new NextResponse("File too large. Maximum size is 10MB.", { status: 400 });
+        }
 
-        if (file.name.endsWith(".xlsx")) {
-            const buffer = Buffer.from(await file.arrayBuffer());
+        let parsedRows: Record<string, unknown>[] = [];
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        // Magic bytes validation
+        const hexSignature = buffer.toString('hex', 0, 4).toUpperCase();
+        let isValidSignature = false;
+
+        if (file.name.endsWith(".xlsx") && hexSignature === "504B0304") {
+            isValidSignature = true;
             parsedRows = await parseExcel(buffer);
         } else if (file.name.endsWith(".csv")) {
-            const text = await file.text();
-            parsedRows = await parseCSV(text);
-        } else {
-            return new NextResponse("Unsupported file type", { status: 400 });
+            // Null bytes check to differentiate from binary
+            if (!buffer.slice(0, 512).includes(0x00)) {
+                isValidSignature = true;
+                const text = buffer.toString('utf-8');
+                parsedRows = await parseCSV(text);
+            }
+        }
+
+        if (!isValidSignature) {
+            return new NextResponse("Invalid file signature or unsupported type", { status: 400 });
         }
 
         if (parsedRows.length === 0) {

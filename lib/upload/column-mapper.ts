@@ -106,3 +106,33 @@ export function mapColumns(fileColumns: string[]) {
         };
     });
 }
+
+/**
+ * Returns a simple Record mapping file columns to DB fields
+ */
+export function autoMapColumns(headers: string[]): Record<string, string> {
+    const mappings = mapColumns(headers);
+    const result: Record<string, string> = {};
+    for (const m of mappings) {
+        if (m.dbField) {
+            result[m.fileColumn] = m.dbField;
+        }
+    }
+    return result;
+}
+
+/**
+ * Applies a column mapping to a set of parsed rows
+ * Returned rows will only have the mapped keys (DB fields)
+ */
+export function applyMapping(rows: Record<string, unknown>[], mapping: Record<string, string>): Record<string, unknown>[] {
+    return rows.map(row => {
+        const newRow: Record<string, unknown> = {};
+        for (const [fileCol, dbField] of Object.entries(mapping)) {
+            if (fileCol in row) {
+                newRow[dbField] = row[fileCol];
+            }
+        }
+        return newRow;
+    });
+}

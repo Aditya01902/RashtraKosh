@@ -5,6 +5,8 @@ import { calculateAndStoreScores } from "@/lib/scoring";
 import { UserRole } from "@/lib/types";
 
 import { limitRate } from "@/lib/rate-limit";
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function POST(req: Request) {
     try {
@@ -92,6 +94,6 @@ export async function POST(req: Request) {
         });
     } catch (error) {
         console.error("[UPLOAD_COMMIT_POST]", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

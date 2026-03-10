@@ -57,5 +57,19 @@ export default auth((req) => {
         return new NextResponse("Forbidden", { status: 403 });
     }
 
+    // CSRF Protection for custom POST/PUT/DELETE routes outside NextAuth
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && !isAuthRoute) {
+        const origin = req.headers.get("origin");
+        const host = req.headers.get("host");
+
+        // Use a simple partial match for localhost and production hosts
+        if (origin && host) {
+            const originHost = new URL(origin).host;
+            if (originHost !== host) {
+                return new NextResponse("Invalid Origin - CSRF Protection", { status: 403 });
+            }
+        }
+    }
+
     return;
 });

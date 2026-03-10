@@ -21,13 +21,16 @@ const CATEGORIES = ['ALL', 'SCHEME_PERFORMANCE', 'POLICY_SUGGESTION', 'ANOMALY_F
 export default function CommunityPage() {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-    const [activeCategory, setActiveCategory] = useState('ALL');
+    const [statusFilter, setStatusFilter] = useState('ALL'); // New state for status filter
+    const [categoryFilter, setCategoryFilter] = useState('ALL'); // Renamed from activeCategory
+    const [sortBy, setSortBy] = useState('newest'); // New state for sort by
     const [showForm, setShowForm] = useState(false);
 
     // Data Fetching
     const { data: feedbackItems, isLoading } = useQuery({
-        queryKey: ['feedback', activeCategory],
-        queryFn: () => fetch(`/api/feedback${activeCategory !== 'ALL' ? `?category=${activeCategory}` : ''}`).then(res => res.json())
+        queryKey: ['feedback', statusFilter, categoryFilter, sortBy],
+        queryFn: () => fetch(`/api/feedback?status=${statusFilter}&category=${categoryFilter}&sort=${sortBy}`).then(res => res.json()),
+        staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     // Mutations
@@ -78,16 +81,16 @@ export default function CommunityPage() {
                             {CATEGORIES.map(cat => (
                                 <button
                                     key={cat}
-                                    onClick={() => setActiveCategory(cat)}
+                                    onClick={() => setCategoryFilter(cat)}
                                     className={cn(
                                         "w-full text-left px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 flex items-center justify-between group relative overflow-hidden",
-                                        activeCategory === cat
+                                        categoryFilter === cat
                                             ? "bg-accent-saffron/20 text-accent-saffron border border-accent-saffron/30 shadow-[0_4px_20px_rgba(255,153,51,0.1)] translate-x-1"
                                             : "text-text-muted hover:text-text-primary hover:bg-white/5 border border-transparent hover:border-white/10"
                                     )}
                                 >
                                     <span className="relative z-10">{cat.charAt(0) + cat.slice(1).toLowerCase().replace(/_/g, ' ')}</span>
-                                    <ChevronRight size={14} className={cn("opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1", activeCategory === cat && "opacity-100 translate-x-1")} />
+                                    <ChevronRight size={14} className={cn("opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1", categoryFilter === cat && "opacity-100 translate-x-1")} />
                                 </button>
                             ))}
                         </div>
@@ -192,6 +195,8 @@ function FeedbackCard({ item, onVote, isVoted, isVoting }: {
                     <button
                         disabled={isVoting}
                         onClick={onVote}
+                        aria-label={`Vote for feedback: ${item.title}`}
+                        aria-pressed={isVoted}
                         className={cn(
                             "w-12 h-14 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 relative overflow-hidden",
                             isVoted
@@ -199,10 +204,10 @@ function FeedbackCard({ item, onVote, isVoted, isVoting }: {
                                 : "bg-white/5 border-border-default text-text-muted hover:text-accent-saffron hover:border-accent-saffron/30 hover:bg-white/10"
                         )}
                     >
-                        <ThumbsUp size={18} className={cn("transition-transform", isVoting && "animate-pulse")} />
+                        <ThumbsUp size={18} className={cn("transition-transform", isVoting && "animate-pulse")} aria-hidden="true" />
                         <span className="text-xs font-bold mono mt-0.5">{item.voteCount}</span>
                     </button>
-                    <span className="text-[10px] mono text-text-muted2 uppercase font-bold tracking-widest text-center">Votes</span>
+                    <span className="text-[10px] mono text-text-muted2 uppercase font-bold tracking-widest text-center" aria-hidden="true">Votes</span>
                 </div>
 
                 {/* Content Column */}
@@ -327,8 +332,9 @@ function FeedbackFormModal({ onClose }: { onClose: () => void }) {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Feedback Title</label>
+                            <label htmlFor="feedback-title" className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Feedback Title</label>
                             <input
+                                id="feedback-title"
                                 required
                                 value={formData.title}
                                 onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -339,8 +345,9 @@ function FeedbackFormModal({ onClose }: { onClose: () => void }) {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Category</label>
+                                <label htmlFor="feedback-category" className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Category</label>
                                 <select
+                                    id="feedback-category"
                                     value={formData.category}
                                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                                     className="w-full bg-white/5 border border-border-default rounded-xl px-4 py-3 h-12 text-sm text-text-primary focus:border-accent-saffron/50 outline-none transition-all"
@@ -353,8 +360,9 @@ function FeedbackFormModal({ onClose }: { onClose: () => void }) {
                                 </select>
                             </div>
                             <div className="space-y-2 flex flex-col justify-end">
-                                <label className="flex items-center gap-3 p-3 border border-border-default rounded-xl cursor-pointer hover:bg-white/5 transition-all">
+                                <label htmlFor="feedback-anonymous" className="flex items-center gap-3 p-3 border border-border-default rounded-xl cursor-pointer hover:bg-white/5 transition-all">
                                     <input
+                                        id="feedback-anonymous"
                                         type="checkbox"
                                         checked={formData.isAnonymous}
                                         onChange={e => setFormData({ ...formData, isAnonymous: e.target.checked })}
@@ -366,8 +374,9 @@ function FeedbackFormModal({ onClose }: { onClose: () => void }) {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Detail Description (Min. 50 chars)</label>
+                            <label htmlFor="feedback-body" className="text-xs font-bold mono text-text-muted uppercase tracking-widest">Detail Description (Min. 50 chars)</label>
                             <textarea
+                                id="feedback-body"
                                 required
                                 rows={5}
                                 value={formData.body}

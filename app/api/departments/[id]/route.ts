@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { handleApiError } from '@/lib/api-response';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +33,6 @@ export async function GET(
         return NextResponse.json(department);
     } catch (error) {
         console.error("[DEPARTMENT_GET]", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

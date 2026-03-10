@@ -37,32 +37,37 @@ interface ScatterItem {
 
 export default function AnalyticsPage() {
     const [activeTab, setActiveTab] = useState<'distribution' | 'sectors' | 'utilization'>('distribution');
+    const [selectedFy, setSelectedFy] = useState<string>('2023-24'); // Assuming a default value
+    const [selectedSchemeStatus, setSelectedSchemeStatus] = useState<string>('all'); // Assuming a default value
 
     // Data Fetching
     const { data: ministries, isLoading: loadingMinistries } = useQuery({
-        queryKey: ['ministries'],
-        queryFn: () => fetch('/api/ministries').then(res => res.json())
+        queryKey: ['ministries', selectedFy],
+        queryFn: () => fetch(`/api/ministries?fy=${selectedFy}`).then(res => res.json()),
+        staleTime: 10 * 60 * 1000, // 10 minutes for analytics
     });
 
     const { data: schemes, isLoading: loadingSchemes } = useQuery({
-        queryKey: ['schemes'],
-        queryFn: () => fetch('/api/schemes').then(res => res.json())
+        queryKey: ['schemes', selectedSchemeStatus, selectedFy],
+        queryFn: () => fetch(`/api/schemes?status=${selectedSchemeStatus}&fy=${selectedFy}`).then(res => res.json()),
+        staleTime: 10 * 60 * 1000,
     });
 
     const { data: distribution, isLoading: loadingDist } = useQuery({
-        queryKey: ['scores', 'distribution'],
-        queryFn: () => fetch('/api/scores/distribution').then(res => res.json())
+        queryKey: ['scores-distribution', selectedFy],
+        queryFn: () => fetch(`/api/scores/distribution?fy=${selectedFy}`).then(res => res.json()),
+        staleTime: 10 * 60 * 1000,
     });
 
     // Data Formatting for Charts
     const distData = React.useMemo(() => {
         if (!distribution) return [];
         return [
-            { name: 'Critical', value: distribution.CRITICAL, color: 'var(--accent-red)' },
-            { name: 'Poor', value: distribution.POOR, color: 'var(--accent-red)', opacity: 0.6 },
-            { name: 'Average', value: distribution.AVERAGE, color: 'var(--accent-gold)' },
-            { name: 'Good', value: distribution.GOOD, color: 'var(--accent-green)', opacity: 0.6 },
-            { name: 'Excellent', value: distribution.EXCELLENT, color: 'var(--accent-green)' },
+            { name: 'Critical', value: distribution.CRITICAL || 0, color: 'var(--accent-red)' },
+            { name: 'Poor', value: distribution.POOR || 0, color: 'var(--accent-red)', opacity: 0.6 },
+            { name: 'Average', value: distribution.AVERAGE || 0, color: 'var(--accent-gold)' },
+            { name: 'Good', value: distribution.GOOD || 0, color: 'var(--accent-green)', opacity: 0.6 },
+            { name: 'Excellent', value: distribution.EXCELLENT || 0, color: 'var(--accent-green)' },
         ];
     }, [distribution]);
 
@@ -154,7 +159,7 @@ export default function AnalyticsPage() {
                                         <p className="text-text-muted text-xs">National aggregate of scheme ratings</p>
                                     </div>
                                 </div>
-                                <div className="flex-1 w-full">
+                                <div className="flex-1 w-full min-h-[400px]">
                                     {loadingDist ? <Skeleton className="w-full h-full" /> : (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <BarChart data={distData}>
@@ -185,7 +190,7 @@ export default function AnalyticsPage() {
                                         <p className="text-text-muted text-xs">Relative allocation across key sectors</p>
                                     </div>
                                 </div>
-                                <div className="flex-1 w-full pt-4">
+                                <div className="flex-1 w-full pt-4 min-h-[400px]">
                                     {loadingMinistries ? <Skeleton className="w-full h-full" /> : (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <Treemap
@@ -215,7 +220,7 @@ export default function AnalyticsPage() {
                                         <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[var(--accent-red)]" /> Low/Low</div>
                                     </div>
                                 </div>
-                                <div className="flex-1 w-full pt-4">
+                                <div className="flex-1 w-full pt-4 min-h-[400px]">
                                     {loadingSchemes ? <Skeleton className="w-full h-full" /> : (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

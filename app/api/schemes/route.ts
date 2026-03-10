@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Prisma } from '@prisma/client';
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -83,6 +85,6 @@ export async function GET(request: Request) {
         return NextResponse.json(results);
     } catch (error) {
         console.error('[SCHEMES_GET]', error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

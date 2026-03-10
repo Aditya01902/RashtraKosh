@@ -34,11 +34,20 @@ export function ScoreRing({
     const color = colorMap[rating] || 'var(--accent-blue)'
 
     return (
-        <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
+        <div
+            className={cn("relative flex items-center justify-center", className)}
+            style={{ width: size, height: size }}
+            role="meter"
+            aria-valuenow={score}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Score: ${score.toFixed(0)}, Rating: ${rating}`}
+        >
             <svg
                 width={size}
                 height={size}
                 className="transform -rotate-90"
+                aria-hidden="true"
             >
                 {/* Background Ring */}
                 <circle

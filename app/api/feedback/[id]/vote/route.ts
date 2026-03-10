@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { auth } from '@/lib/auth';
 
 import { limitRate } from '@/lib/rate-limit';
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function POST(
     request: Request,
@@ -54,6 +56,6 @@ export async function POST(
         return NextResponse.json({ voteCount });
     } catch (error) {
         console.error('[FEEDBACK_VOTE_POST]', error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

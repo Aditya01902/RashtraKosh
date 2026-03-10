@@ -6,7 +6,7 @@ import RecalculateButton from "@/components/admin/recalculate-button";
 
 export default async function AdminDashboard() {
     const session = await auth();
-    const role = (session?.user as any)?.role;
+    const role = (session?.user as { role?: string })?.role;
 
     // Fetch stats concurrently
     const [

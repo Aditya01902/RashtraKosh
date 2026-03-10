@@ -56,19 +56,22 @@ export default function ExplorerPage() {
     // Data Fetching
     const { data: ministries, isLoading: loadingMinistries } = useQuery({
         queryKey: ['ministries'],
-        queryFn: () => fetch('/api/ministries').then(res => res.json())
+        queryFn: () => fetch('/api/ministries').then(res => res.json()),
+        staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     const { data: ministryDetail, isLoading: loadingMinistryDetail } = useQuery({
         queryKey: ['ministry', selectedMinistryId],
         queryFn: () => fetch(`/api/ministries/${selectedMinistryId}`).then(res => res.json()),
-        enabled: !!selectedMinistryId
+        enabled: !!selectedMinistryId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     const { data: schemeDetail } = useQuery({
         queryKey: ['scheme', selectedSchemeId],
         queryFn: () => fetch(`/api/schemes/${selectedSchemeId}`).then(res => res.json()),
-        enabled: !!selectedSchemeId
+        enabled: !!selectedSchemeId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     // Derived Left Panel List

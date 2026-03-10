@@ -6,6 +6,8 @@ import { Prisma, FeedbackCategory, FeedbackStatus } from '@prisma/client';
 
 import { limitRate } from '@/lib/rate-limit';
 import { feedbackSchema } from '@/lib/validations/api';
+import { handleApiError } from '@/lib/api-response';
+import sanitizeHtml from 'sanitize-html';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,10 +98,15 @@ export async function POST(request: Request) {
             initialWeight = 3.0;
         }
 
+        const sanitizedTitle = sanitizeHtml(title, { allowedTags: [], allowedAttributes: {} });
+        const sanitizedContent = sanitizeHtml(content, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+        });
+
         const feedback = await db.feedbackItem.create({
             data: {
-                title,
-                body: content,
+                title: sanitizedTitle,
+                body: sanitizedContent,
                 category,
                 schemeId: schemeId || null,
                 authorId: session.user.id!,

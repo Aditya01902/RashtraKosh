@@ -55,9 +55,10 @@ Beautiful, high-density data visualizations that reveal the stories behind the n
 
 ### 🏗️ 4. Admin Command Center
 A unified console for treasury managers and analysts.
-- **Bulk Data Ingestion**: Secure upload of CSV and XLSX budget records.
+- **Automated PDF Ingestion**: Robust pipeline to extract, map, and ingest data from official Outcome Budgets and Demand for Grants PDFs.
+- **Ingestion Audit Trail**: Dedicated dashboard to monitor, verify, and track the history of automated data ingestions.
+- **Feedback Inbox**: Comprehensive interface to manage, filter, and process citizen feedback with internal notes and status tracking.
 - **Policy Reallocation**: Tools to simulate budget shifts based on AI recommendations.
-- **Feedback Loop**: Direct channel for citizen engagement and community feedback.
 
 ---
 
@@ -72,7 +73,8 @@ A unified console for treasury managers and analysts.
 - **AI Integration**: [Vercel AI SDK](https://sdk.vercel.ai/) & [Anthropic Claude](https://www.anthropic.com/)
 - **Visuals**: [Lucide React](https://lucide.dev/) & [Recharts](https://recharts.org/)
 
-### **Performance Design**
+### **Performance & Security Design**
+- **Security Hardening**: Strict input validation using Zod and comprehensive rate-limiting across all public endpoints and API routes.
 - **Edge Compatible Auth**: Decoupled configuration for optimal middleware performance.
 - **Optimized Assets**: Next.js `Image` component used for LCP performance.
 - **Component Architecture**: Atomic design for reusable UI elements.

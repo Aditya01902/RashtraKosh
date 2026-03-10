@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { classifyScore, ScoreRating } from '@/lib/scoring/final';
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -29,6 +31,6 @@ export async function GET(request: Request) {
         return NextResponse.json(distribution);
     } catch (error) {
         console.error('[SCORES_DISTRIBUTION_GET]', error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }

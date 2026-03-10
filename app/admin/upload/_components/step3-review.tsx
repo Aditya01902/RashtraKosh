@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUploadStore } from "@/store/upload";
-import { CheckCircle2, ChevronLeft, Save, Loader2, BarChart3, Database } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Save, Loader2, BarChart3, Database } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Step3Review() {

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { aggregateScores } from '@/lib/scoring/final';
+import { handleApiError } from '@/lib/api-response';
+
 
 export async function GET(
     request: Request,
@@ -102,6 +104,6 @@ export async function GET(
         });
     } catch (error) {
         console.error('[MINISTRY_GET]', error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return handleApiError(error);
     }
 }
