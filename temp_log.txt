@@ -1,0 +1,265 @@
+﻿commit a22f23d109a45b8f5d31db518e37ce19207e8d41
+Author: Aditya01902 <adityachoudharybvbvpn1727@gmail.com>
+Date:   Wed Mar 11 03:39:21 2026 +0530
+
+    Version 2.0.0
+
+diff --git a/README.md b/README.md
+index 9dceb1f..c606c20 100644
+--- a/README.md
++++ b/README.md
+@@ -55,9 +55,10 @@ Beautiful, high-density data visualizations that reveal the stories behind the n
+ 
+ ### ≡ƒÅù∩╕Å 4. Admin Command Center
+ A unified console for treasury managers and analysts.
+-- **Bulk Data Ingestion**: Secure upload of CSV and XLSX budget records.
++- **Automated PDF Ingestion**: Robust pipeline to extract, map, and ingest data from official Outcome Budgets and Demand for Grants PDFs.
++- **Ingestion Audit Trail**: Dedicated dashboard to monitor, verify, and track the history of automated data ingestions.
++- **Feedback Inbox**: Comprehensive interface to manage, filter, and process citizen feedback with internal notes and status tracking.
+ - **Policy Reallocation**: Tools to simulate budget shifts based on AI recommendations.
+-- **Feedback Loop**: Direct channel for citizen engagement and community feedback.
+ 
+ ---
+ 
+@@ -72,7 +73,8 @@ A unified console for treasury managers and analysts.
+ - **AI Integration**: [Vercel AI SDK](https://sdk.vercel.ai/) & [Anthropic Claude](https://www.anthropic.com/)
+ - **Visuals**: [Lucide React](https://lucide.dev/) & [Recharts](https://recharts.org/)
+ 
+-### **Performance Design**
++### **Performance & Security Design**
++- **Security Hardening**: Strict input validation using Zod and comprehensive rate-limiting across all public endpoints and API routes.
+ - **Edge Compatible Auth**: Decoupled configuration for optimal middleware performance.
+ - **Optimized Assets**: Next.js `Image` component used for LCP performance.
+ - **Component Architecture**: Atomic design for reusable UI elements.
+
+commit e6f913c3e61b1e61f7b3a35773ec35b315e8deb5
+Author: Aditya01902 <adityachoudharybvbvpn1727@gmail.com>
+Date:   Tue Mar 10 20:27:05 2026 +0530
+
+    Updated readme.md
+
+diff --git a/README.md b/README.md
+index e215bc4..9dceb1f 100644
+--- a/README.md
++++ b/README.md
+@@ -1,36 +1,148 @@
+-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
++<div align="center">
+ 
+-## Getting Started
++# ≡ƒÅ¢∩╕Å RashtraKosh
++### **|| αñòαÑïαñ╢αñ«αÑéαñ▓αñ╛αñâ αñ╕αñ░αÑìαñ╡αñ╛αñ░αñ«αÑìαñ¡αñ╛αñâ ||**
++*Finance is the root of all endeavors*
+ 
+-First, run the development server:
++**Premium AI-Powered Public Finance Intelligence & Budget Visualization Platform**
+ 
+-```bash
+-npm run dev
+-# or
+-yarn dev
+-# or
+-pnpm dev
+-# or
+-bun dev
+-```
++[![Vercel Deployment](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
++[![Next.js 14](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=next.js)](https://nextjs.org)
++[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
++
++---
++
++[Overview](#-overview) ΓÇó [Key Features](#-key-features) ΓÇó [Tech Stack](#-technical-architecture) ΓÇó [Setup](#-installation--setup) ΓÇó [Architecture](#-project-structure)
++
++</div>
++
++## Γ£¿ Vision
++**RashtraKosh** is a state-of-the-art intelligence platform designed to bring radical transparency and AI-driven insights to the Indian Union Budget. By transforming complex treasury data into interactive, intuitive, and beautiful visualizations, RashtraKosh empowers citizens, analysts, and policy-makers to understand the national financial landscape in high resolution.
++
++---
++
++## ≡ƒô╕ Final Interface
++
++![Home Page](./public/docs/screenshots/home.png)
++*Modern Landing with Vintage Indian Aesthetic and Real-time KPI Tracking*
++
++---
++
++## ≡ƒÜÇ Key Features
++
++### ≡ƒöì 1. Budget Explorer (Deep Drill-down)
++Navigate through the layers of the Indian economy with surgical precision.
++- **Hierarchical Drill-down**: Ministry ΓåÆ Department ΓåÆ Core Schemes.
++- **Health Scoring**: Proprietary performance metrics for every financial entity.
++- **Utilization Tracking**: Real-time monitoring of allocated vs. utilized funds.
++
++![Explorer](./public/docs/screenshots/explorer.png)
++
++### ≡ƒñû 2. RashtraKosh Intelligence (AI Advisor)
++An AI-powered policy advisor that understands the nuances of public finance.
++- **Natural Language Queries**: Ask complex questions about budget reallocations or policy impact.
++- **Context-Aware Insights**: Leverages Anthropic Claude models for deep financial reasoning.
++- **Predictive Analysis**: Intelligence on fiscal surplus and potential impact zones.
+ 
+-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
++![Intelligence](./public/docs/screenshots/intelligence.png)
+ 
+-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
++### ≡ƒôè 3. Advanced Analytics & Visualization
++Beautiful, high-density data visualizations that reveal the stories behind the numbers.
++- **Macro Trends**: Visualization of sector-wise growth and allocation shifts.
++- **Comparative Metrics**: Benchmarking departmental performance across fiscal years.
+ 
+-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
++![Analytics](./public/docs/screenshots/analytics.png)
+ 
+-## Learn More
++### ≡ƒÅù∩╕Å 4. Admin Command Center
++A unified console for treasury managers and analysts.
++- **Bulk Data Ingestion**: Secure upload of CSV and XLSX budget records.
++- **Policy Reallocation**: Tools to simulate budget shifts based on AI recommendations.
++- **Feedback Loop**: Direct channel for citizen engagement and community feedback.
+ 
+-To learn more about Next.js, take a look at the following resources:
++---
+ 
+-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
++## ≡ƒ¢á∩╕Å Technical Architecture
+ 
+-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
++### **Core Stack**
++- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Server Actions)
++- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with Custom Glassmorphism System
++- **Animations**: [Framer Motion](https://www.framer.com/motion/)
++- **Database**: [Prisma ORM](https://www.prisma.io/) with PostgreSQL
++- **Auth**: [Next-Auth (Auth.js v5)](https://authjs.dev/)
++- **AI Integration**: [Vercel AI SDK](https://sdk.vercel.ai/) & [Anthropic Claude](https://www.anthropic.com/)
++- **Visuals**: [Lucide React](https://lucide.dev/) & [Recharts](https://recharts.org/)
++
++### **Performance Design**
++- **Edge Compatible Auth**: Decoupled configuration for optimal middleware performance.
++- **Optimized Assets**: Next.js `Image` component used for LCP performance.
++- **Component Architecture**: Atomic design for reusable UI elements.
++
++---
++
++## ≡ƒÆ╗ Installation & Setup
++
++### **Prerequisites**
++- Node.js 18+ 
++- PostgreSQL Database
++- Anthropic API Key (for Intelligence features)
++
++### **Local Development**
++1. **Clone the repository**
++   ```bash
++   git clone https://github.com/your-username/India-Innovates.git
++   cd India-Innovates/RashtraKosh
++   ```
++
++2. **Install Dependencies**
++   ```bash
++   npm install --legacy-peer-deps
++   ```
++
++3. **Configure Environment Variables**
++   Create a `.env.local` file:
++   ```env
++   DATABASE_URL="postgresql://..."
++   AUTH_SECRET="your-secret"
++   ANTHROPIC_API_KEY="your-key"
++   ```
++
++4. **Database Setup**
++   ```bash
++   npx prisma generate
++   npx prisma db push
++   npx prisma db seed
++   ```
++
++5. **Start Dev Server**
++   ```bash
++   npm run dev
++   ```
++
++---
++
++## ≡ƒÅ¢∩╕Å Project Structure
++
++```bash
++RashtraKosh/
++Γö£ΓöÇΓöÇ app/               # Next.js 14 App Router
++Γöé   Γö£ΓöÇΓöÇ (admin)        # Admin Console Routes
++Γöé   Γö£ΓöÇΓöÇ (auth)         # Authentication Pages
++Γöé   ΓööΓöÇΓöÇ (public)       # Core User Facing Pages
++Γö£ΓöÇΓöÇ components/        # Specialized UI Components
++Γöé   Γö£ΓöÇΓöÇ ui/            # Atomic Design System
++Γöé   ΓööΓöÇΓöÇ navigation/    # Navbar & Global Navigation
++Γö£ΓöÇΓöÇ lib/               # Shared Utilities & Auth Config
++Γö£ΓöÇΓöÇ prisma/            # Database Schema & Seed Logic
++Γö£ΓöÇΓöÇ store/             # State Management (Zustand)
++ΓööΓöÇΓöÇ public/            # Static Assets & Documentation
++```
+ 
+-## Deploy on Vercel
++---
+ 
+-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
++## ≡ƒô£ License
++Distributed under the MIT License. See `LICENSE` for more information.
+ 
+-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
++<div align="center">
++  <p>Built with Γ¥ñ∩╕Å for a Transparant and Resurgent India</p>
++  <p><b>┬⌐ 2026 RashtraKosh Team</b></p>
++</div>
+
+commit 0a54f0049f839912a9692938793c0d258d3efef2
+Author: Aditya01902 <adityachoudharybvbvpn1727@gmail.com>
+Date:   Wed Mar 4 23:21:03 2026 +0530
+
+    Initial commit from Create Next App
+
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..e215bc4
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,36 @@
++This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
++
++## Getting Started
++
++First, run the development server:
++
++```bash
++npm run dev
++# or
++yarn dev
++# or
++pnpm dev
++# or
++bun dev
++```
++
++Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
++
++You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
++
++This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
++
++## Learn More
++
++To learn more about Next.js, take a look at the following resources:
++
++- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
++- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
++
++You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
++
++## Deploy on Vercel
++
++The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
++
++Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

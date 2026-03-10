@@ -21,6 +21,13 @@
 
 ---
 
+## ⚠️ Data Accuracy Disclaimer (Beta Platform)
+> **Notice regarding Government Data:** The data presented on this platform is algorithmically extracted from official Government of India Outcome Budget and Demand for Grants PDF documents. While stringent data validation checks and variance flagging are implemented during the ingestion pipeline, extraction anomalies may occur. 
+> 
+> *This data is provided for illustrative, educational, and analytical purposes only, and should **not** be cited as an official administrative source of government financial figures.*
+
+---
+
 ## 📸 Final Interface
 
 ![Home Page](./public/docs/screenshots/home.png)
@@ -59,6 +66,17 @@ A unified console for treasury managers and analysts.
 - **Ingestion Audit Trail**: Dedicated dashboard to monitor, verify, and track the history of automated data ingestions.
 - **Feedback Inbox**: Comprehensive interface to manage, filter, and process citizen feedback with internal notes and status tracking.
 - **Policy Reallocation**: Tools to simulate budget shifts based on AI recommendations.
+
+<div align="center">
+  <img src="./public/docs/screenshots/admin-dashboard.png" alt="Admin Dashboard" width="48%">
+  <img src="./public/docs/screenshots/feedback-inbox.png" alt="Feedback Inbox" width="48%">
+</div>
+<br/>
+<div align="center">
+  <img src="./public/docs/screenshots/audit-trail.png" alt="Audit Trail" width="48%">
+  <img src="./public/docs/screenshots/pdf-ingestion.png" alt="PDF Ingestion" width="48%">
+</div>
+*Comprehensive suite of tools for robust data and engagement management*
 
 ---
 
