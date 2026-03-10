@@ -1,78 +1,108 @@
-// Levenshtein distance implementation for fuzzy matching
-function levenshtein(a: string, b: string): number {
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) == a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-                );
-            }
-        }
-    }
-    return matrix[b.length][a.length];
-}
-
-const EXPECTED_COLUMNS = [
-    { key: "schemeId", label: "Scheme ID", aliases: ["scheme id", "id", "slug"] },
-    { key: "fiscalYear", label: "Fiscal Year", aliases: ["year", "fy", "financial year"] },
-    { key: "allocatedAmount", label: "Allocated Amount", aliases: ["allocated", "budget allocation", "be"] },
-    { key: "revisedAmount", label: "Revised Amount", aliases: ["revised", "re", "revised estimate"] },
-    { key: "actualExpenditure", label: "Actual Expenditure", aliases: ["actual", "actuals", "expenditure"] },
-    { key: "expenditureType", label: "Expenditure Type", aliases: ["type", "capital/revenue", "exp type"] },
+export const KNOWN_DB_FIELDS = [
+    "schemeId",
+    "ministry.name",
+    "department.name",
+    "name", // Scheme name
+    "allocatedCapital",
+    "allocatedRevenue",
+    "expenditureQ1",
+    "expenditureQ2",
+    "expenditureQ3",
+    "expenditureQ4",
+    "physicalTargetValue",
+    "physicalAchievedValue",
+    "beneficiaryTarget",
+    "beneficiaryAchieved",
+    "sectorKpiName",
+    "sectorKpiBaseline",
+    "sectorKpiCurrent"
 ];
 
-export function autoMapColumns(headers: string[]) {
-    const mapping: Record<string, string> = {};
+// Map of canonical DB field names to known aliases (lowercase)
+const ALIAS_MAP: Record<string, string[]> = {
+    "schemeId": ["scheme id", "scheme_id", "scheme code", "uid"],
+    "ministry.name": ["ministry name", "ministryname", "min. name", "ministry"],
+    "department.name": ["department name", "departmentname", "dept. name", "department"],
+    "name": ["scheme name", "schemename", "scheme", "program name", "project name"],
+    "allocatedCapital": ["budget 2024 capital", "alloc cap 24-25", "allocated capital", "capital budget", "ca", "capital allocation"],
+    "allocatedRevenue": ["budget 2024 revenue", "alloc rev 24-25", "allocated revenue", "revenue budget", "ra", "revenue allocation"],
+    "expenditureQ1": ["expenditure q1", "q1 spend", "q1 exp", "apr-jun spend"],
+    "expenditureQ2": ["expenditure q2", "q2 spend", "q2 exp", "jul-sep spend"],
+    "expenditureQ3": ["expenditure q3", "q3 spend", "q3 exp", "oct-dec spend"],
+    "expenditureQ4": ["expenditure q4", "q4 spend", "q4 exp", "jan-mar spend"],
+    "physicalTargetValue": ["physical target", "target value", "target physical"],
+    "physicalAchievedValue": ["physical achieved", "achieved value", "accomplished"],
+    "beneficiaryTarget": ["beneficiary target", "target beneficiaries", "planned benes"],
+    "beneficiaryAchieved": ["beneficiary achieved", "actual beneficiaries", "reached benes"],
+    "sectorKpiName": ["kpi name", "indicator", "sector kpi"],
+    "sectorKpiBaseline": ["kpi baseline", "baseline value", "starting kpi"],
+    "sectorKpiCurrent": ["kpi current", "current value", "latest kpi"]
+};
 
-    for (const expected of EXPECTED_COLUMNS) {
-        let bestMatch = null;
+/**
+ * Calculates a basic Levenshtein distance between two strings
+ */
+function levenshteinDistance(s1: string, s2: string): number {
+    if (!s1.length) return s2.length;
+    if (!s2.length) return s1.length;
+
+    const arr = [];
+    for (let i = 0; i <= s2.length; i++) {
+        arr[i] = [i];
+        for (let j = 1; j <= s1.length; j++) {
+            arr[i][j] = i === 0 ? j
+                : Math.min(
+                    arr[i - 1][j] + 1,
+                    arr[i][j - 1] + 1,
+                    arr[i - 1][j - 1] + (s1[j - 1] === s2[i - 1] ? 0 : 1)
+                );
+        }
+    }
+    return arr[s2.length][s1.length];
+}
+
+/**
+ * Maps an array of uploaded file columns to expected database fields
+ */
+export function mapColumns(fileColumns: string[]) {
+    return fileColumns.map(colName => {
+        const normalizedCol = colName.toLowerCase().trim();
+
+        let bestMatch: string | null = null;
+        let highestConfidence: "high" | "medium" | "low" | "none" = "none";
         let minDistance = Infinity;
 
-        for (const header of headers) {
-            const normalizedHeader = header.toLowerCase().trim();
-
-            // Check exact alias matches first
-            if (expected.aliases.includes(normalizedHeader) || expected.key.toLowerCase() === normalizedHeader || expected.label.toLowerCase() === normalizedHeader) {
-                bestMatch = header;
+        // 1. Exact or Alias Match
+        for (const [dbField, aliases] of Object.entries(ALIAS_MAP)) {
+            if (normalizedCol === dbField.toLowerCase() || aliases.includes(normalizedCol)) {
+                bestMatch = dbField;
+                highestConfidence = "high";
                 break;
             }
 
-            // Fuzzy matching fallback
-            for (const alias of [...expected.aliases, expected.label]) {
-                const dist = levenshtein(alias, normalizedHeader);
-                if (dist < minDistance && dist < 4) { // Threshold for acceptable typo
+            // 2. Fuzzy Match (Levenshtein)
+            for (const alias of [...aliases, dbField.toLowerCase()]) {
+                const dist = levenshteinDistance(normalizedCol, alias);
+                // Calculate a basic similarity score (0 to 1)
+                const maxLen = Math.max(normalizedCol.length, alias.length);
+                const similarity = 1 - (dist / maxLen);
+
+                if (similarity > 0.8 && dist < minDistance) {
                     minDistance = dist;
-                    bestMatch = header;
+                    bestMatch = dbField;
+                    highestConfidence = similarity > 0.9 ? "high" : "medium";
+                } else if (similarity > 0.6 && dist < minDistance && highestConfidence === "none") {
+                    minDistance = dist;
+                    bestMatch = dbField;
+                    highestConfidence = "low";
                 }
             }
         }
 
-        if (bestMatch) {
-            mapping[bestMatch] = expected.key;
-        }
-    }
-
-    return mapping;
-}
-
-export function applyMapping(rows: Record<string, unknown>[], mapping: Record<string, string>) {
-    return rows.map(row => {
-        const mappedRow: Record<string, unknown> = {};
-        for (const [originalKey, expectedKey] of Object.entries(mapping)) {
-            if (row[originalKey] !== undefined) {
-                mappedRow[expectedKey] = row[originalKey];
-            }
-        }
-        return mappedRow;
+        return {
+            fileColumn: colName,
+            dbField: bestMatch,
+            confidence: highestConfidence
+        };
     });
 }

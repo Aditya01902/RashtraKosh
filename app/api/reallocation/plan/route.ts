@@ -1,57 +1,47 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { fetchSchemesWithScores } from '@/lib/reallocation/data-fetcher';
-import { detectIdleMoney } from '@/lib/reallocation/idle-detector';
-import { generateReallocPlan } from '@/lib/reallocation/plan-generator';
-import { db as prisma } from '@/lib/db';
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-import { Prisma } from '@prisma/client';
-
-const ALLOWED_ROLES = ['SUPER_ADMIN', 'MINISTRY_ADMIN', 'ANALYST'];
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
     try {
         const session = await auth();
-        if (!session || !ALLOWED_ROLES.includes(session.user.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        if (!session || !session.user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const body = await request.json();
-        const { donorSchemeIds, recipientSchemeIds, fiscalYear } = body;
+        const { donorIds, recipientIds } = await req.json();
 
-        if (!donorSchemeIds || !recipientSchemeIds || !fiscalYear || !Array.isArray(donorSchemeIds) || !Array.isArray(recipientSchemeIds)) {
-            return NextResponse.json({ error: 'Missing or invalid parameters' }, { status: 400 });
+        if (!donorIds || !recipientIds) {
+            return NextResponse.json({ error: "Missing donor or recipient IDs" }, { status: 400 });
         }
 
-        const allSchemes = await fetchSchemesWithScores(fiscalYear);
-        const allIdle = detectIdleMoney(allSchemes);
-
-        const donors = allIdle.filter(d => donorSchemeIds.includes(d.schemeId));
-        const recipients = allSchemes.filter(s => recipientSchemeIds.includes(s.id));
-
-        const flows = generateReallocPlan(donors, recipients, { fiscalYear });
-
-        let totalCapital = 0;
-        let totalRevenue = 0;
-        flows.forEach(flow => {
-            totalCapital += flow.amountCapital;
-            totalRevenue += flow.amountRevenue;
-        });
-
-        const plan = await prisma.reallocPlan.create({
-            data: {
-                fiscalYear,
-                createdBy: session.user.id,
-                status: 'DRAFT',
-                totalCapitalReallocated: totalCapital,
-                totalRevenueReallocated: totalRevenue,
-                planData: flows as unknown as Prisma.InputJsonValue,
+        // Mock response generating flows
+        const flows = [
+            {
+                id: "flow_1",
+                fromSchemeId: donorIds[0] || "scheme_1",
+                fromSchemeName: "National Highway Expansion Phase II",
+                toSchemeId: recipientIds[0] || "scheme_4",
+                toSchemeName: "Pradhan Mantri Awas Yojana (Urban)",
+                amount: 2500,
+                type: "CAPITAL", // Testing separation of capital and revenue
+                rationale: "High absorption capacity in PMAY-U to utilize idle capital from MoRTH",
+                risk: "LOW" // Removed extra comma 
+            },
+            {
+                id: "flow_2",
+                fromSchemeId: donorIds[1] || "scheme_2",
+                fromSchemeName: "Rural Digital Literacy",
+                toSchemeId: recipientIds[1] || "scheme_5",
+                toSchemeName: "Jal Jeevan Mission",
+                amount: 800,
+                type: "REVENUE", // Testing separation of capital and revenue
+                rationale: "Shifting unutilized MeitY revenue to JJM operations",
+                risk: "MEDIUM"
             }
-        });
+        ];
 
-        return NextResponse.json({ planId: plan.id, flows });
-    } catch (error) {
-        console.error('Plan Generation API Error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ flows });
+    } catch (err) {
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
