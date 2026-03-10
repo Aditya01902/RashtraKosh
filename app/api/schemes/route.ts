@@ -43,6 +43,8 @@ export async function GET(request: Request) {
             const score = scheme.scores[0];
             const alloc = scheme.budgetAllocations[0];
             const finalScore = score ? Number(score.finalScore) : 0;
+            const utilizationScore = score ? Number(score.utilizationScore) : 0;
+            const outcomeScore = score ? Number(score.outcomeScore) : 0;
 
             // Compute rating manually since classifyScore is in another module
             let currentRating = 'CRITICAL';
@@ -60,6 +62,8 @@ export async function GET(request: Request) {
                 allocated: alloc ? Number(alloc.allocated) : 0,
                 utilized: alloc ? Number(alloc.utilized) : 0,
                 finalScore,
+                utilizationScore,
+                outcomeScore,
                 rating: currentRating,
             };
         });

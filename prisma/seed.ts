@@ -5,39 +5,15 @@ const prisma = new PrismaClient();
 
 // Helper: compute utilization score
 function computeUtilizationScore(allocated: number, utilized: number, capAlloc: number, capUtil: number, revAlloc: number, revUtil: number, surrendered: number, suppDemands: number): { score: number, breakdown: Record<string, number> } {
-    const overallRatio = allocated > 0 ? Math.round(Math.min(utilized / allocated, 1.0) * 10000) / 100 : 0;
-    const capRatio = capAlloc > 0 ? Math.round(Math.min(capUtil / capAlloc, 1.0) * 10000) / 100 : 100;
-    const revRatio = revAlloc > 0 ? Math.round(Math.min(revUtil / revAlloc, 1.0) * 10000) / 100 : 100;
-    const surrenderBonus = allocated > 0 ? Math.round((1 - surrendered / allocated) * 10000) / 100 : 0;
-    const suppPenalty = Math.round(Math.max(0, 100 - suppDemands * 15) * 100) / 100;
-
-    // The seed math is slightly different from utilization.ts gini math because it's a mock script,
-    // but we should at least use the correct weights if possible.
-    // However, the user asked to FIX DISCREPANCIES, so I will align seed math better or at least ensure rounding.
-    // Aligning seed weights exactly with utilization.ts: 0.4*E, 0.25*T, 0.2*S, 0.15*D
-    // Since seed doesn't have Gini, we'll map: 
-    // E -> overallRatio
-    // T -> average of capRatio/revRatio (as a proxy)
-    // S -> surrenderBonus (with penalty if > 5%)
-    // D -> suppPenalty
-
-    const E = overallRatio;
-    const T = (capRatio + revRatio) / 2;
-    let S = surrenderBonus;
-    if (allocated > 0 && surrendered > 0.05 * allocated) {
-        S = Math.round(S * 0.9 * 100) / 100;
-    }
-    const D = suppPenalty;
-
-    const score = 0.40 * E + 0.25 * T + 0.20 * S + 0.15 * D;
+    const score = allocated > 0 ? Math.round((utilized / allocated) * 10000) / 100 : 0;
 
     return {
-        score: Math.round(score * 100) / 100,
+        score: score,
         breakdown: {
-            expenditureRate: E,
-            temporalDistribution: T,
-            surrenderRate: S,
-            supplementaryDemand: D
+            expenditureRate: score,
+            temporalDistribution: capAlloc > 0 ? Math.round((capUtil / capAlloc) * 10000) / 100 : 100,
+            surrenderRate: allocated > 0 ? Math.round((1 - surrendered / allocated) * 10000) / 100 : 0,
+            supplementaryDemand: Math.round(Math.max(0, 100 - suppDemands * 15) * 100) / 100
         }
     };
 }
@@ -152,6 +128,20 @@ const ministriesData: MinistryData[] = [
                         allocated: 320000, utilized: 233600, capPct: 90, revPct: 10,
                         output: { physTarget: 50, physAchieved: 35, unit: "projects", benTarget: 2000000, benAchieved: 1400000, timeliness: 65, quality: 88, geoDist: 55, dataSource: "RBI Green Bond Framework" },
                         outcome: { kpiName: "Carbon Emission Reduction (MT)", kpiBaseline: 2500, kpiCurrent: 2320, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 62, beneficiaryReported: 60, attribution: 55, sustainability: 90, dataSource: "MoEFCC Climate Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Standup India Support", description: "Credit facilities for underserved demographics",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2016,
+                        allocated: 50000, utilized: 48000, capPct: 20, revPct: 80,
+                        output: { physTarget: 50000, physAchieved: 48000, unit: "loans disbursed", benTarget: 50000, benAchieved: 48000, timeliness: 90, quality: 85, geoDist: 75, dataSource: "SIDBI Dashboard" },
+                        outcome: { kpiName: "Entrepreneurship Index Growth", kpiBaseline: 20, kpiCurrent: 22, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 60, beneficiaryReported: 65, attribution: 55, sustainability: 60, dataSource: "Ministry Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Startup India Seed Fund", description: "Seed funding for early-stage startups",
+                        priorityCategory: PriorityCategory.ADMINISTRATIVE, launchYear: 2021,
+                        allocated: 10000, utilized: 5000, capPct: 90, revPct: 10,
+                        output: { physTarget: 5000, physAchieved: 2500, unit: "startups funded", benTarget: 5000, benAchieved: 2500, timeliness: 60, quality: 80, geoDist: 65, dataSource: "DPIIT Portal" },
+                        outcome: { kpiName: "Startup Survival Rate (%)", kpiBaseline: 10, kpiCurrent: 30, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 90, beneficiaryReported: 85, attribution: 80, sustainability: 75, dataSource: "DPIIT Report", surveyYear: 2024 }
                     }
                 ]
             },
@@ -221,6 +211,20 @@ const ministriesData: MinistryData[] = [
                         allocated: 30000, utilized: 27000, capPct: 5, revPct: 95,
                         output: { physTarget: 8000000, physAchieved: 7200000, unit: "scholarships disbursed", benTarget: 8000000, benAchieved: 7200000, timeliness: 85, quality: 80, geoDist: 90, dataSource: "NSP Dashboard" },
                         outcome: { kpiName: "Higher Education GER (%)", kpiBaseline: 27.1, kpiCurrent: 30.5, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 80, attribution: 60, sustainability: 78, dataSource: "AISHE Report 2024", surveyYear: 2024 }
+                    },
+                    {
+                        name: "RUSA (Rashtriya Uchchatar Shiksha Abhiyan)", description: "Funding to state higher education institutions",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2013,
+                        allocated: 40000, utilized: 20000, capPct: 80, revPct: 20,
+                        output: { physTarget: 300, physAchieved: 150, unit: "institutions upgraded", benTarget: 2000000, benAchieved: 1000000, timeliness: 50, quality: 65, geoDist: 60, dataSource: "RUSA Dashboard" },
+                        outcome: { kpiName: "State University Quality Score", kpiBaseline: 40, kpiCurrent: 41, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 55, beneficiaryReported: 50, attribution: 45, sustainability: 50, dataSource: "NAAC Aggregated Data", surveyYear: 2024 }
+                    },
+                    {
+                        name: "SWAYAM Plus", description: "Online massive open courses for skill enhancement",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2017,
+                        allocated: 15000, utilized: 14000, capPct: 10, revPct: 90,
+                        output: { physTarget: 500, physAchieved: 480, unit: "courses launched", benTarget: 5000000, benAchieved: 4800000, timeliness: 95, quality: 85, geoDist: 80, dataSource: "SWAYAM Portal" },
+                        outcome: { kpiName: "Skill Employability Rate (%)", kpiBaseline: 20, kpiCurrent: 45, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 80, attribution: 75, sustainability: 85, dataSource: "AICTE Tracking", surveyYear: 2024 }
                     }
                 ]
             }
@@ -259,6 +263,20 @@ const ministriesData: MinistryData[] = [
                         allocated: 2005, utilized: 1825, capPct: 97.76, revPct: 2.24,
                         output: { physTarget: 22, physAchieved: 20, unit: "medical institutions upgraded", benTarget: 5000000, benAchieved: 4550000, timeliness: 85, quality: 88, geoDist: 70, dataSource: "PMSSY Dashboard" },
                         outcome: { kpiName: "Tertiary Care Bed Availability (per 10k)", kpiBaseline: 1.2, kpiCurrent: 1.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 82, attribution: 75, sustainability: 80, dataSource: "CBHI Health Statistics", surveyYear: 2024 }
+                    },
+                    {
+                        name: "National Digital Health Mission", description: "Creating digital health IDs and unified health infrastructure",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2020,
+                        allocated: 35000, utilized: 17000, capPct: 90, revPct: 10,
+                        output: { physTarget: 100000000, physAchieved: 50000000, unit: "ABHA IDs created", benTarget: 100000000, benAchieved: 50000000, timeliness: 60, quality: 80, geoDist: 70, dataSource: "NDHM Portal" },
+                        outcome: { kpiName: "Digital Health Integration (%)", kpiBaseline: 5, kpiCurrent: 15, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 80, attribution: 90, sustainability: 85, dataSource: "NHA Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "E-Sanjeevani Telemedicine", description: "National telemedicine service for remote health access",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2019,
+                        allocated: 12000, utilized: 11800, capPct: 15, revPct: 85,
+                        output: { physTarget: 80000000, physAchieved: 79000000, unit: "consultations done", benTarget: 80000000, benAchieved: 79000000, timeliness: 95, quality: 85, geoDist: 90, dataSource: "E-Sanjeevani Dashboard" },
+                        outcome: { kpiName: "Rural Health Access Index", kpiBaseline: 10, kpiCurrent: 35, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 88, beneficiaryReported: 90, attribution: 85, sustainability: 80, dataSource: "MoHFW Survey", surveyYear: 2024 }
                     }
                 ]
             }
@@ -290,6 +308,20 @@ const ministriesData: MinistryData[] = [
                         allocated: 30000, utilized: 22500, capPct: 20, revPct: 80,
                         output: { physTarget: 50000000, physAchieved: 37500000, unit: "cards issued", benTarget: 50000000, benAchieved: 37500000, timeliness: 68, quality: 72, geoDist: 70, dataSource: "SHC Portal" },
                         outcome: { kpiName: "Fertilizer Use Efficiency Index", kpiBaseline: 42, kpiCurrent: 55, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 68, beneficiaryReported: 58, attribution: 55, sustainability: 72, dataSource: "ICAR Study Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "PM Krishi Sinchayee Yojana", description: "Enhancing physical access of water on farm and expanding cultivable area",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2015,
+                        allocated: 65000, utilized: 62000, capPct: 85, revPct: 15,
+                        output: { physTarget: 2000000, physAchieved: 1900000, unit: "hectares irrigated", benTarget: 5000000, benAchieved: 4800000, timeliness: 90, quality: 80, geoDist: 75, dataSource: "PMKSY Dashboard" },
+                        outcome: { kpiName: "Crop Yield Growth (%)", kpiBaseline: 45, kpiCurrent: 48, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 58, beneficiaryReported: 60, attribution: 55, sustainability: 65, dataSource: "Agri Census", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Paramparagat Krishi Vikas Yojana", description: "Promoting organic farming through cluster approach",
+                        priorityCategory: PriorityCategory.ENVIRONMENT, launchYear: 2015,
+                        allocated: 20000, utilized: 12000, capPct: 10, revPct: 90,
+                        output: { physTarget: 50000, physAchieved: 30000, unit: "clusters formed", benTarget: 1000000, benAchieved: 600000, timeliness: 65, quality: 70, geoDist: 60, dataSource: "PKVY Portal" },
+                        outcome: { kpiName: "Organic Production Volume Indicator", kpiBaseline: 15, kpiCurrent: 17, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 50, beneficiaryReported: 55, attribution: 45, sustainability: 50, dataSource: "APEDA Report", surveyYear: 2024 }
                     }
                 ]
             }
@@ -314,6 +346,13 @@ const ministriesData: MinistryData[] = [
                         allocated: 242000, utilized: 217800, capPct: 90, revPct: 10,
                         output: { physTarget: 3500, physAchieved: 3150, unit: "km roads constructed", benTarget: 2000000, benAchieved: 1800000, timeliness: 85, quality: 88, geoDist: 55, dataSource: "BRO Annual Report" },
                         outcome: { kpiName: "Border Connectivity Index", kpiBaseline: 58, kpiCurrent: 72, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 70, attribution: 78, sustainability: 82, dataSource: "Strategic Assessment Division", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Agniveer Scheme Integration", description: "Short-term recruitment scheme for the armed forces",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2022,
+                        allocated: 45000, utilized: 43000, capPct: 5, revPct: 95,
+                        output: { physTarget: 46000, physAchieved: 45000, unit: "recruits trained", benTarget: 46000, benAchieved: 45000, timeliness: 95, quality: 85, geoDist: 85, dataSource: "Armed Forces Dashboard" },
+                        outcome: { kpiName: "Force Youth Profile Index", kpiBaseline: 20, kpiCurrent: 40, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 80, attribution: 90, sustainability: 75, dataSource: "MoD Annual Assessment", surveyYear: 2024 }
                     }
                 ]
             }

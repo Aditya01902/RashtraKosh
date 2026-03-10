@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, Cell, Treemap,
-    ScatterChart, Scatter, ZAxis, Legend
+    ScatterChart, Scatter, ZAxis, Legend, ReferenceLine, ReferenceArea
 } from 'recharts';
 import {
     Card
@@ -27,10 +27,12 @@ interface DistItem {
 
 interface ScatterItem {
     name: string;
+    ministry: string;
     allocated: number;
-    utilized: number;
-    score: number;
+    utilizationScore: number;
+    outcomeScore: number;
     size: number;
+    quadrant: number;
 }
 
 export default function AnalyticsPage() {
@@ -40,6 +42,11 @@ export default function AnalyticsPage() {
     const { data: ministries, isLoading: loadingMinistries } = useQuery({
         queryKey: ['ministries'],
         queryFn: () => fetch('/api/ministries').then(res => res.json())
+    });
+
+    const { data: schemes, isLoading: loadingSchemes } = useQuery({
+        queryKey: ['schemes'],
+        queryFn: () => fetch('/api/schemes').then(res => res.json())
     });
 
     const { data: distribution, isLoading: loadingDist } = useQuery({
@@ -70,15 +77,26 @@ export default function AnalyticsPage() {
     }, [ministries]);
 
     const scatterData = React.useMemo((): ScatterItem[] => {
-        if (!ministries) return [];
-        return ministries.map((m: MinistryWithStats) => ({
-            name: m.name,
-            allocated: m.totalAllocated / 100000,
-            utilized: m.totalUtilized / 100000,
-            score: m.avgFinalScore,
-            size: m.totalAllocated / 1000
-        }));
-    }, [ministries]);
+        if (!schemes) return [];
+        return schemes.map((s: any) => {
+            const util = s.utilizationScore || 0;
+            const out = s.outcomeScore || 0;
+            let quadrant = 3; // Low-Low (Red)
+            if (util >= 85 && out >= 70) quadrant = 1; // High-High (Green)
+            else if (util >= 85 && out < 70) quadrant = 2; // High-Low (Saffron)
+            else if (util < 85 && out >= 70) quadrant = 4; // Low-High (Blue)
+
+            return {
+                name: s.name,
+                ministry: s.ministryShortCode || s.ministryName || 'Unknown',
+                allocated: s.allocated,
+                utilizationScore: util,
+                outcomeScore: out,
+                size: s.allocated / 1000,
+                quadrant: quadrant
+            };
+        });
+    }, [schemes]);
 
     return (
         <main className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-12 space-y-12">
@@ -187,43 +205,80 @@ export default function AnalyticsPage() {
                             <div className="h-full flex flex-col space-y-4">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="text-xl font-bold font-serif text-text-primary">Utilization vs Achievement</h3>
-                                        <p className="text-text-muted text-xs">Efficiency mapping by individual ministries</p>
+                                        <h3 className="text-xl font-bold font-serif text-text-primary">Efficiency Matrix</h3>
+                                        <p className="text-text-muted text-xs">Scheme-level performance by utilisation and outcome</p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-wider mt-2">
+                                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[var(--accent-green)]" /> High/High</div>
+                                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[var(--accent-saffron)]" /> High/Low</div>
+                                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[var(--accent-blue)]" /> Low/High</div>
+                                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[var(--accent-red)]" /> Low/Low</div>
                                     </div>
                                 </div>
                                 <div className="flex-1 w-full pt-4">
-                                    {loadingMinistries ? <Skeleton className="w-full h-full" /> : (
+                                    {loadingSchemes ? <Skeleton className="w-full h-full" /> : (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                                 <XAxis
                                                     type="number"
-                                                    dataKey="allocated"
-                                                    name="Allocated"
-                                                    unit="L Cr"
+                                                    dataKey="utilizationScore"
+                                                    name="Utilisation"
+                                                    unit="%"
+                                                    domain={[0, 100]}
                                                     stroke="var(--text-muted)"
                                                     fontSize={10}
-                                                    label={{ value: 'Total Allocated (₹)', position: 'insideBottom', offset: -10, fill: 'var(--text-muted)', fontSize: 10 }}
+                                                    label={{ value: 'Utilisation Score (U) %', position: 'insideBottom', offset: -10, fill: 'var(--text-muted)', fontSize: 10 }}
                                                 />
                                                 <YAxis
                                                     type="number"
-                                                    dataKey="utilized"
-                                                    name="Utilized"
-                                                    unit="L Cr"
+                                                    dataKey="outcomeScore"
+                                                    name="Outcome"
+                                                    unit="%"
+                                                    domain={[0, 100]}
                                                     stroke="var(--text-muted)"
                                                     fontSize={10}
-                                                    label={{ value: 'Total Utilized (₹)', angle: -90, position: 'insideLeft', fill: 'var(--text-muted)', fontSize: 10 }}
+                                                    label={{ value: 'Outcome Score (OC) %', angle: -90, position: 'insideLeft', fill: 'var(--text-muted)', fontSize: 10 }}
                                                 />
-                                                <ZAxis type="number" dataKey="size" range={[100, 1000]} />
+                                                <ZAxis type="number" dataKey="size" range={[50, 400]} />
                                                 <Tooltip
                                                     cursor={{ strokeDasharray: '3 3' }}
-                                                    contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: '12px' }}
+                                                    content={({ active, payload }) => {
+                                                        if (active && payload && payload.length) {
+                                                            const data = payload[0].payload as ScatterItem;
+                                                            return (
+                                                                <div className="bg-bg-card border border-border-default rounded-xl p-3 text-sm space-y-2 shadow-2xl backdrop-blur-md">
+                                                                    <p className="font-bold text-text-primary max-w-[200px] leading-tight">{data.name}</p>
+                                                                    <p className="text-xs text-text-muted">{data.ministry}</p>
+                                                                    <div className="h-px bg-white/10 my-2" />
+                                                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                                                        <span className="text-text-muted">Allocated:</span>
+                                                                        <span className="font-mono text-text-primary text-right">₹{formatBudget(data.allocated)}</span>
+                                                                        <span className="text-text-muted">Utilisation:</span>
+                                                                        <span className="font-mono text-text-primary text-right">{data.utilizationScore}%</span>
+                                                                        <span className="text-text-muted">Outcome:</span>
+                                                                        <span className="font-mono text-text-primary text-right">{data.outcomeScore}%</span>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    }}
                                                 />
-                                                <Legend verticalAlign="top" height={36} />
-                                                <Scatter name="Ministries" data={scatterData} fill="var(--accent-saffron)">
-                                                    {scatterData.map((entry: ScatterItem, index: number) => (
-                                                        <Cell key={`cell-${index}`} fill={entry.score > 80 ? 'var(--accent-green)' : 'var(--accent-saffron)'} />
-                                                    ))}
+                                                <ReferenceLine x={85} stroke="var(--text-muted)" strokeDasharray="3 3" opacity={0.5} />
+                                                <ReferenceLine y={70} stroke="var(--text-muted)" strokeDasharray="3 3" opacity={0.5} />
+                                                <ReferenceArea x1={85} x2={100} y1={70} y2={100} fill="var(--accent-green)" fillOpacity={0.1} stroke="var(--accent-green)" strokeOpacity={0.3} strokeWidth={1} />
+                                                <ReferenceArea x1={85} x2={100} y1={0} y2={70} fill="var(--accent-saffron)" fillOpacity={0.1} stroke="var(--accent-saffron)" strokeOpacity={0.3} strokeWidth={1} />
+                                                <ReferenceArea x1={0} x2={85} y1={70} y2={100} fill="var(--accent-blue)" fillOpacity={0.1} stroke="var(--accent-blue)" strokeOpacity={0.3} strokeWidth={1} />
+                                                <ReferenceArea x1={0} x2={85} y1={0} y2={70} fill="var(--accent-red)" fillOpacity={0.1} stroke="var(--accent-red)" strokeOpacity={0.3} strokeWidth={1} />
+                                                <Scatter name="Schemes" data={scatterData}>
+                                                    {scatterData.map((entry: ScatterItem, index: number) => {
+                                                        let color = 'var(--accent-red)';
+                                                        if (entry.quadrant === 1) color = 'var(--accent-green)';
+                                                        else if (entry.quadrant === 2) color = 'var(--accent-saffron)';
+                                                        else if (entry.quadrant === 4) color = 'var(--accent-blue)';
+                                                        return <Cell key={`cell-${index}`} fill={color} opacity={0.8} />;
+                                                    })}
                                                 </Scatter>
                                             </ScatterChart>
                                         </ResponsiveContainer>

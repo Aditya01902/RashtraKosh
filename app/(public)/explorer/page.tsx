@@ -557,25 +557,25 @@ function SchemeDetail({ data }: {
                     className="p-4"
                     icon={<Wallet size={16} />}
                     label="Allocated"
-                    value={`₹${formatLakhCrore(allocation?.allocated / 1000)}`}
+                    value={`₹${formatBudget(allocation?.allocated || 0)}`}
                 />
                 <Stat
                     className="p-4"
                     icon={<BarChart3 size={16} />}
                     label="Utilized"
-                    value={`₹${formatLakhCrore(allocation?.utilized / 1000)}`}
+                    value={`₹${formatBudget(allocation?.utilized || 0)}`}
                 />
                 <Stat
                     className="p-4"
                     icon={<Info size={16} />}
                     label="Capital"
-                    value={`₹${formatLakhCrore(allocation?.capitalAllocated / 1000)}`}
+                    value={`₹${formatBudget(allocation?.allocatedCapital || 0)}`}
                 />
                 <Stat
                     className="p-4"
                     icon={<Info size={16} />}
                     label="Revenue"
-                    value={`₹${formatLakhCrore(allocation?.revenueAllocated / 1000)}`}
+                    value={`₹${formatBudget(allocation?.allocatedRevenue || 0)}`}
                 />
             </div>
 
@@ -599,7 +599,7 @@ function SchemeDetail({ data }: {
                             <span className="text-xs font-bold uppercase tracking-[0.2em] mono">AI Intelligence Report</span>
                         </div>
                         <p className="text-[15px] text-text-primary leading-relaxed italic relative z-10 font-medium">
-                            &quot;Current utilization trends suggest a potential surplus of ₹{formatLakhCrore((allocation?.allocated - allocation?.utilized) * 0.4 / 1000)}. We recommend reallocating 15% of the idle revenue budget to high-impact capital projects identified in the output achievement analysis.&quot;
+                            &quot;Current utilization trends suggest a potential surplus of ₹{formatBudget((allocation?.allocated - allocation?.utilized) * 0.4)}. We recommend reallocating 15% of the idle revenue budget to high-impact capital projects identified in the output achievement analysis.&quot;
                         </p>
                     </div>
 
@@ -612,19 +612,19 @@ function SchemeDetail({ data }: {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
                                     <span className="text-text-muted2">Capital Contribution</span>
-                                    <span className="text-text-primary">42%</span>
+                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.allocatedCapital / allocation?.allocated) * 100) : 0}%</span>
                                 </div>
                                 <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-blue w-[42%] shadow-[0_0_10px_rgba(79,158,255,0.4)]" />
+                                    <div className="h-full bg-accent-blue shadow-[0_0_10px_rgba(79,158,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.allocatedCapital / allocation?.allocated) * 100) : 0}%` }} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
                                     <span className="text-text-muted2">Revenue Contribution</span>
-                                    <span className="text-text-primary">58%</span>
+                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.allocatedRevenue / allocation?.allocated) * 100) : 0}%</span>
                                 </div>
                                 <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-purple w-[58%] shadow-[0_0_10px_rgba(164,124,255,0.4)]" />
+                                    <div className="h-full bg-accent-purple shadow-[0_0_10px_rgba(164,124,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.allocatedRevenue / allocation?.allocated) * 100) : 0}%` }} />
                                 </div>
                             </div>
                         </div>
