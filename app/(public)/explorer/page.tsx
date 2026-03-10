@@ -569,13 +569,13 @@ function SchemeDetail({ data }: {
                     className="p-4"
                     icon={<Info size={16} />}
                     label="Capital"
-                    value={`₹${formatBudget(allocation?.allocatedCapital || 0)}`}
+                    value={`₹${formatBudget(allocation?.capitalAllocated || 0)}`}
                 />
                 <Stat
                     className="p-4"
                     icon={<Info size={16} />}
                     label="Revenue"
-                    value={`₹${formatBudget(allocation?.allocatedRevenue || 0)}`}
+                    value={`₹${formatBudget(allocation?.revenueAllocated || 0)}`}
                 />
             </div>
 
@@ -612,19 +612,19 @@ function SchemeDetail({ data }: {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
                                     <span className="text-text-muted2">Capital Contribution</span>
-                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.allocatedCapital / allocation?.allocated) * 100) : 0}%</span>
+                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.capitalAllocated / allocation?.allocated) * 100) : 0}%</span>
                                 </div>
                                 <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-blue shadow-[0_0_10px_rgba(79,158,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.allocatedCapital / allocation?.allocated) * 100) : 0}%` }} />
+                                    <div className="h-full bg-accent-blue shadow-[0_0_10px_rgba(79,158,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.capitalAllocated / allocation?.allocated) * 100) : 0}%` }} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
                                     <span className="text-text-muted2">Revenue Contribution</span>
-                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.allocatedRevenue / allocation?.allocated) * 100) : 0}%</span>
+                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.revenueAllocated / allocation?.allocated) * 100) : 0}%</span>
                                 </div>
                                 <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-purple shadow-[0_0_10px_rgba(164,124,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.allocatedRevenue / allocation?.allocated) * 100) : 0}%` }} />
+                                    <div className="h-full bg-accent-purple shadow-[0_0_10px_rgba(164,124,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.revenueAllocated / allocation?.allocated) * 100) : 0}%` }} />
                                 </div>
                             </div>
                         </div>

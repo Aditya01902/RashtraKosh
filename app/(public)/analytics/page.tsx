@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, Cell, Treemap,
-    ScatterChart, Scatter, ZAxis, Legend, ReferenceLine, ReferenceArea
+    ScatterChart, Scatter, ZAxis, ReferenceLine, ReferenceArea
 } from 'recharts';
 import {
     Card
@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
 
     const scatterData = React.useMemo((): ScatterItem[] => {
         if (!schemes) return [];
-        return schemes.map((s: any) => {
+        return schemes.map((s: { name: string; ministryShortCode?: string; ministryName?: string; allocated: number; utilizationScore?: number; outcomeScore?: number; }) => {
             const util = s.utilizationScore || 0;
             const out = s.outcomeScore || 0;
             let quadrant = 3; // Low-Low (Red)
