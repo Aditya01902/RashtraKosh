@@ -26,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -34,3 +35,32 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs and temporary files
+*.log
+build_output*.txt
+ts_err*.txt
+ts_errors*.txt
+eslint*.json
+eslint*.txt
+eslint*.log
+lint*.log
+lint_output.txt
+verify_output.txt
+eslint-errors.json
+eslint-output.json
+eslint.json
+eslint2.json
+eslint3.json
+eslint_report.json
+ts_errors_new.txt
+ts_errors_debug.txt
+ts_errors_final.txt
+ts_errors_utf8.txt
+ts_err2.txt
+ts_errors_2.txt
+ts_errors2.txt
+ts_errors.log
+verify_output.txt
+test-login.ts
+test-scoring.js

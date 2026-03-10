@@ -1,0 +1,607 @@
+import { PrismaClient, Sector, PriorityCategory, KpiDirection, UserRole, MembershipTier, FeedbackCategory, FeedbackStatus } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
+
+// Helper: compute utilization score
+function computeUtilizationScore(allocated: number, utilized: number, capAlloc: number, capUtil: number, revAlloc: number, revUtil: number, surrendered: number, suppDemands: number): { score: number, breakdown: Record<string, number> } {
+    const overallRatio = allocated > 0 ? Math.round(Math.min(utilized / allocated, 1.0) * 10000) / 100 : 0;
+    const capRatio = capAlloc > 0 ? Math.round(Math.min(capUtil / capAlloc, 1.0) * 10000) / 100 : 100;
+    const revRatio = revAlloc > 0 ? Math.round(Math.min(revUtil / revAlloc, 1.0) * 10000) / 100 : 100;
+    const surrenderBonus = allocated > 0 ? Math.round((1 - surrendered / allocated) * 10000) / 100 : 0;
+    const suppPenalty = Math.round(Math.max(0, 100 - suppDemands * 15) * 100) / 100;
+
+    // The seed math is slightly different from utilization.ts gini math because it's a mock script,
+    // but we should at least use the correct weights if possible.
+    // However, the user asked to FIX DISCREPANCIES, so I will align seed math better or at least ensure rounding.
+    // Aligning seed weights exactly with utilization.ts: 0.4*E, 0.25*T, 0.2*S, 0.15*D
+    // Since seed doesn't have Gini, we'll map: 
+    // E -> overallRatio
+    // T -> average of capRatio/revRatio (as a proxy)
+    // S -> surrenderBonus (with penalty if > 5%)
+    // D -> suppPenalty
+
+    const E = overallRatio;
+    const T = (capRatio + revRatio) / 2;
+    let S = surrenderBonus;
+    if (allocated > 0 && surrendered > 0.05 * allocated) {
+        S = Math.round(S * 0.9 * 100) / 100;
+    }
+    const D = suppPenalty;
+
+    const score = 0.40 * E + 0.25 * T + 0.20 * S + 0.15 * D;
+
+    return {
+        score: Math.round(score * 100) / 100,
+        breakdown: {
+            expenditureRate: E,
+            temporalDistribution: T,
+            surrenderRate: S,
+            supplementaryDemand: D
+        }
+    };
+}
+
+// Helper: compute output score
+function computeOutputScore(physTarget: number, physAchieved: number, benTarget: number, benAchieved: number, timeliness: number, quality: number, geoDist: number): { score: number, breakdown: Record<string, number> } {
+    const PT = physTarget > 0 ? Math.round(Math.min(physAchieved / physTarget, 1.0) * 10000) / 100 : 0;
+    const BC = benTarget > 0 ? Math.round(Math.min(benAchieved / benTarget, 1.0) * 10000) / 100 : 0;
+    const DT = Math.round(timeliness * 100) / 100;
+    const QC = Math.round(quality * 100) / 100;
+    const GD = Math.round(geoDist * 100) / 100;
+
+    const score = 0.30 * PT + 0.25 * BC + 0.20 * DT + 0.15 * QC + 0.10 * GD;
+
+    return {
+        score: Math.round(score * 100) / 100,
+        breakdown: {
+            physicalTargetAchievement: PT,
+            beneficiaryCoverageRatio: BC,
+            deliveryTimeliness: DT,
+            qualityComplianceScore: QC,
+            geographicDistributionIndex: GD
+        }
+    };
+}
+
+// Helper: compute outcome score
+function computeOutcomeScore(baselineVsCurrent: number, beneficiaryReported: number, attribution: number, sustainability: number): { score: number, breakdown: Record<string, number> } {
+    // Round direct inputs to match breakdown display
+    const KPI = Math.round(baselineVsCurrent * 100) / 100;
+    const BCI = Math.round(baselineVsCurrent * 100) / 100; // In seed, these are often the same mock value
+    const BI = Math.round(beneficiaryReported * 100) / 100;
+    const AS = Math.round(attribution * 100) / 100;
+    const SI = Math.round(sustainability * 100) / 100;
+
+    // Use lib/scoring/outcome logic: 0.30 * KPI + 0.25 * BCI + 0.20 * BI + 0.15 * AS + 0.10 * SI
+    const score = 0.30 * KPI + 0.25 * BCI + 0.20 * BI + 0.15 * AS + 0.10 * SI;
+
+    return {
+        score: Math.round(score * 100) / 100,
+        breakdown: {
+            sectorKpiImprovement: KPI,
+            baselineVsCurrentIndex: BCI,
+            beneficiaryImpact: BI,
+            attributionScore: AS,
+            sustainabilityIndex: SI
+        }
+    };
+}
+
+// Helper: compute final score
+function computeFinalScore(util: number, output: number, outcome: number): number {
+    const finalScore = 0.30 * util + 0.35 * outcome + 0.35 * output;
+    return Math.round(finalScore * 100) / 100;
+}
+
+const FISCAL_YEAR = "2024-25";
+
+interface SchemeData {
+    name: string;
+    description: string;
+    priorityCategory: PriorityCategory;
+    launchYear: number;
+    allocated: number;
+    utilized: number;
+    capPct: number;
+    revPct: number;
+    output: {
+        physTarget: number; physAchieved: number; unit: string;
+        benTarget: number; benAchieved: number;
+        timeliness: number; quality: number; geoDist: number;
+        dataSource: string;
+    };
+    outcome: {
+        kpiName: string; kpiBaseline: number; kpiCurrent: number;
+        direction: KpiDirection;
+        baselineVsCurrent: number; beneficiaryReported: number;
+        attribution: number; sustainability: number;
+        dataSource: string; surveyYear: number;
+    };
+}
+
+interface MinistryData {
+    name: string; shortCode: string; color: string; sector: Sector;
+    departments: { name: string; schemes: SchemeData[] }[];
+}
+
+const ministriesData: MinistryData[] = [
+    {
+        name: "Ministry of Finance", shortCode: "MoF", color: "#FF9933", sector: Sector.FINANCE,
+        departments: [
+            {
+                name: "Dept. of Economic Affairs",
+                schemes: [
+                    {
+                        name: "PM Gati Shakti", description: "National master plan for multi-modal connectivity and infrastructure development",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2021,
+                        allocated: 1200000, utilized: 1080000, capPct: 70, revPct: 30,
+                        output: { physTarget: 25000, physAchieved: 22500, unit: "km", benTarget: 5000000, benAchieved: 4500000, timeliness: 88, quality: 85, geoDist: 72, dataSource: "Ministry of Finance Annual Report 2024-25" },
+                        outcome: { kpiName: "Logistics Performance Index", kpiBaseline: 3.18, kpiCurrent: 3.42, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 75, attribution: 70, sustainability: 80, dataSource: "World Bank LPI Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "National Infrastructure Fund", description: "Long-term funding for critical national infrastructure projects",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2019,
+                        allocated: 1800000, utilized: 1620000, capPct: 85, revPct: 15,
+                        output: { physTarget: 120, physAchieved: 108, unit: "projects", benTarget: 8000000, benAchieved: 7200000, timeliness: 82, quality: 90, geoDist: 68, dataSource: "DEA Project Tracker" },
+                        outcome: { kpiName: "Infrastructure Quality Rating", kpiBaseline: 4.2, kpiCurrent: 4.6, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 82, beneficiaryReported: 78, attribution: 75, sustainability: 85, dataSource: "Global Competitiveness Index", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Sovereign Green Bonds", description: "Government securities to finance green infrastructure and climate action",
+                        priorityCategory: PriorityCategory.ENVIRONMENT, launchYear: 2023,
+                        allocated: 1200000, utilized: 876000, capPct: 90, revPct: 10,
+                        output: { physTarget: 50, physAchieved: 35, unit: "projects", benTarget: 2000000, benAchieved: 1400000, timeliness: 65, quality: 88, geoDist: 55, dataSource: "RBI Green Bond Framework" },
+                        outcome: { kpiName: "Carbon Emission Reduction (MT)", kpiBaseline: 2500, kpiCurrent: 2320, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 62, beneficiaryReported: 60, attribution: 55, sustainability: 90, dataSource: "MoEFCC Climate Report", surveyYear: 2024 }
+                    }
+                ]
+            },
+            {
+                name: "Dept. of Revenue",
+                schemes: [
+                    {
+                        name: "GST Implementation Support", description: "Technology and capacity building for nationwide GST compliance",
+                        priorityCategory: PriorityCategory.ADMINISTRATIVE, launchYear: 2017,
+                        allocated: 950000, utilized: 883500, capPct: 20, revPct: 80,
+                        output: { physTarget: 12000, physAchieved: 11100, unit: "taxpayer touchpoints", benTarget: 15000000, benAchieved: 13950000, timeliness: 90, quality: 82, geoDist: 85, dataSource: "GSTN Annual Report" },
+                        outcome: { kpiName: "GST Compliance Rate (%)", kpiBaseline: 68, kpiCurrent: 78, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 72, attribution: 80, sustainability: 75, dataSource: "CBIC Data Analytics", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Tax Dispute Resolution", description: "Fast-track resolution of pending direct and indirect tax disputes",
+                        priorityCategory: PriorityCategory.ADMINISTRATIVE, launchYear: 2020,
+                        allocated: 850000, utilized: 714000, capPct: 15, revPct: 85,
+                        output: { physTarget: 250000, physAchieved: 195000, unit: "cases resolved", benTarget: 500000, benAchieved: 390000, timeliness: 72, quality: 80, geoDist: 78, dataSource: "CBDT Annual Report" },
+                        outcome: { kpiName: "Pendency Reduction Rate (%)", kpiBaseline: 35, kpiCurrent: 52, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 68, attribution: 72, sustainability: 70, dataSource: "Tax Tribunal Statistics", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Education", shortCode: "MoE", color: "#4F9EFF", sector: Sector.EDUCATION,
+        departments: [
+            {
+                name: "Dept. of School Education",
+                schemes: [
+                    {
+                        name: "PM POSHAN", description: "Mid-day meal programme for nutritional support in government schools",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2021,
+                        allocated: 1280000, utilized: 1216000, capPct: 5, revPct: 95,
+                        output: { physTarget: 120000, physAchieved: 118200, unit: "schools covered", benTarget: 120000000, benAchieved: 118000000, timeliness: 95, quality: 78, geoDist: 88, dataSource: "POSHAN Tracker Portal" },
+                        outcome: { kpiName: "Underweight Children Rate (%)", kpiBaseline: 32.1, kpiCurrent: 28.5, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 82, attribution: 65, sustainability: 75, dataSource: "NFHS-6 Survey", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Samagra Shiksha", description: "Integrated scheme for school education from pre-school to class XII",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2018,
+                        allocated: 2100000, utilized: 1890000, capPct: 30, revPct: 70,
+                        output: { physTarget: 1150000, physAchieved: 1035000, unit: "schools strengthened", benTarget: 250000000, benAchieved: 225000000, timeliness: 85, quality: 80, geoDist: 82, dataSource: "UDISE+ Portal" },
+                        outcome: { kpiName: "Net Enrollment Ratio (%)", kpiBaseline: 87.4, kpiCurrent: 91.2, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 76, attribution: 72, sustainability: 80, dataSource: "ASER 2024 Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "NEP Implementation", description: "National Education Policy 2020 implementation including curriculum reform",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2020,
+                        allocated: 900000, utilized: 630000, capPct: 40, revPct: 60,
+                        output: { physTarget: 500, physAchieved: 310, unit: "institutions reformed", benTarget: 10000000, benAchieved: 6200000, timeliness: 55, quality: 75, geoDist: 60, dataSource: "NEP Implementation Cell" },
+                        outcome: { kpiName: "Multi-disciplinary Program Adoption (%)", kpiBaseline: 12, kpiCurrent: 28, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 65, beneficiaryReported: 62, attribution: 58, sustainability: 68, dataSource: "UGC Annual Report", surveyYear: 2024 }
+                    }
+                ]
+            },
+            {
+                name: "Dept. of Higher Education",
+                schemes: [
+                    {
+                        name: "PM Research Fellowship", description: "Fellowship scheme attracting top talent into doctoral research programs",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2021,
+                        allocated: 600000, utilized: 558000, capPct: 10, revPct: 90,
+                        output: { physTarget: 3000, physAchieved: 2790, unit: "fellowships awarded", benTarget: 3000, benAchieved: 2790, timeliness: 92, quality: 95, geoDist: 65, dataSource: "PMRF Portal" },
+                        outcome: { kpiName: "Research Publications per Fellow", kpiBaseline: 1.2, kpiCurrent: 2.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 88, beneficiaryReported: 90, attribution: 85, sustainability: 82, dataSource: "Scopus/Web of Science", surveyYear: 2024 }
+                    },
+                    {
+                        name: "National Scholarship Portal", description: "Centralized portal for scholarship disbursement to SC/ST/OBC/minority students",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2015,
+                        allocated: 1480000, utilized: 1332000, capPct: 5, revPct: 95,
+                        output: { physTarget: 8000000, physAchieved: 7200000, unit: "scholarships disbursed", benTarget: 8000000, benAchieved: 7200000, timeliness: 85, quality: 80, geoDist: 90, dataSource: "NSP Dashboard" },
+                        outcome: { kpiName: "Higher Education GER (%)", kpiBaseline: 27.1, kpiCurrent: 30.5, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 80, attribution: 60, sustainability: 78, dataSource: "AISHE Report 2024", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Health & Family Welfare", shortCode: "MoHFW", color: "#1FCF74", sector: Sector.HEALTH,
+        departments: [
+            {
+                name: "Dept. of Health Services",
+                schemes: [
+                    {
+                        name: "Ayushman Bharat PM-JAY", description: "World's largest government-funded health insurance scheme providing ₹5 lakh cover",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2018,
+                        allocated: 2400000, utilized: 2208000, capPct: 15, revPct: 85,
+                        output: { physTarget: 30000000, physAchieved: 27600000, unit: "treatments authorized", benTarget: 550000000, benAchieved: 500000000, timeliness: 90, quality: 82, geoDist: 78, dataSource: "PM-JAY Dashboard" },
+                        outcome: { kpiName: "Out-of-Pocket Health Expenditure (%)", kpiBaseline: 62.6, kpiCurrent: 48.2, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 78, attribution: 80, sustainability: 72, dataSource: "NHA Estimates 2024", surveyYear: 2024 }
+                    },
+                    {
+                        name: "National Health Mission", description: "Strengthening public health infrastructure across rural and urban India",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2013,
+                        allocated: 1800000, utilized: 1620000, capPct: 35, revPct: 65,
+                        output: { physTarget: 180000, physAchieved: 162000, unit: "health facilities upgraded", benTarget: 400000000, benAchieved: 360000000, timeliness: 82, quality: 78, geoDist: 75, dataSource: "NHM HMIS Portal" },
+                        outcome: { kpiName: "Maternal Mortality Rate (per 100k)", kpiBaseline: 113, kpiCurrent: 97, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 74, attribution: 75, sustainability: 82, dataSource: "SRS Special Bulletin", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Mission Indradhanush", description: "Full immunization drive to reach every child under 2 years",
+                        priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2014,
+                        allocated: 840000, utilized: 588000, capPct: 25, revPct: 75,
+                        output: { physTarget: 40000000, physAchieved: 28000000, unit: "children vaccinated", benTarget: 40000000, benAchieved: 28000000, timeliness: 62, quality: 85, geoDist: 58, dataSource: "IMI Dashboard" },
+                        outcome: { kpiName: "Full Immunization Coverage (%)", kpiBaseline: 62, kpiCurrent: 76.4, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 72, beneficiaryReported: 70, attribution: 68, sustainability: 65, dataSource: "NFHS-6 Data", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Agriculture", shortCode: "MoA", color: "#F5C842", sector: Sector.AGRICULTURE,
+        departments: [
+            {
+                name: "Dept. of Agriculture & Farmers Welfare",
+                schemes: [
+                    {
+                        name: "PM Kisan Samman Nidhi", description: "Direct income support of ₹6,000/year to small and marginal farmer families",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2019,
+                        allocated: 2600000, utilized: 2470000, capPct: 0, revPct: 100,
+                        output: { physTarget: 110000000, physAchieved: 104500000, unit: "beneficiaries paid", benTarget: 110000000, benAchieved: 104500000, timeliness: 92, quality: 88, geoDist: 92, dataSource: "PM-KISAN Portal" },
+                        outcome: { kpiName: "Farmer Income Growth Rate (%)", kpiBaseline: 2.4, kpiCurrent: 5.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 82, beneficiaryReported: 72, attribution: 60, sustainability: 70, dataSource: "Agriculture Census 2024", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Fasal Bima Yojana", description: "Crop insurance scheme protecting farmers against natural calamities and pest attacks",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2016,
+                        allocated: 1600000, utilized: 1360000, capPct: 5, revPct: 95,
+                        output: { physTarget: 60000000, physAchieved: 45600000, unit: "farmers insured", benTarget: 60000000, benAchieved: 45600000, timeliness: 72, quality: 70, geoDist: 75, dataSource: "PMFBY Portal" },
+                        outcome: { kpiName: "Claim Settlement Ratio (%)", kpiBaseline: 55, kpiCurrent: 68, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 70, beneficiaryReported: 62, attribution: 65, sustainability: 68, dataSource: "Insurance Regulatory Authority", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Soil Health Card Scheme", description: "Providing soil health cards with crop-wise nutrient recommendations",
+                        priorityCategory: PriorityCategory.ENVIRONMENT, launchYear: 2015,
+                        allocated: 450000, utilized: 337500, capPct: 20, revPct: 80,
+                        output: { physTarget: 50000000, physAchieved: 37500000, unit: "cards issued", benTarget: 50000000, benAchieved: 37500000, timeliness: 68, quality: 72, geoDist: 70, dataSource: "SHC Portal" },
+                        outcome: { kpiName: "Fertilizer Use Efficiency Index", kpiBaseline: 42, kpiCurrent: 55, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 68, beneficiaryReported: 58, attribution: 55, sustainability: 72, dataSource: "ICAR Study Report", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    }
+];
+
+async function main() {
+    console.log("🧹 Cleaning existing data...");
+    await prisma.feedbackVote.deleteMany();
+    await prisma.feedbackItem.deleteMany();
+    await prisma.schemeScore.deleteMany();
+    await prisma.outcomeData.deleteMany();
+    await prisma.outputData.deleteMany();
+    await prisma.budgetAllocation.deleteMany();
+    await prisma.uploadLog.deleteMany();
+    await prisma.reallocPlan.deleteMany();
+    await prisma.scheme.deleteMany();
+    await prisma.department.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.ministry.deleteMany();
+
+    console.log("🏛️  Seeding ministries, departments, schemes...");
+
+    const createdSchemeIds: string[] = [];
+
+    for (const mData of ministriesData) {
+        const ministry = await prisma.ministry.create({
+            data: {
+                name: mData.name,
+                shortCode: mData.shortCode,
+                color: mData.color,
+                description: `Government of India — ${mData.name}`,
+                sector: mData.sector,
+            }
+        });
+        console.log(`  ✅ Ministry: ${ministry.name}`);
+
+        for (const dData of mData.departments) {
+            const department = await prisma.department.create({
+                data: {
+                    name: dData.name,
+                    ministryId: ministry.id,
+                }
+            });
+
+            for (const sData of dData.schemes) {
+                const capAlloc = sData.allocated * (sData.capPct / 100);
+                const revAlloc = sData.allocated * (sData.revPct / 100);
+                const capUtil = sData.utilized * (sData.capPct / 100);
+                const revUtil = sData.utilized * (sData.revPct / 100);
+                const surrendered = (sData.allocated - sData.utilized) * 0.3; // 30% of gap surrendered
+                const suppDemands = sData.utilized / sData.allocated < 0.75 ? 2 : (sData.utilized / sData.allocated < 0.9 ? 1 : 0);
+
+                // Quarter-wise expenditure: realistic distribution
+                const q1Pct = 0.20, q2Pct = 0.25, q3Pct = 0.28, q4Pct = 0.27;
+                const expQ1 = sData.utilized * q1Pct;
+                const expQ2 = sData.utilized * q2Pct;
+                const expQ3 = sData.utilized * q3Pct;
+                const expQ4 = sData.utilized * q4Pct;
+
+                const scheme = await prisma.scheme.create({
+                    data: {
+                        name: sData.name,
+                        description: sData.description,
+                        departmentId: department.id,
+                        isActive: true,
+                        launchYear: sData.launchYear,
+                        priorityCategory: sData.priorityCategory,
+                    }
+                });
+                createdSchemeIds.push(scheme.id);
+
+                // Budget allocation (scheme-level)
+                await prisma.budgetAllocation.create({
+                    data: {
+                        schemeId: scheme.id,
+                        ministryId: ministry.id,
+                        fiscalYear: FISCAL_YEAR,
+                        allocated: capAlloc + revAlloc,
+                        allocatedCapital: capAlloc,
+                        allocatedRevenue: revAlloc,
+                        utilized: capUtil + revUtil,
+                        utilizedCapital: capUtil,
+                        utilizedRevenue: revUtil,
+                        expenditureQ1: expQ1,
+                        expenditureQ2: expQ2,
+                        expenditureQ3: expQ3,
+                        expenditureQ4: expQ4,
+                        surrendered: surrendered,
+                        supplementaryDemands: suppDemands,
+                    }
+                });
+
+                // Output data
+                const od = sData.output;
+                await prisma.outputData.create({
+                    data: {
+                        schemeId: scheme.id,
+                        fiscalYear: FISCAL_YEAR,
+                        physicalTargetValue: od.physTarget,
+                        physicalAchievedValue: od.physAchieved,
+                        physicalUnit: od.unit,
+                        beneficiaryTarget: od.benTarget,
+                        beneficiaryAchieved: od.benAchieved,
+                        timelinessScore: od.timeliness,
+                        qualityComplianceScore: od.quality,
+                        geoDistributionIndex: od.geoDist,
+                        dataSource: od.dataSource,
+                    }
+                });
+
+                // Outcome data
+                const oc = sData.outcome;
+                await prisma.outcomeData.create({
+                    data: {
+                        schemeId: scheme.id,
+                        fiscalYear: FISCAL_YEAR,
+                        sectorKpiName: oc.kpiName,
+                        sectorKpiBaseline: oc.kpiBaseline,
+                        sectorKpiCurrent: oc.kpiCurrent,
+                        sectorKpiDirection: oc.direction,
+                        baselineVsCurrentIndex: oc.baselineVsCurrent,
+                        beneficiaryReportedScore: oc.beneficiaryReported,
+                        attributionScore: oc.attribution,
+                        sustainabilityIndex: oc.sustainability,
+                        dataSource: oc.dataSource,
+                        surveyYear: oc.surveyYear,
+                    }
+                });
+
+                // Compute scores
+                const utilResult = computeUtilizationScore(sData.allocated, sData.utilized, capAlloc, capUtil, revAlloc, revUtil, surrendered, suppDemands);
+                const outputResult = computeOutputScore(od.physTarget, od.physAchieved, od.benTarget, od.benAchieved, od.timeliness, od.quality, od.geoDist);
+                const outcomeResult = computeOutcomeScore(oc.baselineVsCurrent, oc.beneficiaryReported, oc.attribution, oc.sustainability);
+                const finalScore = computeFinalScore(utilResult.score, outputResult.score, outcomeResult.score);
+
+                await prisma.schemeScore.create({
+                    data: {
+                        schemeId: scheme.id,
+                        fiscalYear: FISCAL_YEAR,
+                        utilizationScore: utilResult.score,
+                        utilizationBreakdown: utilResult.breakdown,
+                        outputScore: outputResult.score,
+                        outputBreakdown: outputResult.breakdown,
+                        outcomeScore: outcomeResult.score,
+                        outcomeBreakdown: outcomeResult.breakdown,
+                        finalScore: finalScore,
+                        scoreVersion: "v1.0",
+                        calculatedAt: new Date(),
+                    }
+                });
+
+                console.log(`    📊 ${sData.name} — Final Score: ${finalScore}`);
+            }
+        }
+    }
+
+    // ========== USERS ==========
+    console.log("\n👤 Seeding users...");
+    // Get first two ministries for admin assignment
+    const allMinistries = await prisma.ministry.findMany({ take: 4 });
+
+    const _superAdmin = await prisma.user.create({
+        data: {
+            name: "Rajiv Kumar",
+            email: "admin@rashtrakosh.gov.in",
+            password: bcrypt.hashSync("Admin@123", 10), // hashed "Admin@123"
+            role: UserRole.SUPER_ADMIN,
+            membershipTier: MembershipTier.INSTITUTIONAL,
+            institution: "NITI Aayog",
+            credentialVerified: true,
+        }
+    });
+    console.log("  ✅ Super Admin:", _superAdmin.name);
+
+    const financeAdmin = await prisma.user.create({
+        data: {
+            name: "Priya Sharma",
+            email: "priya.sharma@finance.gov.in",
+            password: bcrypt.hashSync("Admin@123", 10),
+            role: UserRole.MINISTRY_ADMIN,
+            membershipTier: MembershipTier.INSTITUTIONAL,
+            institution: "Ministry of Finance",
+            ministryId: allMinistries[0]?.id,
+            credentialVerified: true,
+        }
+    });
+    console.log("  ✅ Ministry Admin (MoF): Priya Sharma");
+
+    const healthAdmin = await prisma.user.create({
+        data: {
+            name: "Dr. Anand Mehta",
+            email: "anand.mehta@health.gov.in",
+            password: bcrypt.hashSync("Admin@123", 10),
+            role: UserRole.MINISTRY_ADMIN,
+            membershipTier: MembershipTier.INSTITUTIONAL,
+            institution: "Ministry of Health & Family Welfare",
+            ministryId: allMinistries[2]?.id,
+            credentialVerified: true,
+        }
+    });
+    console.log("  ✅ Ministry Admin (MoHFW): Dr. Anand Mehta");
+
+    const expertUser = await prisma.user.create({
+        data: {
+            name: "Prof. Sunita Desai",
+            email: "sunita.desai@iima.ac.in",
+            password: bcrypt.hashSync("Admin@123", 10),
+            role: UserRole.EXPERT_MEMBER,
+            membershipTier: MembershipTier.EXPERT,
+            institution: "IIM Ahmedabad",
+            credentials: "https://linkedin.com/in/sunita-desai-professor",
+            credentialVerified: true,
+        }
+    });
+    console.log("  ✅ Expert Member: Prof. Sunita Desai");
+
+    const generalUser = await prisma.user.create({
+        data: {
+            name: "Arjun Patel",
+            email: "arjun.patel@gmail.com",
+            password: bcrypt.hashSync("Admin@123", 10),
+            role: UserRole.GENERAL_MEMBER,
+            membershipTier: MembershipTier.GENERAL,
+        }
+    });
+    console.log("  ✅ General Member:", generalUser.name);
+
+    // ========== FEEDBACK ==========
+    console.log("\n💬 Seeding feedback items...");
+    const allSchemes = await prisma.scheme.findMany({ take: 16 });
+
+    await prisma.feedbackItem.create({
+        data: {
+            title: "PM Gati Shakti exceeding connectivity targets in Northeast",
+            body: "The multi-modal connectivity approach has significantly improved logistics in Assam and Meghalaya. Suggest expanding rail corridor funding by 20% in the next fiscal year.",
+            category: FeedbackCategory.SCHEME_PERFORMANCE,
+            schemeId: allSchemes[0]?.id,
+            authorId: expertUser.id,
+            status: FeedbackStatus.UNDER_REVIEW,
+            weightedScore: 2.0,
+        }
+    });
+
+    await prisma.feedbackItem.create({
+        data: {
+            title: "NEP Implementation needs urgent course correction",
+            body: "Only 62% of targeted institutions have been reformed. The multi-disciplinary program adoption is lagging. Recommend a dedicated task force with monthly milestones.",
+            category: FeedbackCategory.POLICY_SUGGESTION,
+            schemeId: allSchemes.find(s => s.name === "NEP Implementation")?.id,
+            authorId: expertUser.id,
+            status: FeedbackStatus.NEW,
+            weightedScore: 2.0,
+        }
+    });
+
+    await prisma.feedbackItem.create({
+        data: {
+            title: "Discrepancy in Mission Indradhanush coverage data",
+            body: "The reported 28M vaccinations seems inflated when cross-referenced with state-level HMIS data. Suggest an independent audit of the cold chain infrastructure utilization.",
+            category: FeedbackCategory.ANOMALY_FLAG,
+            schemeId: allSchemes.find(s => s.name === "Mission Indradhanush")?.id,
+            authorId: healthAdmin.id,
+            status: FeedbackStatus.UNDER_REVIEW,
+            adminNote: "Internal audit initiated. Awaiting state reports.",
+            weightedScore: 3.0,
+        }
+    });
+
+    await prisma.feedbackItem.create({
+        data: {
+            title: "Reallocate funds from Sovereign Green Bonds to PM-JAY",
+            body: "Green Bonds has only utilized 73% of allocation. PM-JAY is oversubscribed with 27.6M treatments vs 30M target. A 15% reallocation would directly improve healthcare access.",
+            category: FeedbackCategory.REALLOCATION_SUGGESTION,
+            authorId: financeAdmin.id,
+            status: FeedbackStatus.INCORPORATED,
+            weightedScore: 3.0,
+        }
+    });
+
+    await prisma.feedbackItem.create({
+        data: {
+            title: "PM Kisan portal crashes during payment cycles",
+            body: "As a beneficiary farmer from Madhya Pradesh, I've noticed the PM Kisan portal becomes inaccessible for 2-3 days during each payment cycle. This affects 11 crore farmers.",
+            category: FeedbackCategory.DATA_QUALITY,
+            schemeId: allSchemes.find(s => s.name === "PM Kisan Samman Nidhi")?.id,
+            authorId: generalUser.id,
+            isAnonymous: false,
+            status: FeedbackStatus.NEW,
+            weightedScore: 1.0,
+        }
+    });
+    console.log("  ✅ 5 feedback items created");
+
+    // ========== SUMMARY ==========
+    const schemeCount = await prisma.scheme.count();
+    const scoreCount = await prisma.schemeScore.count();
+    const userCount = await prisma.user.count();
+    const feedbackCount = await prisma.feedbackItem.count();
+
+    console.log("\n🎯 Seed Summary:");
+    console.log(`   Ministries:   ${await prisma.ministry.count()}`);
+    console.log(`   Departments:  ${await prisma.department.count()}`);
+    console.log(`   Schemes:      ${schemeCount}`);
+    console.log(`   Allocations:  ${await prisma.budgetAllocation.count()}`);
+    console.log(`   Output Data:  ${await prisma.outputData.count()}`);
+    console.log(`   Outcome Data: ${await prisma.outcomeData.count()}`);
+    console.log(`   Scores:       ${scoreCount}`);
+    console.log(`   Users:        ${userCount}`);
+    console.log(`   Feedback:     ${feedbackCount}`);
+    console.log("\n✅ Seed completed successfully!");
+}
+
+main()
+    .catch((e) => {
+        console.error("❌ Seed failed:", e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
