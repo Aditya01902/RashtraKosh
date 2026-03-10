@@ -14,7 +14,7 @@ import {
     ChevronRight, ArrowLeft, Building2, Layers,
     Target, Info, BrainCircuit, Wallet, BarChart3
 } from 'lucide-react';
-import { cn, formatLakhCrore } from '@/lib/utils';
+import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
 
 export default function ExplorerPage() {
     const router = useRouter();
@@ -230,7 +230,7 @@ export default function ExplorerPage() {
                                                     </p>
                                                     {level === 'ministry' && (
                                                         <div className="flex flex-col items-start gap-1 text-[11px] text-text-muted2 mono">
-                                                            <span className="text-accent-blue font-bold text-xs">₹{((item.totalAllocated || 0) / 100000).toFixed(2)}L Cr</span>
+                                                            <span className="text-accent-blue font-bold text-xs">₹{formatBudget(item.totalAllocated || 0)}</span>
                                                             <span>{item.departmentCount || 0} Depts</span>
                                                         </div>
                                                     )}
@@ -493,8 +493,8 @@ function DepartmentDetail({ data, parentMinistry }: {
                                     </td>
                                     <td className="px-8 py-7">
                                         <div className="flex flex-col group-hover:translate-x-1 transition-transform duration-500">
-                                            <span className="text-text-primary text-[15px] font-bold leading-none tracking-tight">₹{(scheme.allocated / 100000).toFixed(2)}</span>
-                                            <span className="text-[10px] text-text-muted2 mt-2 leading-none font-bold uppercase tracking-widest mono">Lakh crores</span>
+                                            <span className="text-text-primary text-[15px] font-bold leading-none tracking-tight">₹{formatBudget(scheme.allocated)}</span>
+                                            <span className="text-[10px] text-text-muted2 mt-2 leading-none font-bold uppercase tracking-widest mono">Allocated</span>
                                         </div>
                                     </td>
                                     <td className="px-8 py-7">

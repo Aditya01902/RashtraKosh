@@ -4,7 +4,7 @@ import { useTheme } from '@/components/providers/ThemeProvider';
 import Link from 'next/link';
 import { useMinistries } from '@/hooks/use-ministries';
 import { Stat } from '@/components/ui/stat';
-import { cn, formatLakhCrore } from '@/lib/utils';
+import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
 
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -67,6 +67,18 @@ export default function OverviewPage() {
                 { label: 'Avg Final Score', value: avgScoreValue.toFixed(1), sub: 'Impact Score', icon: <Users size={20} />, delta: "Premium", deltaDirection: 'up' as const },
             ],
         };
+    }, [ministries]);
+
+    const sortedMinistries = useMemo(() => {
+        const priorityOrder = ['Ministry of Finance', 'Ministry of Agriculture', 'Ministry of Education', 'Ministry of Health & Family Welfare'];
+        return [...ministries].sort((a: { name: string }, b: { name: string }) => {
+            const aIdx = priorityOrder.indexOf(a.name);
+            const bIdx = priorityOrder.indexOf(b.name);
+            if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+            if (aIdx !== -1) return -1;
+            if (bIdx !== -1) return 1;
+            return 0;
+        });
     }, [ministries]);
 
     return (
@@ -187,8 +199,8 @@ export default function OverviewPage() {
                 >
                     {loadingMinistries ? (
                         Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-72 rounded-3xl bg-white/5" />)
-                    ) : ministries?.length > 0 ? (
-                        ministries?.slice(0, 8).map((min: { id: string; name: string; sector: string; avgFinalScore?: number; utilizationPct?: number; totalAllocated: number }) => (
+                    ) : sortedMinistries?.length > 0 ? (
+                        sortedMinistries.slice(0, 9).map((min: { id: string; name: string; sector: string; avgFinalScore?: number; utilizationPct?: number; totalAllocated: number }) => (
                             <motion.div key={min.id} variants={itemVariants} className="h-full">
                                 <Link href={`/explorer?ministry=${min.id}`} className="block h-full">
                                     <Card variant="default" className="p-8 h-full space-y-8 cursor-pointer group glass-card hover:bg-white/[0.02] border-white/5 flex flex-col">
@@ -219,7 +231,7 @@ export default function OverviewPage() {
                                         <div className="pt-6 border-t border-white/5 flex justify-between items-center text-xs text-text-muted2">
                                             <div className="mono font-bold text-xs opacity-80 flex flex-col items-start gap-1">
                                                 <span>ALLOCATED:</span>
-                                                <span className="text-accent-saffron text-base font-bold">₹{(min.totalAllocated / 1000000).toFixed(2)}L Cr</span>
+                                                <span className="text-accent-saffron text-base font-bold">₹{formatBudget(min.totalAllocated)}</span>
                                             </div>
                                             <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-accent-saffron group-hover:text-white transition-all duration-300">
                                                 <ArrowRight size={16} />

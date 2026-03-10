@@ -135,21 +135,21 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "PM Gati Shakti", description: "National master plan for multi-modal connectivity and infrastructure development",
                         priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2021,
-                        allocated: 1200000, utilized: 1080000, capPct: 70, revPct: 30,
+                        allocated: 450000, utilized: 405000, capPct: 70, revPct: 30,
                         output: { physTarget: 25000, physAchieved: 22500, unit: "km", benTarget: 5000000, benAchieved: 4500000, timeliness: 88, quality: 85, geoDist: 72, dataSource: "Ministry of Finance Annual Report 2024-25" },
                         outcome: { kpiName: "Logistics Performance Index", kpiBaseline: 3.18, kpiCurrent: 3.42, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 75, attribution: 70, sustainability: 80, dataSource: "World Bank LPI Report", surveyYear: 2024 }
                     },
                     {
                         name: "National Infrastructure Fund", description: "Long-term funding for critical national infrastructure projects",
                         priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2019,
-                        allocated: 1800000, utilized: 1620000, capPct: 85, revPct: 15,
+                        allocated: 620000, utilized: 558000, capPct: 85, revPct: 15,
                         output: { physTarget: 120, physAchieved: 108, unit: "projects", benTarget: 8000000, benAchieved: 7200000, timeliness: 82, quality: 90, geoDist: 68, dataSource: "DEA Project Tracker" },
                         outcome: { kpiName: "Infrastructure Quality Rating", kpiBaseline: 4.2, kpiCurrent: 4.6, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 82, beneficiaryReported: 78, attribution: 75, sustainability: 85, dataSource: "Global Competitiveness Index", surveyYear: 2024 }
                     },
                     {
                         name: "Sovereign Green Bonds", description: "Government securities to finance green infrastructure and climate action",
                         priorityCategory: PriorityCategory.ENVIRONMENT, launchYear: 2023,
-                        allocated: 1200000, utilized: 876000, capPct: 90, revPct: 10,
+                        allocated: 320000, utilized: 233600, capPct: 90, revPct: 10,
                         output: { physTarget: 50, physAchieved: 35, unit: "projects", benTarget: 2000000, benAchieved: 1400000, timeliness: 65, quality: 88, geoDist: 55, dataSource: "RBI Green Bond Framework" },
                         outcome: { kpiName: "Carbon Emission Reduction (MT)", kpiBaseline: 2500, kpiCurrent: 2320, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 62, beneficiaryReported: 60, attribution: 55, sustainability: 90, dataSource: "MoEFCC Climate Report", surveyYear: 2024 }
                     }
@@ -161,14 +161,14 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "GST Implementation Support", description: "Technology and capacity building for nationwide GST compliance",
                         priorityCategory: PriorityCategory.ADMINISTRATIVE, launchYear: 2017,
-                        allocated: 950000, utilized: 883500, capPct: 20, revPct: 80,
+                        allocated: 340000, utilized: 316200, capPct: 20, revPct: 80,
                         output: { physTarget: 12000, physAchieved: 11100, unit: "taxpayer touchpoints", benTarget: 15000000, benAchieved: 13950000, timeliness: 90, quality: 82, geoDist: 85, dataSource: "GSTN Annual Report" },
                         outcome: { kpiName: "GST Compliance Rate (%)", kpiBaseline: 68, kpiCurrent: 78, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 72, attribution: 80, sustainability: 75, dataSource: "CBIC Data Analytics", surveyYear: 2024 }
                     },
                     {
                         name: "Tax Dispute Resolution", description: "Fast-track resolution of pending direct and indirect tax disputes",
                         priorityCategory: PriorityCategory.ADMINISTRATIVE, launchYear: 2020,
-                        allocated: 850000, utilized: 714000, capPct: 15, revPct: 85,
+                        allocated: 242000, utilized: 203280, capPct: 15, revPct: 85,
                         output: { physTarget: 250000, physAchieved: 195000, unit: "cases resolved", benTarget: 500000, benAchieved: 390000, timeliness: 72, quality: 80, geoDist: 78, dataSource: "CBDT Annual Report" },
                         outcome: { kpiName: "Pendency Reduction Rate (%)", kpiBaseline: 35, kpiCurrent: 52, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 68, attribution: 72, sustainability: 70, dataSource: "Tax Tribunal Statistics", surveyYear: 2024 }
                     }
@@ -185,21 +185,21 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "PM POSHAN", description: "Mid-day meal programme for nutritional support in government schools",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2021,
-                        allocated: 1280000, utilized: 1216000, capPct: 5, revPct: 95,
+                        allocated: 28000, utilized: 26600, capPct: 5, revPct: 95,
                         output: { physTarget: 120000, physAchieved: 118200, unit: "schools covered", benTarget: 120000000, benAchieved: 118000000, timeliness: 95, quality: 78, geoDist: 88, dataSource: "POSHAN Tracker Portal" },
                         outcome: { kpiName: "Underweight Children Rate (%)", kpiBaseline: 32.1, kpiCurrent: 28.5, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 82, attribution: 65, sustainability: 75, dataSource: "NFHS-6 Survey", surveyYear: 2024 }
                     },
                     {
                         name: "Samagra Shiksha", description: "Integrated scheme for school education from pre-school to class XII",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2018,
-                        allocated: 2100000, utilized: 1890000, capPct: 30, revPct: 70,
+                        allocated: 46000, utilized: 41400, capPct: 30, revPct: 70,
                         output: { physTarget: 1150000, physAchieved: 1035000, unit: "schools strengthened", benTarget: 250000000, benAchieved: 225000000, timeliness: 85, quality: 80, geoDist: 82, dataSource: "UDISE+ Portal" },
                         outcome: { kpiName: "Net Enrollment Ratio (%)", kpiBaseline: 87.4, kpiCurrent: 91.2, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 76, attribution: 72, sustainability: 80, dataSource: "ASER 2024 Report", surveyYear: 2024 }
                     },
                     {
                         name: "NEP Implementation", description: "National Education Policy 2020 implementation including curriculum reform",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2020,
-                        allocated: 900000, utilized: 630000, capPct: 40, revPct: 60,
+                        allocated: 20000, utilized: 14000, capPct: 40, revPct: 60,
                         output: { physTarget: 500, physAchieved: 310, unit: "institutions reformed", benTarget: 10000000, benAchieved: 6200000, timeliness: 55, quality: 75, geoDist: 60, dataSource: "NEP Implementation Cell" },
                         outcome: { kpiName: "Multi-disciplinary Program Adoption (%)", kpiBaseline: 12, kpiCurrent: 28, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 65, beneficiaryReported: 62, attribution: 58, sustainability: 68, dataSource: "UGC Annual Report", surveyYear: 2024 }
                     }
@@ -211,14 +211,14 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "PM Research Fellowship", description: "Fellowship scheme attracting top talent into doctoral research programs",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2021,
-                        allocated: 600000, utilized: 558000, capPct: 10, revPct: 90,
+                        allocated: 15000, utilized: 13950, capPct: 10, revPct: 90,
                         output: { physTarget: 3000, physAchieved: 2790, unit: "fellowships awarded", benTarget: 3000, benAchieved: 2790, timeliness: 92, quality: 95, geoDist: 65, dataSource: "PMRF Portal" },
                         outcome: { kpiName: "Research Publications per Fellow", kpiBaseline: 1.2, kpiCurrent: 2.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 88, beneficiaryReported: 90, attribution: 85, sustainability: 82, dataSource: "Scopus/Web of Science", surveyYear: 2024 }
                     },
                     {
                         name: "National Scholarship Portal", description: "Centralized portal for scholarship disbursement to SC/ST/OBC/minority students",
                         priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2015,
-                        allocated: 1480000, utilized: 1332000, capPct: 5, revPct: 95,
+                        allocated: 30000, utilized: 27000, capPct: 5, revPct: 95,
                         output: { physTarget: 8000000, physAchieved: 7200000, unit: "scholarships disbursed", benTarget: 8000000, benAchieved: 7200000, timeliness: 85, quality: 80, geoDist: 90, dataSource: "NSP Dashboard" },
                         outcome: { kpiName: "Higher Education GER (%)", kpiBaseline: 27.1, kpiCurrent: 30.5, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 80, attribution: 60, sustainability: 78, dataSource: "AISHE Report 2024", surveyYear: 2024 }
                     }
@@ -235,23 +235,30 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "Ayushman Bharat PM-JAY", description: "World's largest government-funded health insurance scheme providing ₹5 lakh cover",
                         priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2018,
-                        allocated: 2400000, utilized: 2208000, capPct: 15, revPct: 85,
+                        allocated: 42000, utilized: 38640, capPct: 15, revPct: 85,
                         output: { physTarget: 30000000, physAchieved: 27600000, unit: "treatments authorized", benTarget: 550000000, benAchieved: 500000000, timeliness: 90, quality: 82, geoDist: 78, dataSource: "PM-JAY Dashboard" },
                         outcome: { kpiName: "Out-of-Pocket Health Expenditure (%)", kpiBaseline: 62.6, kpiCurrent: 48.2, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 78, attribution: 80, sustainability: 72, dataSource: "NHA Estimates 2024", surveyYear: 2024 }
                     },
                     {
                         name: "National Health Mission", description: "Strengthening public health infrastructure across rural and urban India",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2013,
-                        allocated: 1800000, utilized: 1620000, capPct: 35, revPct: 65,
+                        allocated: 27000, utilized: 24300, capPct: 35, revPct: 65,
                         output: { physTarget: 180000, physAchieved: 162000, unit: "health facilities upgraded", benTarget: 400000000, benAchieved: 360000000, timeliness: 82, quality: 78, geoDist: 75, dataSource: "NHM HMIS Portal" },
                         outcome: { kpiName: "Maternal Mortality Rate (per 100k)", kpiBaseline: 113, kpiCurrent: 97, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 74, attribution: 75, sustainability: 82, dataSource: "SRS Special Bulletin", surveyYear: 2024 }
                     },
                     {
                         name: "Mission Indradhanush", description: "Full immunization drive to reach every child under 2 years",
                         priorityCategory: PriorityCategory.HUMAN_CAPITAL, launchYear: 2014,
-                        allocated: 840000, utilized: 588000, capPct: 25, revPct: 75,
+                        allocated: 18995, utilized: 13297, capPct: 25, revPct: 75,
                         output: { physTarget: 40000000, physAchieved: 28000000, unit: "children vaccinated", benTarget: 40000000, benAchieved: 28000000, timeliness: 62, quality: 85, geoDist: 58, dataSource: "IMI Dashboard" },
                         outcome: { kpiName: "Full Immunization Coverage (%)", kpiBaseline: 62, kpiCurrent: 76.4, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 72, beneficiaryReported: 70, attribution: 68, sustainability: 65, dataSource: "NFHS-6 Data", surveyYear: 2024 }
+                    },
+                    {
+                        name: "PM Swasthya Suraksha Yojana (PMSSY)", description: "Setting up AIIMS-like institutions and upgrading government medical colleges across India",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2006,
+                        allocated: 2005, utilized: 1825, capPct: 97.76, revPct: 2.24,
+                        output: { physTarget: 22, physAchieved: 20, unit: "medical institutions upgraded", benTarget: 5000000, benAchieved: 4550000, timeliness: 85, quality: 88, geoDist: 70, dataSource: "PMSSY Dashboard" },
+                        outcome: { kpiName: "Tertiary Care Bed Availability (per 10k)", kpiBaseline: 1.2, kpiCurrent: 1.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 82, attribution: 75, sustainability: 80, dataSource: "CBHI Health Statistics", surveyYear: 2024 }
                     }
                 ]
             }
@@ -266,23 +273,143 @@ const ministriesData: MinistryData[] = [
                     {
                         name: "PM Kisan Samman Nidhi", description: "Direct income support of ₹6,000/year to small and marginal farmer families",
                         priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2019,
-                        allocated: 2600000, utilized: 2470000, capPct: 0, revPct: 100,
+                        allocated: 70000, utilized: 66500, capPct: 0, revPct: 100,
                         output: { physTarget: 110000000, physAchieved: 104500000, unit: "beneficiaries paid", benTarget: 110000000, benAchieved: 104500000, timeliness: 92, quality: 88, geoDist: 92, dataSource: "PM-KISAN Portal" },
                         outcome: { kpiName: "Farmer Income Growth Rate (%)", kpiBaseline: 2.4, kpiCurrent: 5.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 82, beneficiaryReported: 72, attribution: 60, sustainability: 70, dataSource: "Agriculture Census 2024", surveyYear: 2024 }
                     },
                     {
                         name: "Fasal Bima Yojana", description: "Crop insurance scheme protecting farmers against natural calamities and pest attacks",
                         priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2016,
-                        allocated: 1600000, utilized: 1360000, capPct: 5, revPct: 95,
+                        allocated: 50000, utilized: 42500, capPct: 5, revPct: 95,
                         output: { physTarget: 60000000, physAchieved: 45600000, unit: "farmers insured", benTarget: 60000000, benAchieved: 45600000, timeliness: 72, quality: 70, geoDist: 75, dataSource: "PMFBY Portal" },
                         outcome: { kpiName: "Claim Settlement Ratio (%)", kpiBaseline: 55, kpiCurrent: 68, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 70, beneficiaryReported: 62, attribution: 65, sustainability: 68, dataSource: "Insurance Regulatory Authority", surveyYear: 2024 }
                     },
                     {
                         name: "Soil Health Card Scheme", description: "Providing soil health cards with crop-wise nutrient recommendations",
                         priorityCategory: PriorityCategory.ENVIRONMENT, launchYear: 2015,
-                        allocated: 450000, utilized: 337500, capPct: 20, revPct: 80,
+                        allocated: 30000, utilized: 22500, capPct: 20, revPct: 80,
                         output: { physTarget: 50000000, physAchieved: 37500000, unit: "cards issued", benTarget: 50000000, benAchieved: 37500000, timeliness: 68, quality: 72, geoDist: 70, dataSource: "SHC Portal" },
                         outcome: { kpiName: "Fertilizer Use Efficiency Index", kpiBaseline: 42, kpiCurrent: 55, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 68, beneficiaryReported: 58, attribution: 55, sustainability: 72, dataSource: "ICAR Study Report", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Defence", shortCode: "MoD", color: "#6B7280", sector: Sector.OTHER,
+        departments: [
+            {
+                name: "Dept. of Military Affairs",
+                schemes: [
+                    {
+                        name: "Defence Modernization Programme", description: "Modernization of armed forces including procurement of indigenous defence equipment",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2018,
+                        allocated: 380000, utilized: 346000, capPct: 75, revPct: 25,
+                        output: { physTarget: 150, physAchieved: 135, unit: "procurement contracts", benTarget: 1500000, benAchieved: 1365000, timeliness: 80, quality: 92, geoDist: 60, dataSource: "MoD Annual Report 2024-25" },
+                        outcome: { kpiName: "Defence Indigenization Rate (%)", kpiBaseline: 54, kpiCurrent: 68, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 80, attribution: 72, sustainability: 85, dataSource: "SIPRI Defence Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Border Infrastructure & Roads", description: "Strategic border road construction and infrastructure in frontier areas",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2015,
+                        allocated: 242000, utilized: 217800, capPct: 90, revPct: 10,
+                        output: { physTarget: 3500, physAchieved: 3150, unit: "km roads constructed", benTarget: 2000000, benAchieved: 1800000, timeliness: 85, quality: 88, geoDist: 55, dataSource: "BRO Annual Report" },
+                        outcome: { kpiName: "Border Connectivity Index", kpiBaseline: 58, kpiCurrent: 72, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 75, beneficiaryReported: 70, attribution: 78, sustainability: 82, dataSource: "Strategic Assessment Division", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Railways", shortCode: "MoR", color: "#DC2626", sector: Sector.INFRASTRUCTURE,
+        departments: [
+            {
+                name: "Railway Board",
+                schemes: [
+                    {
+                        name: "Vande Bharat & Network Expansion", description: "Semi-high-speed rail expansion and new Vande Bharat train manufacturing",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2019,
+                        allocated: 520000, utilized: 468000, capPct: 80, revPct: 20,
+                        output: { physTarget: 75, physAchieved: 62, unit: "train sets delivered", benTarget: 50000000, benAchieved: 41500000, timeliness: 78, quality: 92, geoDist: 72, dataSource: "Railway Board Production Report" },
+                        outcome: { kpiName: "Passenger Satisfaction Index", kpiBaseline: 62, kpiCurrent: 78, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 82, attribution: 75, sustainability: 78, dataSource: "IRCTC Customer Survey", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Station Redevelopment & Safety", description: "World-class station development and safety enhancement across Indian Railways",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2020,
+                        allocated: 330000, utilized: 287100, capPct: 70, revPct: 30,
+                        output: { physTarget: 200, physAchieved: 174, unit: "stations redeveloped", benTarget: 100000000, benAchieved: 87000000, timeliness: 75, quality: 85, geoDist: 80, dataSource: "IRSDC Dashboard" },
+                        outcome: { kpiName: "Railway Accident Rate (per M km)", kpiBaseline: 0.10, kpiCurrent: 0.04, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 88, beneficiaryReported: 75, attribution: 80, sustainability: 85, dataSource: "CRS Safety Report", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Road Transport & Highways", shortCode: "MoRTH", color: "#EA580C", sector: Sector.INFRASTRUCTURE,
+        departments: [
+            {
+                name: "Dept. of Highways",
+                schemes: [
+                    {
+                        name: "Bharatmala Pariyojana", description: "Major highway development programme connecting economic corridors and border areas",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2017,
+                        allocated: 378000, utilized: 340200, capPct: 85, revPct: 15,
+                        output: { physTarget: 12000, physAchieved: 10800, unit: "km highways built", benTarget: 200000000, benAchieved: 180000000, timeliness: 82, quality: 86, geoDist: 78, dataSource: "NHAI Project Tracker" },
+                        outcome: { kpiName: "National Highway Density (km/1000 sq km)", kpiBaseline: 42, kpiCurrent: 48, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 78, attribution: 82, sustainability: 75, dataSource: "MoRTH Annual Report", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Road Safety Programme", description: "National road safety awareness, enforcement, and infrastructure improvements",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2021,
+                        allocated: 200000, utilized: 176000, capPct: 60, revPct: 40,
+                        output: { physTarget: 50000, physAchieved: 44000, unit: "black spots rectified", benTarget: 500000000, benAchieved: 440000000, timeliness: 80, quality: 78, geoDist: 82, dataSource: "MORTH Road Safety Cell" },
+                        outcome: { kpiName: "Road Fatality Rate (per 100k population)", kpiBaseline: 11.5, kpiCurrent: 9.2, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 72, beneficiaryReported: 65, attribution: 60, sustainability: 70, dataSource: "NCRB Accidental Deaths Report", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Home Affairs", shortCode: "MHA", color: "#7C3AED", sector: Sector.OTHER,
+        departments: [
+            {
+                name: "Dept. of Internal Security",
+                schemes: [
+                    {
+                        name: "Safe City & CCTNS", description: "Crime and Criminal Tracking Network and safe city surveillance infrastructure",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2019,
+                        allocated: 130000, utilized: 117000, capPct: 65, revPct: 35,
+                        output: { physTarget: 500, physAchieved: 450, unit: "cities equipped", benTarget: 300000000, benAchieved: 270000000, timeliness: 82, quality: 80, geoDist: 75, dataSource: "MHA Smart Policing Report" },
+                        outcome: { kpiName: "Crime Resolution Rate (%)", kpiBaseline: 42, kpiCurrent: 56, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 78, beneficiaryReported: 72, attribution: 68, sustainability: 75, dataSource: "NCRB Crime Statistics", surveyYear: 2024 }
+                    },
+                    {
+                        name: "Border Security Modernization", description: "Comprehensive border management and surveillance modernization",
+                        priorityCategory: PriorityCategory.INFRASTRUCTURE, launchYear: 2017,
+                        allocated: 89000, utilized: 78320, capPct: 70, revPct: 30,
+                        output: { physTarget: 2500, physAchieved: 2200, unit: "km border fenced/smart", benTarget: 50000000, benAchieved: 44000000, timeliness: 78, quality: 85, geoDist: 60, dataSource: "BSF/ITBP Annual Report" },
+                        outcome: { kpiName: "Illegal Infiltration Incidents (reduction %)", kpiBaseline: 100, kpiCurrent: 62, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 82, beneficiaryReported: 70, attribution: 75, sustainability: 80, dataSource: "MHA Border Report", surveyYear: 2024 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ministry of Rural Development", shortCode: "MoRD", color: "#059669", sector: Sector.OTHER,
+        departments: [
+            {
+                name: "Dept. of Rural Development",
+                schemes: [
+                    {
+                        name: "MGNREGA", description: "Mahatma Gandhi National Rural Employment Guarantee Act - right to work programme",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2006,
+                        allocated: 480000, utilized: 432000, capPct: 10, revPct: 90,
+                        output: { physTarget: 80000000, physAchieved: 72000000, unit: "person-days generated", benTarget: 60000000, benAchieved: 54000000, timeliness: 88, quality: 72, geoDist: 90, dataSource: "MGNREGA MIS Portal" },
+                        outcome: { kpiName: "Rural Wage Growth Rate (%)", kpiBaseline: 3.2, kpiCurrent: 6.8, direction: KpiDirection.HIGHER_IS_BETTER, baselineVsCurrent: 80, beneficiaryReported: 75, attribution: 65, sustainability: 72, dataSource: "NSSO Labour Force Survey", surveyYear: 2024 }
+                    },
+                    {
+                        name: "PM Awas Yojana - Gramin", description: "Rural housing scheme providing pucca houses to homeless and those in kutcha houses",
+                        priorityCategory: PriorityCategory.SOCIAL_PROTECTION, launchYear: 2016,
+                        allocated: 257000, utilized: 231300, capPct: 50, revPct: 50,
+                        output: { physTarget: 3000000, physAchieved: 2700000, unit: "houses sanctioned", benTarget: 3000000, benAchieved: 2700000, timeliness: 82, quality: 80, geoDist: 85, dataSource: "PMAY-G Dashboard" },
+                        outcome: { kpiName: "Rural Housing Shortage Reduction (%)", kpiBaseline: 100, kpiCurrent: 42, direction: KpiDirection.LOWER_IS_BETTER, baselineVsCurrent: 85, beneficiaryReported: 88, attribution: 80, sustainability: 78, dataSource: "Census Housing Data", surveyYear: 2024 }
                     }
                 ]
             }

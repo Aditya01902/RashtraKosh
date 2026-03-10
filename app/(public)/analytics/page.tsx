@@ -16,7 +16,7 @@ import {
     TrendingUp, AlertCircle
 } from 'lucide-react';
 import { MinistryWithStats } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, formatBudget } from '@/lib/utils';
 
 interface DistItem {
     name: string;
@@ -319,7 +319,7 @@ const CustomTreemapContent = (props: any) => {
                         fontSize={8}
                         fontFamily="JetBrains Mono"
                     >
-                        ₹{(value / 100000).toFixed(2)}L Cr
+                        ₹{formatBudget(value)}
                     </text>
                 </>
             )}
