@@ -4,8 +4,14 @@ import { db } from "@/lib/db";
 import { calculateAndStoreScores } from "@/lib/scoring";
 import { UserRole } from "@/lib/types";
 
+import { limitRate } from "@/lib/rate-limit";
+
 export async function POST(req: Request) {
     try {
+        // Rate limiting - Max 5 commits per minute per IP
+        const rateLimitResponse = await limitRate(req, 5, 60 * 1000, "upload_commit");
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await auth();
         const isAdmin = session?.user?.role === UserRole.SUPER_ADMIN || session?.user?.role === UserRole.MINISTRY_ADMIN;
 
@@ -16,8 +22,13 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { validRows } = body;
 
+        // strict length limits
         if (!validRows || !Array.isArray(validRows) || validRows.length === 0) {
             return new NextResponse("No valid rows to commit", { status: 400 });
+        }
+
+        if (validRows.length > 10000) {
+            return new NextResponse("Payload too large. Maximum 10,000 rows permitted per commit.", { status: 413 });
         }
 
         const results = [];

@@ -3,15 +3,26 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { Resend } from "resend";
 
+import { registerSchema } from "@/lib/validations/api";
+import { limitRate } from "@/lib/rate-limit";
+
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, institution, membershipTier, credentials } = await req.json();
+        // Rate limiting - Max 5 registration attempts per 15 minutes per IP
+        const rateLimitResponse = await limitRate(req, 5, 15 * 60 * 1000, "register");
+        if (rateLimitResponse) return rateLimitResponse;
 
-        if (!name || !email || !password || !membershipTier) {
-            return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+        const body = await req.json();
+
+        // Input validation using Zod
+        const parsed = registerSchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json({ message: "Invalid input fields", errors: parsed.error.format() }, { status: 400 });
         }
+
+        const { name, email, password, institution, membershipTier, credentials } = parsed.data;
 
         const existingUser = await db.user.findUnique({
             where: { email }

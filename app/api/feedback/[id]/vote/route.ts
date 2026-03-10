@@ -2,11 +2,17 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { auth } from '@/lib/auth';
 
+import { limitRate } from '@/lib/rate-limit';
+
 export async function POST(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
+        // Rate limiting - Max 30 requests per minute per IP for Vote POST
+        const rateLimitResponse = await limitRate(request, 30, 60 * 1000, "feedback_vote");
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await auth();
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });

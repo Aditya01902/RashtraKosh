@@ -5,8 +5,14 @@ import { validateRows } from "@/lib/upload/validator";
 import { auth } from "@/lib/auth";
 import { UserRole } from "@/lib/types";
 
+import { limitRate } from "@/lib/rate-limit";
+
 export async function POST(req: Request) {
     try {
+        // Rate limiting - Max 5 file validations per minute per IP to prevent DoS
+        const rateLimitResponse = await limitRate(req, 5, 60 * 1000, "upload_validate");
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await auth();
         const isAdmin = session?.user?.role === UserRole.SUPER_ADMIN || session?.user?.role === UserRole.MINISTRY_ADMIN;
 

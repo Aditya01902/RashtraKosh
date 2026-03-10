@@ -4,6 +4,9 @@ import { auth } from '@/lib/auth';
 
 import { Prisma, FeedbackCategory, FeedbackStatus } from '@prisma/client';
 
+import { limitRate } from '@/lib/rate-limit';
+import { feedbackSchema } from '@/lib/validations/api';
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
@@ -13,6 +16,10 @@ export async function GET(request: Request) {
     const schemeId = searchParams.get('schemeId');
 
     try {
+        // Rate limiting - Max 30 requests per minute per IP for GET feedback
+        const rateLimitResponse = await limitRate(request, 30, 60 * 1000, "feedback_get");
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await auth();
         const currentUserId = session?.user?.id;
 
@@ -61,6 +68,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting - Max 10 requests per minute per IP for POST feedback
+        const rateLimitResponse = await limitRate(request, 10, 60 * 1000, "feedback_post");
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await auth();
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });
@@ -72,18 +83,12 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { title, body: content, category, schemeId, isAnonymous } = body;
-
-        if (!title || title.length < 10) {
-            return new NextResponse("Title must be at least 10 characters", { status: 400 });
-        }
-        if (!content || content.length < 50) {
-            return new NextResponse("Body must be at least 50 characters", { status: 400 });
-        }
-        if (!category) {
-            return new NextResponse("Category is required", { status: 400 });
+        const parsed = feedbackSchema.safeParse(body);
+        if (!parsed.success) {
+            return NextResponse.json({ message: "Invalid input fields", errors: parsed.error.format() }, { status: 400 });
         }
 
+        const { title, body: content, category, schemeId, isAnonymous } = parsed.data;
         let initialWeight = 1.0;
         if (session.user.membershipTier === 'EXPERT') {
             initialWeight = 2.0;
