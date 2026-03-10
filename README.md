@@ -43,7 +43,15 @@ Navigate through the layers of the Indian economy with surgical precision.
 - **Health Scoring**: Proprietary performance metrics for every financial entity.
 - **Utilization Tracking**: Real-time monitoring of allocated vs. utilized funds.
 
-![Explorer](./public/docs/screenshots/explorer.png)
+<div align="center">
+  <img src="./public/docs/screenshots/explorer.png" alt="Explorer Overview" width="48%">
+  <img src="./public/docs/screenshots/explorer-drilldown.png" alt="Hierarchical Drill-down" width="48%">
+</div>
+<br/>
+<div align="center">
+  <img src="./public/docs/screenshots/explorer-health.png" alt="Entity Health Scoring" width="48%">
+  <img src="./public/docs/screenshots/explorer-utilization.png" alt="Fund Utilization Tracking" width="48%">
+</div>
 
 ### 🤖 2. RashtraKosh Intelligence (AI Advisor)
 An AI-powered policy advisor that understands the nuances of public finance.
@@ -51,14 +59,29 @@ An AI-powered policy advisor that understands the nuances of public finance.
 - **Context-Aware Insights**: Leverages Anthropic Claude models for deep financial reasoning.
 - **Predictive Analysis**: Intelligence on fiscal surplus and potential impact zones.
 
-![Intelligence](./public/docs/screenshots/intelligence.png)
+<div align="center">
+  <img src="./public/docs/screenshots/intelligence.png" alt="AI Advisor Interface" width="48%">
+  <img src="./public/docs/screenshots/intelligence-queries.png" alt="Natural Language Queries" width="48%">
+</div>
+<br/>
+<div align="center">
+  <img src="./public/docs/screenshots/intelligence-insights.png" alt="Context-Aware Insights" width="48%">
+  <img src="./public/docs/screenshots/intelligence-prediction.png" alt="Predictive Analysis" width="48%">
+</div>
 
 ### 📊 3. Advanced Analytics & Visualization
 Beautiful, high-density data visualizations that reveal the stories behind the numbers.
 - **Macro Trends**: Visualization of sector-wise growth and allocation shifts.
 - **Comparative Metrics**: Benchmarking departmental performance across fiscal years.
 
-![Analytics](./public/docs/screenshots/analytics.png)
+<div align="center">
+  <img src="./public/docs/screenshots/analytics.png" alt="Analytics Dashboard" width="48%">
+  <img src="./public/docs/screenshots/analytics-macro.png" alt="Macro Trends Visualization" width="48%">
+</div>
+<br/>
+<div align="center">
+  <img src="./public/docs/screenshots/analytics-comparative.png" alt="Comparative Metrics" width="98%">
+</div>
 
 ### 🏗️ 4. Admin Command Center
 A unified console for treasury managers and analysts.
