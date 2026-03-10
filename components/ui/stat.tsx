@@ -16,19 +16,34 @@ interface StatProps {
 }
 
 function Counter({ value }: { value: number | string }) {
-    if (value === undefined || value === null) return null;
-    const valStr = value.toString();
-    const isNumeric = !isNaN(Number(valStr.replace(/[^0-9.-]/g, '')));
-    const numericValue = isNumeric ? Number(valStr.replace(/[^0-9.-]/g, '')) : 0;
-    const prefix = valStr.startsWith('₹') ? '₹' : '';
-    const suffix = valStr.endsWith('Lakh crores') ? ' Lakh crores' :
-        valStr.endsWith('k Cr') ? 'k Cr' :
-            valStr.endsWith('Cr') ? ' Cr' : '';
-
     const count = useSpring(0, {
         bounce: 0,
         duration: 2000,
     });
+
+    const isNumeric = React.useMemo(() => {
+        if (value === undefined || value === null) return false;
+        const valStr = value.toString();
+        return !isNaN(Number(valStr.replace(/[^0-9.-]/g, '')));
+    }, [value]);
+
+    const numericValue = React.useMemo(() => {
+        if (!isNumeric) return 0;
+        return Number(value.toString().replace(/[^0-9.-]/g, ''));
+    }, [value, isNumeric]);
+
+    const prefix = React.useMemo(() => {
+        if (value === undefined || value === null) return '';
+        return value.toString().startsWith('₹') ? '₹' : '';
+    }, [value]);
+
+    const suffix = React.useMemo(() => {
+        if (value === undefined || value === null) return '';
+        const valStr = value.toString();
+        return valStr.endsWith('Lakh crores') ? ' Lakh crores' :
+            valStr.endsWith('k Cr') ? 'k Cr' :
+                valStr.endsWith('Cr') ? ' Cr' : '';
+    }, [value]);
 
     React.useEffect(() => {
         if (isNumeric) {
@@ -37,9 +52,11 @@ function Counter({ value }: { value: number | string }) {
     }, [numericValue, isNumeric, count]);
 
     const displayValue = useTransform(count, (latest) => {
-        if (!isNumeric) return value.toString();
+        if (!isNumeric) return value ? value.toString() : '';
         return `${prefix}${latest.toLocaleString(undefined, { maximumFractionDigits: 1 })}`;
     });
+
+    if (value === undefined || value === null) return null;
 
     return (
         <span className="flex flex-col">

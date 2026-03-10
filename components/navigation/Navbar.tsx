@@ -8,6 +8,8 @@ import { User } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
+import Image from 'next/image';
+
 import { useTheme } from '@/components/providers/ThemeProvider';
 
 export function Navbar() {
@@ -32,9 +34,11 @@ export function Navbar() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group relative">
                         <div className="absolute inset-0 bg-accent-saffron/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                        <img
+                        <Image
                             src={theme === 'light' ? '/logo-light.png' : '/logo.png'}
                             alt="RashtraKosh"
+                            width={180}
+                            height={56}
                             className="h-[56px] w-auto object-contain transition-all duration-500 group-hover:scale-105 group-hover:brightness-110 relative z-10"
                         />
                     </Link>

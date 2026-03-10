@@ -679,7 +679,7 @@ function MethodologyDetail() {
 
                     <div className="max-w-xl text-center">
                         <p className="text-xs text-text-muted2 italic leading-relaxed">
-                            "The methodology prioritizes <span className="text-text-primary font-bold">real-world impact (70%)</span> while ensuring accountability through <span className="text-text-primary font-bold">fiscal discipline (30%)</span>."
+                            &quot;The methodology prioritizes <span className="text-text-primary font-bold">real-world impact (70%)</span> while ensuring accountability through <span className="text-text-primary font-bold">fiscal discipline (30%)</span>.&quot;
                         </p>
                     </div>
                 </div>
