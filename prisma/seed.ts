@@ -496,20 +496,6 @@ async function main() {
             });
 
             for (const sData of dData.schemes) {
-                const capAlloc = sData.allocated * (sData.capPct / 100);
-                const revAlloc = sData.allocated * (sData.revPct / 100);
-                const capUtil = sData.utilized * (sData.capPct / 100);
-                const revUtil = sData.utilized * (sData.revPct / 100);
-                const surrendered = (sData.allocated - sData.utilized) * 0.3; // 30% of gap surrendered
-                const suppDemands = sData.utilized / sData.allocated < 0.75 ? 2 : (sData.utilized / sData.allocated < 0.9 ? 1 : 0);
-
-                // Quarter-wise expenditure: realistic distribution
-                const q1Pct = 0.20, q2Pct = 0.25, q3Pct = 0.28, q4Pct = 0.27;
-                const expQ1 = sData.utilized * q1Pct;
-                const expQ2 = sData.utilized * q2Pct;
-                const expQ3 = sData.utilized * q3Pct;
-                const expQ4 = sData.utilized * q4Pct;
-
                 const scheme = await prisma.scheme.create({
                     data: {
                         name: sData.name,
@@ -522,87 +508,107 @@ async function main() {
                 });
                 createdSchemeIds.push(scheme.id);
 
-                // Budget allocation (scheme-level)
-                await prisma.budgetAllocation.create({
-                    data: {
-                        schemeId: scheme.id,
-                        ministryId: ministry.id,
-                        fiscalYear: FISCAL_YEAR,
-                        allocated: capAlloc + revAlloc,
-                        allocatedCapital: capAlloc,
-                        allocatedRevenue: revAlloc,
-                        utilized: capUtil + revUtil,
-                        utilizedCapital: capUtil,
-                        utilizedRevenue: revUtil,
-                        expenditureQ1: expQ1,
-                        expenditureQ2: expQ2,
-                        expenditureQ3: expQ3,
-                        expenditureQ4: expQ4,
-                        surrendered: surrendered,
-                        supplementaryDemands: suppDemands,
+                for (const fy of ["2022-23", "2023-24", "2024-25"]) {
+                    const m = fy === "2024-25" ? 1.0 : (fy === "2023-24" ? 0.88 : 0.78);
+
+                    const capAlloc = sData.allocated * m * (sData.capPct / 100);
+                    const revAlloc = sData.allocated * m * (sData.revPct / 100);
+                    const capUtil = sData.utilized * m * (sData.capPct / 100);
+                    const revUtil = sData.utilized * m * (sData.revPct / 100);
+                    const surrendered = (sData.allocated * m - sData.utilized * m) * 0.3;
+                    const suppDemands = sData.utilized / sData.allocated < 0.75 ? 2 : (sData.utilized / sData.allocated < 0.9 ? 1 : 0);
+
+                    // Quarter-wise expenditure: realistic distribution
+                    const q1Pct = 0.20, q2Pct = 0.25, q3Pct = 0.28, q4Pct = 0.27;
+                    const expQ1 = sData.utilized * m * q1Pct;
+                    const expQ2 = sData.utilized * m * q2Pct;
+                    const expQ3 = sData.utilized * m * q3Pct;
+                    const expQ4 = sData.utilized * m * q4Pct;
+
+                    // Budget allocation (scheme-level)
+                    await prisma.budgetAllocation.create({
+                        data: {
+                            schemeId: scheme.id,
+                            ministryId: ministry.id,
+                            fiscalYear: fy,
+                            allocated: capAlloc + revAlloc,
+                            allocatedCapital: capAlloc,
+                            allocatedRevenue: revAlloc,
+                            utilized: capUtil + revUtil,
+                            utilizedCapital: capUtil,
+                            utilizedRevenue: revUtil,
+                            expenditureQ1: expQ1,
+                            expenditureQ2: expQ2,
+                            expenditureQ3: expQ3,
+                            expenditureQ4: expQ4,
+                            surrendered: surrendered,
+                            supplementaryDemands: suppDemands,
+                        }
+                    });
+
+                    // Output data
+                    const od = sData.output;
+                    await prisma.outputData.create({
+                        data: {
+                            schemeId: scheme.id,
+                            fiscalYear: fy,
+                            physicalTargetValue: od.physTarget * m,
+                            physicalAchievedValue: od.physAchieved * m,
+                            physicalUnit: od.unit,
+                            beneficiaryTarget: od.benTarget * m,
+                            beneficiaryAchieved: od.benAchieved * m,
+                            timelinessScore: od.timeliness,
+                            qualityComplianceScore: od.quality,
+                            geoDistributionIndex: od.geoDist,
+                            dataSource: od.dataSource,
+                        }
+                    });
+
+                    // Outcome data
+                    const oc = sData.outcome;
+                    await prisma.outcomeData.create({
+                        data: {
+                            schemeId: scheme.id,
+                            fiscalYear: fy,
+                            sectorKpiName: oc.kpiName,
+                            sectorKpiBaseline: oc.kpiBaseline,
+                            sectorKpiCurrent: oc.kpiCurrent * (fy === "2024-25" ? 1 : (fy === "2023-24" ? 0.95 : 0.9)),
+                            sectorKpiDirection: oc.direction,
+                            baselineVsCurrentIndex: oc.baselineVsCurrent,
+                            beneficiaryReportedScore: oc.beneficiaryReported,
+                            attributionScore: oc.attribution,
+                            sustainabilityIndex: oc.sustainability,
+                            dataSource: oc.dataSource,
+                            surveyYear: parseInt(fy.split("-")[0], 10),
+                        }
+                    });
+
+                    // Compute scores
+                    const utilResult = computeUtilizationScore(sData.allocated * m, sData.utilized * m, capAlloc, capUtil, revAlloc, revUtil, surrendered, suppDemands);
+                    const outputResult = computeOutputScore(od.physTarget * m, od.physAchieved * m, od.benTarget * m, od.benAchieved * m, od.timeliness, od.quality, od.geoDist);
+                    const outcomeResult = computeOutcomeScore(oc.baselineVsCurrent, oc.beneficiaryReported, oc.attribution, oc.sustainability);
+                    const finalScore = computeFinalScore(utilResult.score, outputResult.score, outcomeResult.score);
+
+                    await prisma.schemeScore.create({
+                        data: {
+                            schemeId: scheme.id,
+                            fiscalYear: fy,
+                            utilizationScore: utilResult.score,
+                            utilizationBreakdown: utilResult.breakdown,
+                            outputScore: outputResult.score,
+                            outputBreakdown: outputResult.breakdown,
+                            outcomeScore: outcomeResult.score,
+                            outcomeBreakdown: outcomeResult.breakdown,
+                            finalScore: finalScore,
+                            scoreVersion: "v1.0",
+                            calculatedAt: new Date(),
+                        }
+                    });
+
+                    if (fy === "2024-25") {
+                        console.log(`    📊 ${sData.name} — Final Score (2024-25): ${finalScore}`);
                     }
-                });
-
-                // Output data
-                const od = sData.output;
-                await prisma.outputData.create({
-                    data: {
-                        schemeId: scheme.id,
-                        fiscalYear: FISCAL_YEAR,
-                        physicalTargetValue: od.physTarget,
-                        physicalAchievedValue: od.physAchieved,
-                        physicalUnit: od.unit,
-                        beneficiaryTarget: od.benTarget,
-                        beneficiaryAchieved: od.benAchieved,
-                        timelinessScore: od.timeliness,
-                        qualityComplianceScore: od.quality,
-                        geoDistributionIndex: od.geoDist,
-                        dataSource: od.dataSource,
-                    }
-                });
-
-                // Outcome data
-                const oc = sData.outcome;
-                await prisma.outcomeData.create({
-                    data: {
-                        schemeId: scheme.id,
-                        fiscalYear: FISCAL_YEAR,
-                        sectorKpiName: oc.kpiName,
-                        sectorKpiBaseline: oc.kpiBaseline,
-                        sectorKpiCurrent: oc.kpiCurrent,
-                        sectorKpiDirection: oc.direction,
-                        baselineVsCurrentIndex: oc.baselineVsCurrent,
-                        beneficiaryReportedScore: oc.beneficiaryReported,
-                        attributionScore: oc.attribution,
-                        sustainabilityIndex: oc.sustainability,
-                        dataSource: oc.dataSource,
-                        surveyYear: oc.surveyYear,
-                    }
-                });
-
-                // Compute scores
-                const utilResult = computeUtilizationScore(sData.allocated, sData.utilized, capAlloc, capUtil, revAlloc, revUtil, surrendered, suppDemands);
-                const outputResult = computeOutputScore(od.physTarget, od.physAchieved, od.benTarget, od.benAchieved, od.timeliness, od.quality, od.geoDist);
-                const outcomeResult = computeOutcomeScore(oc.baselineVsCurrent, oc.beneficiaryReported, oc.attribution, oc.sustainability);
-                const finalScore = computeFinalScore(utilResult.score, outputResult.score, outcomeResult.score);
-
-                await prisma.schemeScore.create({
-                    data: {
-                        schemeId: scheme.id,
-                        fiscalYear: FISCAL_YEAR,
-                        utilizationScore: utilResult.score,
-                        utilizationBreakdown: utilResult.breakdown,
-                        outputScore: outputResult.score,
-                        outputBreakdown: outputResult.breakdown,
-                        outcomeScore: outcomeResult.score,
-                        outcomeBreakdown: outcomeResult.breakdown,
-                        finalScore: finalScore,
-                        scoreVersion: "v1.0",
-                        calculatedAt: new Date(),
-                    }
-                });
-
-                console.log(`    📊 ${sData.name} — Final Score: ${finalScore}`);
+                }
             }
         }
     }

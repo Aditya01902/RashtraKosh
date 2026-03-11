@@ -77,7 +77,9 @@ export async function POST() {
             console.log(`[IngestPipeline] Dispatching text to ${job.model} for OOMF matrix extraction...`);
             let data, rawResponse;
             try {
-                const extraction = await extractOOMFData(pdfText, job.model);
+                const allDbSchemes = await prisma.scheme.findMany({ select: { name: true } });
+                const dbSchemeNames = allDbSchemes.map(s => s.name);
+                const extraction = await extractOOMFData(pdfText, job.model, dbSchemeNames);
                 data = extraction.data;
                 rawResponse = extraction.rawResponse;
                 console.log(`[IngestPipeline] AI Extracted ${data.length} priority schemes for ${job.year}.`);
@@ -104,12 +106,12 @@ export async function POST() {
                             }
                         },
                         update: {
-                            allocated: alloc.BE || 0,
-                            revisedEstimate: alloc.RE || 0,
-                            utilized: alloc.Actuals || 0,
-                            allocatedCapital: alloc.Capital || 0,
-                            allocatedRevenue: alloc.Revenue || 0,
-                            anomalyFlag: alloc.anomaly_flag || false
+                            ...(alloc.BE > 0 ? { allocated: alloc.BE } : {}),
+                            ...(alloc.RE > 0 ? { revisedEstimate: alloc.RE } : {}),
+                            ...(alloc.Actuals > 0 ? { utilized: alloc.Actuals } : {}),
+                            ...(alloc.Capital > 0 ? { allocatedCapital: alloc.Capital } : {}),
+                            ...(alloc.Revenue > 0 ? { allocatedRevenue: alloc.Revenue } : {}),
+                            ...(alloc.anomaly_flag !== undefined ? { anomalyFlag: alloc.anomaly_flag } : {})
                         },
                         create: {
                             schemeId: scheme.id,

@@ -21,7 +21,9 @@ const validSchemes = [
     "PM POSHAN"
 ];
 
-export async function extractOOMFData(pdfText: string, modelName: string = "gemini-2.5-flash"): Promise<{ data: ExtractedAllocation[], rawResponse: string }> {
+export async function extractOOMFData(pdfText: string, modelName: string = "gemini-2.5-flash", validSchemeNames?: string[]): Promise<{ data: ExtractedAllocation[], rawResponse: string }> {
+    const schemasToUse = validSchemeNames || validSchemes;
+
     try {
         // Limit to 200,000 chars to avoid payload / token limit issues on smaller models
         const truncatedText = pdfText.substring(0, 200000);
@@ -30,7 +32,7 @@ export async function extractOOMFData(pdfText: string, modelName: string = "gemi
 Target Schema Example (ARRAY of OBJECTS):
 [{
     "scheme_name_raw": "String",
-    "scheme_name_mapped": "String (Must be one of: ${validSchemes.join(", ")})",
+    "scheme_name_mapped": "String (Must be one of: ${schemasToUse.join(", ")})",
     "BE": Number,
     "RE": Number,
     "Actuals": Number,
@@ -42,7 +44,7 @@ Target Schema Example (ARRAY of OBJECTS):
 
 You are a financial analyst extracting data from the India Outcome Budget PDF.
 Look for Outcome-Output Monitoring Framework (OOMF) tables.
-Extract financial allocations (BE, RE, Actuals) and Capital/Revenue splits for the following priority schemes if present: ${validSchemes.join(", ")}.
+Extract financial allocations (BE, RE, Actuals) and Capital/Revenue splits for the following priority schemes if present: ${schemasToUse.join(", ")}.
 Return an exact JSON array of objects.
 Do NOT surround the output with markdown tags like \`\`\`json. Return only the raw JSON.
 
