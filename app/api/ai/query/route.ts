@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { auth } from '@/lib/auth';
-import { puter } from '@heyputer/puter.js';
 
 // Set up basic in-memory rate limit: 20 queries per hour per admin
 const rateLimits = new Map<string, { count: number, resetAt: number }>();
@@ -79,38 +78,29 @@ export async function POST(req: Request) {
 Provide concise, data-driven responses based on the provided context. If no context answers the question, state that you don't have enough data.
 ${contextDb ? `\nContext:\n${contextDb}` : ''}`;
 
-        const fullPrompt = systemPrompt + "\n\nUser Query: " + query;
-
-        // Use Puter.js Claude API with the requested model claude-opus-4-6
-        const puterResponse = await puter.ai.chat(fullPrompt, { model: 'claude-opus-4-6', stream: true });
-
-        const encoder = new TextEncoder();
-        const stream = new ReadableStream({
-            async start(controller) {
-                try {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    for await (const part of puterResponse as any) {
-                        if (part?.text) {
-                            // To be compatible with AI SDK stream format if needed, we can just send raw text. 
-                            // The problem states: "Stream the response back using ReadableStream"
-                            // Sending raw text chunks:
-                            controller.enqueue(encoder.encode(part.text));
-                        }
-                    }
-                    controller.close();
-                } catch (err) {
-                    controller.error(err);
-                }
-            }
+        // Use Puter REST API directly (avoids @heyputer/puter.js SDK which causes Webpack EPERM errors on Windows)
+        const puterResponse = await fetch('https://api.puter.com/v2/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-3-5-sonnet',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: query }
+                ]
+            })
         });
 
-        return new Response(stream, {
-            headers: {
-                'Content-Type': 'text/plain; charset=utf-8',
-                'Transfer-Encoding': 'chunked',
-                'Cache-Control': 'no-cache, no-transform'
-            }
-        });
+        if (!puterResponse.ok) {
+            console.error(`[AI_QUERY] Puter API error: ${puterResponse.status}`);
+            return new NextResponse('AI service unavailable', { status: 502 });
+        }
+
+        const data = await puterResponse.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const responseText = (data as any)?.message?.content || 'I was unable to generate a response. Please try again.';
+
+        return NextResponse.json({ response: responseText });
     } catch (error) {
         console.error('[AI_QUERY_POST]', error);
         return new NextResponse('Internal Error', { status: 500 });

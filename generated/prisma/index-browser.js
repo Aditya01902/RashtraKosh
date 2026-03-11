@@ -217,6 +217,7 @@ exports.Prisma.SchemeScoreScalarFieldEnum = {
   outcomeScore: 'outcomeScore',
   outcomeBreakdown: 'outcomeBreakdown',
   finalScore: 'finalScore',
+  aiInsight: 'aiInsight',
   scoreVersion: 'scoreVersion',
   calculatedAt: 'calculatedAt',
   createdAt: 'createdAt',

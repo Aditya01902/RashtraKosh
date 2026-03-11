@@ -31,8 +31,8 @@ export async function POST() {
 
         // Track the overall run states
         let totalSchemesUpdated = 0;
-        let allAnomalies: string[] = [];
-        let auditReportChunks: string[] = [];
+        const allAnomalies: string[] = [];
+        const auditReportChunks: string[] = [];
 
         for (const job of EXTRACTION_JOBS) {
             console.log(`\n===========================================`);
@@ -106,11 +106,11 @@ export async function POST() {
                             }
                         },
                         update: {
-                            ...(alloc.BE > 0 ? { allocated: alloc.BE } : {}),
-                            ...(alloc.RE > 0 ? { revisedEstimate: alloc.RE } : {}),
-                            ...(alloc.Actuals > 0 ? { utilized: alloc.Actuals } : {}),
-                            ...(alloc.Capital > 0 ? { allocatedCapital: alloc.Capital } : {}),
-                            ...(alloc.Revenue > 0 ? { allocatedRevenue: alloc.Revenue } : {}),
+                            allocated: alloc.BE || 0,
+                            revisedEstimate: alloc.RE || 0,
+                            utilized: alloc.Actuals || 0,
+                            allocatedCapital: alloc.Capital || 0,
+                            allocatedRevenue: alloc.Revenue || 0,
                             ...(alloc.anomaly_flag !== undefined ? { anomalyFlag: alloc.anomaly_flag } : {})
                         },
                         create: {

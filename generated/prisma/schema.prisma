@@ -218,6 +218,7 @@ model SchemeScore {
   outcomeScore         Decimal  @db.Decimal(5, 2)
   outcomeBreakdown     Json
   finalScore           Decimal  @db.Decimal(5, 2)
+  aiInsight            String?  @db.Text
   scoreVersion         String   @default("v1.0")
   calculatedAt         DateTime @default(now())
   createdAt            DateTime @default(now())

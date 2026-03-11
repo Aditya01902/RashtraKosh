@@ -12,9 +12,10 @@ import { Stat } from '@/components/ui/stat';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     ChevronRight, ArrowLeft, Building2, Layers,
-    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle, FileDown
+    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle, FileDown, LineChart
 } from 'lucide-react';
 import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function ExplorerPage() {
     const router = useRouter();
@@ -221,7 +222,7 @@ export default function ExplorerPage() {
                             {loadingMinistries || (level !== 'ministry' && loadingMinistryDetail) ? (
                                 Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-20" />)
                             ) : listItems.length > 0 ? (
-                                listItems.map((item: { id: string; name: string; totalAllocated?: number; departmentCount?: number; finalScore?: number; avgFinalScore?: number; priorityCategory?: string }) => {
+                                listItems.map((item: { id: string; name: string; totalAllocated?: number; departmentCount?: number; finalScore?: number; avgFinalScore?: number; priorityCategory?: string; aiInsight?: string }) => {
                                     const isSelected =
                                         (level === 'ministry' && selectedMinistryId === item.id) ||
                                         (level === 'department' && selectedDepartmentId === item.id) ||
@@ -262,9 +263,16 @@ export default function ExplorerPage() {
                                                         </div>
                                                     )}
                                                     {level === 'scheme' && (
-                                                        <Badge color={(item.finalScore || 0) > 80 ? 'green' : 'saffron'} className="text-[10px] mono py-0">
-                                                            {item.priorityCategory || 'GENERAL'}
-                                                        </Badge>
+                                                        <div className="space-y-2">
+                                                            <Badge color={(item.finalScore || 0) > 80 ? 'green' : 'saffron'} className="text-[10px] mono py-0 inline-block">
+                                                                {item.priorityCategory || 'GENERAL'}
+                                                            </Badge>
+                                                            {item.aiInsight && (
+                                                                <p className="text-xs text-text-muted italic line-clamp-2 leading-relaxed mt-1 group-hover:text-text-primary/80 transition-colors">
+                                                                    "{item.aiInsight}"
+                                                                </p>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <ScoreRing score={item.avgFinalScore || item.finalScore || 0} size={42} />
@@ -458,7 +466,7 @@ function MinistryDetail({ data }: {
 }
 
 function DepartmentDetail({ data, parentMinistry }: {
-    data: { id: string; name: string; schemes: { id: string; name: string; allocated: number; finalScore: number }[] } | undefined;
+    data: { id: string; name: string; schemes: { id: string; name: string; allocated: number; finalScore: number; aiInsight?: string }[] } | undefined;
     parentMinistry: { name: string } | undefined;
 }) {
     const { selectScheme } = useExplorerStore();
@@ -506,16 +514,23 @@ function DepartmentDetail({ data, parentMinistry }: {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10 dark:divide-white/5">
-                            {data.schemes.map((scheme: { id: string; name: string; allocated: number; finalScore: number }) => (
+                            {data.schemes.map((scheme: { id: string; name: string; allocated: number; finalScore: number; aiInsight?: string }) => (
                                 <tr
                                     key={scheme.id}
                                     onClick={() => selectScheme(scheme.id)}
                                     className="hover:bg-white/60 dark:hover:bg-accent-blue/5 transition-all duration-500 cursor-pointer group"
                                 >
-                                    <td className="px-8 py-7 text-[15px] font-bold text-text-muted group-hover:text-text-primary transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-2 h-2 rounded-full bg-accent-blue group-hover:bg-accent-saffron transition-all duration-500 group-hover:scale-125 shadow-[0_0_10px_rgba(79,158,255,0.4)]" />
-                                            {scheme.name}
+                                    <td className="px-8 py-7">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center gap-4 text-[15px] font-bold text-text-muted group-hover:text-text-primary transition-colors">
+                                                <div className="w-2 h-2 rounded-full bg-accent-blue group-hover:bg-accent-saffron transition-all duration-500 group-hover:scale-125 shadow-[0_0_10px_rgba(79,158,255,0.4)]" />
+                                                {scheme.name}
+                                            </div>
+                                            {scheme.aiInsight && (
+                                                <p className="text-xs text-text-muted italic line-clamp-1 ml-6 leading-relaxed">
+                                                    "{scheme.aiInsight}"
+                                                </p>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-8 py-7">
@@ -534,8 +549,8 @@ function DepartmentDetail({ data, parentMinistry }: {
                         </tbody>
                     </table>
                 </div>
-            </Card>
-        </div>
+            </Card >
+        </div >
     );
 }
 
@@ -557,12 +572,19 @@ function SchemeDetail({ data }: {
             utilizationScore: number;
             outputScore: number;
             outcomeScore: number;
+            aiInsight?: string;
         };
+        historicalAllocations?: { fiscalYear: string; allocated: number; utilized: number }[];
     }
 }) {
     const { showMethodology } = useExplorerStore();
     const allocation = data.allocation;
     const score = data.score;
+    const historyData = data.historicalAllocations?.map(a => ({
+        name: a.fiscalYear,
+        allocated: a.allocated,
+        utilized: a.utilized
+    })) || [];
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -586,19 +608,19 @@ function SchemeDetail({ data }: {
                     className="p-4"
                     icon={<Wallet size={16} />}
                     label="Allocated (BE)"
-                    value={`₹${formatBudget(allocation?.allocated || 0)}`}
+                    value={allocation?.allocated > 0 ? `₹${formatBudget(allocation.allocated)}` : 'Data Not Available'}
                 />
                 <Stat
                     className="p-4"
                     icon={<BarChart3 size={16} />}
                     label="Revised (RE)"
-                    value={`₹${formatBudget(allocation?.revisedEstimate || allocation?.allocated || 0)}`}
+                    value={allocation?.revisedEstimate && allocation.revisedEstimate > 0 ? `₹${formatBudget(allocation.revisedEstimate)}` : (allocation?.allocated > 0 ? `₹${formatBudget(allocation.allocated)}` : 'Data Not Available')}
                 />
                 <Stat
                     className={cn("p-4", allocation?.anomalyFlag && "ring-1 ring-rose-500/50 bg-rose-500/5")}
                     icon={<BarChart3 size={16} className={allocation?.anomalyFlag ? "text-rose-500" : ""} />}
                     label="Utilized"
-                    value={`₹${formatBudget(allocation?.utilized || 0)}`}
+                    value={allocation?.utilized && allocation.utilized > 0 ? `₹${formatBudget(allocation.utilized)}` : 'Data Not Available'}
                 />
             </div>
 
@@ -636,7 +658,7 @@ function SchemeDetail({ data }: {
                             <span className="text-xs font-bold uppercase tracking-[0.2em] mono">AI Intelligence Report</span>
                         </div>
                         <p className="text-[15px] text-text-primary leading-relaxed italic relative z-10 font-medium">
-                            &quot;Current utilization trends suggest a potential surplus of ₹{formatBudget((allocation?.allocated - allocation?.utilized) * 0.4)}. We recommend reallocating 15% of the idle revenue budget to high-impact capital projects identified in the output achievement analysis.&quot;
+                            {score?.aiInsight ? `"${score.aiInsight}"` : "Executing preliminary financial analysis. Dedicated AI insights for this scheme have not been compiled for the current reporting cycle."}
                         </p>
                     </div>
 
@@ -666,6 +688,30 @@ function SchemeDetail({ data }: {
                             </div>
                         </div>
                     </Card>
+
+                    {historyData.length > 0 && (
+                        <Card className="p-6 bg-white/5 border-white/5 border-dashed rounded-3xl backdrop-blur-md">
+                            <div className="flex items-center gap-2 text-text-muted mb-4">
+                                <LineChart size={18} />
+                                <span className="text-xs font-bold uppercase tracking-widest mono">Historical Trajectory</span>
+                            </div>
+                            <div className="h-[200px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={historyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                        <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val / 1000}k`} />
+                                        <Tooltip
+                                            cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                                            contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: '12px' }}
+                                        />
+                                        <Bar dataKey="allocated" name="Allocated" fill="var(--accent-blue)" radius={[4, 4, 0, 0]} barSize={20} />
+                                        <Bar dataKey="utilized" name="Utilized" fill="var(--accent-green)" radius={[4, 4, 0, 0]} barSize={20} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

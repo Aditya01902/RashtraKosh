@@ -20,7 +20,7 @@ async function main() {
     } else {
         console.log(`Found ${allocations.length} allocations with utilized = 0:`);
         allocations.forEach(a => {
-            console.log(`- ${a.fiscalYear} | ${a.scheme.name} (BE: ${a.allocated}, RE: ${a.revisedEstimate})`);
+            console.log(`- ${a.fiscalYear} | ${a.scheme?.name} (BE: ${a.allocated}, RE: ${a.revisedEstimate})`);
         });
     }
 

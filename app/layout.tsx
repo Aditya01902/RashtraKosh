@@ -3,6 +3,7 @@ import { Playfair_Display, Outfit, JetBrains_Mono } from 'next/font/google';
 import "./globals.css";
 import { Navbar } from "@/components/navigation/Navbar";
 import Providers from "@/components/providers";
+import Script from "next/script";
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -29,6 +30,9 @@ export const dynamic = "force-dynamic";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${playfair.variable} ${outfit.variable} ${jetbrains.variable}`}>
+      <head>
+        <Script src="https://js.puter.com/v2/" strategy="beforeInteractive" />
+      </head>
       <body className="antialiased font-sans">
         <Providers>
           <Navbar />

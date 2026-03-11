@@ -1,7 +1,7 @@
 import fs from "fs";
 
-const dataPath = "C:\\Users\\quant\\.gemini\\antigravity\\brain\\5554dc64-cdfb-4444-a858-0b0075276471\\ingested_oomf_data.json";
-const walkPath = "C:\\Users\\quant\\.gemini\\antigravity\\brain\\5554dc64-cdfb-4444-a858-0b0075276471\\walkthrough.md";
+const dataPath = process.env.DATA_PATH || "./ingested_oomf_data.json";
+const walkPath = process.env.WALK_PATH || "./walkthrough.md";
 
 async function main() {
     const allocations = JSON.parse(fs.readFileSync(dataPath, "utf8"));

@@ -9761,6 +9761,7 @@ export namespace Prisma {
     outputScore: Decimal | null
     outcomeScore: Decimal | null
     finalScore: Decimal | null
+    aiInsight: string | null
     scoreVersion: string | null
     calculatedAt: Date | null
     createdAt: Date | null
@@ -9775,6 +9776,7 @@ export namespace Prisma {
     outputScore: Decimal | null
     outcomeScore: Decimal | null
     finalScore: Decimal | null
+    aiInsight: string | null
     scoreVersion: string | null
     calculatedAt: Date | null
     createdAt: Date | null
@@ -9792,6 +9794,7 @@ export namespace Prisma {
     outcomeScore: number
     outcomeBreakdown: number
     finalScore: number
+    aiInsight: number
     scoreVersion: number
     calculatedAt: number
     createdAt: number
@@ -9822,6 +9825,7 @@ export namespace Prisma {
     outputScore?: true
     outcomeScore?: true
     finalScore?: true
+    aiInsight?: true
     scoreVersion?: true
     calculatedAt?: true
     createdAt?: true
@@ -9836,6 +9840,7 @@ export namespace Prisma {
     outputScore?: true
     outcomeScore?: true
     finalScore?: true
+    aiInsight?: true
     scoreVersion?: true
     calculatedAt?: true
     createdAt?: true
@@ -9853,6 +9858,7 @@ export namespace Prisma {
     outcomeScore?: true
     outcomeBreakdown?: true
     finalScore?: true
+    aiInsight?: true
     scoreVersion?: true
     calculatedAt?: true
     createdAt?: true
@@ -9957,6 +9963,7 @@ export namespace Prisma {
     outcomeScore: Decimal
     outcomeBreakdown: JsonValue
     finalScore: Decimal
+    aiInsight: string | null
     scoreVersion: string
     calculatedAt: Date
     createdAt: Date
@@ -9993,6 +10000,7 @@ export namespace Prisma {
     outcomeScore?: boolean
     outcomeBreakdown?: boolean
     finalScore?: boolean
+    aiInsight?: boolean
     scoreVersion?: boolean
     calculatedAt?: boolean
     createdAt?: boolean
@@ -10011,6 +10019,7 @@ export namespace Prisma {
     outcomeScore?: boolean
     outcomeBreakdown?: boolean
     finalScore?: boolean
+    aiInsight?: boolean
     scoreVersion?: boolean
     calculatedAt?: boolean
     createdAt?: boolean
@@ -10029,6 +10038,7 @@ export namespace Prisma {
     outcomeScore?: boolean
     outcomeBreakdown?: boolean
     finalScore?: boolean
+    aiInsight?: boolean
     scoreVersion?: boolean
     calculatedAt?: boolean
     createdAt?: boolean
@@ -10047,13 +10057,14 @@ export namespace Prisma {
     outcomeScore?: boolean
     outcomeBreakdown?: boolean
     finalScore?: boolean
+    aiInsight?: boolean
     scoreVersion?: boolean
     calculatedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SchemeScoreOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "schemeId" | "fiscalYear" | "utilizationScore" | "utilizationBreakdown" | "outputScore" | "outputBreakdown" | "outcomeScore" | "outcomeBreakdown" | "finalScore" | "scoreVersion" | "calculatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["schemeScore"]>
+  export type SchemeScoreOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "schemeId" | "fiscalYear" | "utilizationScore" | "utilizationBreakdown" | "outputScore" | "outputBreakdown" | "outcomeScore" | "outcomeBreakdown" | "finalScore" | "aiInsight" | "scoreVersion" | "calculatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["schemeScore"]>
   export type SchemeScoreInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     scheme?: boolean | SchemeDefaultArgs<ExtArgs>
   }
@@ -10080,6 +10091,7 @@ export namespace Prisma {
       outcomeScore: Prisma.Decimal
       outcomeBreakdown: Prisma.JsonValue
       finalScore: Prisma.Decimal
+      aiInsight: string | null
       scoreVersion: string
       calculatedAt: Date
       createdAt: Date
@@ -10518,6 +10530,7 @@ export namespace Prisma {
     readonly outcomeScore: FieldRef<"SchemeScore", 'Decimal'>
     readonly outcomeBreakdown: FieldRef<"SchemeScore", 'Json'>
     readonly finalScore: FieldRef<"SchemeScore", 'Decimal'>
+    readonly aiInsight: FieldRef<"SchemeScore", 'String'>
     readonly scoreVersion: FieldRef<"SchemeScore", 'String'>
     readonly calculatedAt: FieldRef<"SchemeScore", 'DateTime'>
     readonly createdAt: FieldRef<"SchemeScore", 'DateTime'>
@@ -18034,6 +18047,7 @@ export namespace Prisma {
     outcomeScore: 'outcomeScore',
     outcomeBreakdown: 'outcomeBreakdown',
     finalScore: 'finalScore',
+    aiInsight: 'aiInsight',
     scoreVersion: 'scoreVersion',
     calculatedAt: 'calculatedAt',
     createdAt: 'createdAt',
@@ -18991,6 +19005,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonFilter<"SchemeScore">
     finalScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
+    aiInsight?: StringNullableFilter<"SchemeScore"> | string | null
     scoreVersion?: StringFilter<"SchemeScore"> | string
     calculatedAt?: DateTimeFilter<"SchemeScore"> | Date | string
     createdAt?: DateTimeFilter<"SchemeScore"> | Date | string
@@ -19009,6 +19024,7 @@ export namespace Prisma {
     outcomeScore?: SortOrder
     outcomeBreakdown?: SortOrder
     finalScore?: SortOrder
+    aiInsight?: SortOrderInput | SortOrder
     scoreVersion?: SortOrder
     calculatedAt?: SortOrder
     createdAt?: SortOrder
@@ -19031,6 +19047,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonFilter<"SchemeScore">
     finalScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
+    aiInsight?: StringNullableFilter<"SchemeScore"> | string | null
     scoreVersion?: StringFilter<"SchemeScore"> | string
     calculatedAt?: DateTimeFilter<"SchemeScore"> | Date | string
     createdAt?: DateTimeFilter<"SchemeScore"> | Date | string
@@ -19049,6 +19066,7 @@ export namespace Prisma {
     outcomeScore?: SortOrder
     outcomeBreakdown?: SortOrder
     finalScore?: SortOrder
+    aiInsight?: SortOrderInput | SortOrder
     scoreVersion?: SortOrder
     calculatedAt?: SortOrder
     createdAt?: SortOrder
@@ -19074,6 +19092,7 @@ export namespace Prisma {
     outcomeScore?: DecimalWithAggregatesFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonWithAggregatesFilter<"SchemeScore">
     finalScore?: DecimalWithAggregatesFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
+    aiInsight?: StringNullableWithAggregatesFilter<"SchemeScore"> | string | null
     scoreVersion?: StringWithAggregatesFilter<"SchemeScore"> | string
     calculatedAt?: DateTimeWithAggregatesFilter<"SchemeScore"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"SchemeScore"> | Date | string
@@ -20243,6 +20262,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -20261,6 +20281,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -20277,6 +20298,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20295,6 +20317,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20312,6 +20335,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -20328,6 +20352,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20345,6 +20370,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21682,6 +21708,7 @@ export namespace Prisma {
     outcomeScore?: SortOrder
     outcomeBreakdown?: SortOrder
     finalScore?: SortOrder
+    aiInsight?: SortOrder
     scoreVersion?: SortOrder
     calculatedAt?: SortOrder
     createdAt?: SortOrder
@@ -21703,6 +21730,7 @@ export namespace Prisma {
     outputScore?: SortOrder
     outcomeScore?: SortOrder
     finalScore?: SortOrder
+    aiInsight?: SortOrder
     scoreVersion?: SortOrder
     calculatedAt?: SortOrder
     createdAt?: SortOrder
@@ -21717,6 +21745,7 @@ export namespace Prisma {
     outputScore?: SortOrder
     outcomeScore?: SortOrder
     finalScore?: SortOrder
+    aiInsight?: SortOrder
     scoreVersion?: SortOrder
     calculatedAt?: SortOrder
     createdAt?: SortOrder
@@ -23957,6 +23986,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -23973,6 +24003,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -24188,6 +24219,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonFilter<"SchemeScore">
     finalScore?: DecimalFilter<"SchemeScore"> | Decimal | DecimalJsLike | number | string
+    aiInsight?: StringNullableFilter<"SchemeScore"> | string | null
     scoreVersion?: StringFilter<"SchemeScore"> | string
     calculatedAt?: DateTimeFilter<"SchemeScore"> | Date | string
     createdAt?: DateTimeFilter<"SchemeScore"> | Date | string
@@ -25859,6 +25891,7 @@ export namespace Prisma {
     outcomeScore: Decimal | DecimalJsLike | number | string
     outcomeBreakdown: JsonNullValueInput | InputJsonValue
     finalScore: Decimal | DecimalJsLike | number | string
+    aiInsight?: string | null
     scoreVersion?: string
     calculatedAt?: Date | string
     createdAt?: Date | string
@@ -25988,6 +26021,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26004,6 +26038,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26020,6 +26055,7 @@ export namespace Prisma {
     outcomeScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     outcomeBreakdown?: JsonNullValueInput | InputJsonValue
     finalScore?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    aiInsight?: NullableStringFieldUpdateOperationsInput | string | null
     scoreVersion?: StringFieldUpdateOperationsInput | string
     calculatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

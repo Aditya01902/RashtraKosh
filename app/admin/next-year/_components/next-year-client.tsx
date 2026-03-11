@@ -137,7 +137,7 @@ export default function NextYearClient() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-center w-24">
-                                            <ScoreRing score={plan.score} size="sm" />
+                                            <ScoreRing score={Number(plan.score) || 0} size={40} />
                                         </td>
                                         <td className="px-4 py-3 text-right">
                                             <p className="font-bold text-slate-700 dark:text-slate-300">₹{plan.currentAllocation}</p>

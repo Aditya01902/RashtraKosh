@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    serverExternalPackages: ['pdf-parse'],
+    optimizeFonts: false,
+    outputFileTracing: false,
     experimental: {
-        serverComponentsExternalPackages: ['pdf-parse']
+        serverComponentsExternalPackages: ['pdf-parse', '@heyputer/puter.js', 'prisma', '@prisma/client']
     }
 };
 

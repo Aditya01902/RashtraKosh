@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { handleApiError } from '@/lib/api-response';
 
-
 export async function GET(
     request: Request,
     { params }: { params: { id: string } }
@@ -18,10 +17,10 @@ export async function GET(
                     include: { ministry: true }
                 },
                 scores: {
-                    where: { fiscalYear: fy }
+                    orderBy: { fiscalYear: 'asc' }
                 },
                 budgetAllocations: {
-                    where: { fiscalYear: fy }
+                    orderBy: { fiscalYear: 'asc' }
                 },
                 outputData: {
                     where: { fiscalYear: fy }
@@ -52,8 +51,20 @@ export async function GET(
                 id: scheme.department.id,
                 name: scheme.department.name,
             },
-            allocation: scheme.budgetAllocations[0] || null,
-            score: scheme.scores[0] || null,
+            allocation: scheme.budgetAllocations.find((a: any) => a.fiscalYear === fy) || null,
+            score: (() => {
+                const s = scheme.scores.find((s: any) => s.fiscalYear === fy);
+                if (!s) return null;
+                return {
+                    ...s,
+                    aiInsight: (s as any).aiInsight || null
+                };
+            })(),
+            historicalAllocations: scheme.budgetAllocations,
+            historicalScores: scheme.scores.map((s: any) => ({
+                ...s,
+                aiInsight: s.aiInsight || null
+            })),
             outputData: scheme.outputData[0] || null,
             outcomeData: scheme.outcomeData[0] || null,
         });

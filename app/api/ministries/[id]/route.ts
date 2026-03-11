@@ -73,7 +73,8 @@ export async function GET(
                     utilized,
                     utilizationPct: allocated > 0 ? Math.round((utilized / allocated) * 10000) / 100 : 0,
                     finalScore,
-                    scoreVersion: score?.scoreVersion
+                    scoreVersion: score?.scoreVersion,
+                    aiInsight: (score as any)?.aiInsight || null
                 };
             });
 
