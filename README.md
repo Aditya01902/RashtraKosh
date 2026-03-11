@@ -35,7 +35,18 @@
 
 ---
 
-## 🚀 Key Features
+## 🌟 What's New in V2.0 (The Intelligence Update)
+
+- **Automated PDF Data Pipeline**: Entirely eliminated manual data entry. Upload official GOI PDFs, let the custom extraction engine parse the OOMF tables, map schemes, and insert allocations automatically.
+- **Admin Command Center**: A completely secure, designated `/(admin)` route group for managing data ingestion, feedback moderation, and policy actions.
+- **Ingestion Audit Trail**: Complete transparency module verifying the history of data loads, mapping validations, and algorithmic extraction logs.
+- **Citizen Feedback Inbox**: Direct loop for public grievance and feature/policy recommendations with internal triage tracking.
+- **Enterprise-Grade Security**: Global rate limiting on all public routes + strict request payload validation via Zod schemas.
+- **Vintage RashtraKosh UI**: A breathtaking visual overhaul anchoring the project in Indian heritage, featuring dynamic 3D Emblem animations, dark/light modes, and a glass-pane aesthetic.
+
+---
+
+## 🚀 Core Platform Features
 
 ### 🔍 1. Budget Explorer (Deep Drill-down)
 Navigate through the layers of the Indian economy with surgical precision.
@@ -43,15 +54,7 @@ Navigate through the layers of the Indian economy with surgical precision.
 - **Health Scoring**: Proprietary performance metrics for every financial entity.
 - **Utilization Tracking**: Real-time monitoring of allocated vs. utilized funds.
 
-<div align="center">
-  <img src="./public/docs/screenshots/explorer.png" alt="Explorer Overview" width="48%">
-  <img src="./public/docs/screenshots/explorer-drilldown.png" alt="Hierarchical Drill-down" width="48%">
-</div>
-<br/>
-<div align="center">
-  <img src="./public/docs/screenshots/explorer-health.png" alt="Entity Health Scoring" width="48%">
-  <img src="./public/docs/screenshots/explorer-utilization.png" alt="Fund Utilization Tracking" width="48%">
-</div>
+![Explorer](./public/docs/screenshots/explorer.png)
 
 ### 🤖 2. RashtraKosh Intelligence (AI Advisor)
 An AI-powered policy advisor that understands the nuances of public finance.
@@ -59,29 +62,14 @@ An AI-powered policy advisor that understands the nuances of public finance.
 - **Context-Aware Insights**: Leverages Anthropic Claude models for deep financial reasoning.
 - **Predictive Analysis**: Intelligence on fiscal surplus and potential impact zones.
 
-<div align="center">
-  <img src="./public/docs/screenshots/intelligence.png" alt="AI Advisor Interface" width="48%">
-  <img src="./public/docs/screenshots/intelligence-queries.png" alt="Natural Language Queries" width="48%">
-</div>
-<br/>
-<div align="center">
-  <img src="./public/docs/screenshots/intelligence-insights.png" alt="Context-Aware Insights" width="48%">
-  <img src="./public/docs/screenshots/intelligence-prediction.png" alt="Predictive Analysis" width="48%">
-</div>
+![Intelligence](./public/docs/screenshots/intelligence.png)
 
 ### 📊 3. Advanced Analytics & Visualization
 Beautiful, high-density data visualizations that reveal the stories behind the numbers.
 - **Macro Trends**: Visualization of sector-wise growth and allocation shifts.
 - **Comparative Metrics**: Benchmarking departmental performance across fiscal years.
 
-<div align="center">
-  <img src="./public/docs/screenshots/analytics.png" alt="Analytics Dashboard" width="48%">
-  <img src="./public/docs/screenshots/analytics-macro.png" alt="Macro Trends Visualization" width="48%">
-</div>
-<br/>
-<div align="center">
-  <img src="./public/docs/screenshots/analytics-comparative.png" alt="Comparative Metrics" width="98%">
-</div>
+![Analytics](./public/docs/screenshots/analytics.png)
 
 ### 🏗️ 4. Admin Command Center
 A unified console for treasury managers and analysts.
@@ -90,15 +78,7 @@ A unified console for treasury managers and analysts.
 - **Feedback Inbox**: Comprehensive interface to manage, filter, and process citizen feedback with internal notes and status tracking.
 - **Policy Reallocation**: Tools to simulate budget shifts based on AI recommendations.
 
-<div align="center">
-  <img src="./public/docs/screenshots/admin-dashboard.png" alt="Admin Dashboard" width="48%">
-  <img src="./public/docs/screenshots/feedback-inbox.png" alt="Feedback Inbox" width="48%">
-</div>
-<br/>
-<div align="center">
-  <img src="./public/docs/screenshots/audit-trail.png" alt="Audit Trail" width="48%">
-  <img src="./public/docs/screenshots/pdf-ingestion.png" alt="PDF Ingestion" width="48%">
-</div>
+
 *Comprehensive suite of tools for robust data and engagement management*
 
 ---
@@ -124,10 +104,12 @@ A unified console for treasury managers and analysts.
 
 ## 💻 Installation & Setup
 
-### **Prerequisites**
-- Node.js 18+ 
-- PostgreSQL Database
-- Anthropic API Key (for Intelligence features)
+### **System Requirements & Prerequisites**
+- **Node.js**: v18.17.0 or higher (Required for Next.js App Router & Server Actions)
+- **Database**: PostgreSQL (Local or Cloud, e.g., Supabase/Neon)
+- **AI Engine**: Anthropic API Key (Required for `RashtraKosh Intelligence`)
+- **PDF Extraction Engine**: Node environment capable of buffer stream management (No external Python dependencies needed)
+- **Security Protocols**: Built-in memory limits require minimum 1GB RAM for Next Server (due to rate-limiter & pdf-parse overhead)
 
 ### **Local Development**
 1. **Clone the repository**

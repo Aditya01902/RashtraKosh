@@ -12,7 +12,7 @@ import { Stat } from '@/components/ui/stat';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     ChevronRight, ArrowLeft, Building2, Layers,
-    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle
+    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle, FileDown
 } from 'lucide-react';
 import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
 
@@ -20,8 +20,8 @@ export default function ExplorerPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const {
-        level, selectedMinistryId, selectedDepartmentId, selectedSchemeId,
-        setLevel, selectMinistry, selectDepartment, selectScheme, hideMethodology
+        level, selectedMinistryId, selectedDepartmentId, selectedSchemeId, fiscalYear,
+        setLevel, selectMinistry, selectDepartment, selectScheme, hideMethodology, setFiscalYear
     } = useExplorerStore();
 
     // URL Sync: On mount, read params and hydrate store
@@ -29,6 +29,9 @@ export default function ExplorerPage() {
         const ministryId = searchParams.get('ministry');
         const departmentId = searchParams.get('department');
         const schemeId = searchParams.get('scheme');
+        const fy = searchParams.get('fy');
+
+        if (fy) setFiscalYear(fy);
 
         if (schemeId) {
             selectMinistry(ministryId);
@@ -40,36 +43,37 @@ export default function ExplorerPage() {
         } else if (ministryId) {
             selectMinistry(ministryId);
         }
-    }, [searchParams, selectMinistry, selectDepartment, selectScheme]);
+    }, [searchParams, selectMinistry, selectDepartment, selectScheme, setFiscalYear]);
 
     // Sync Store -> URL
     useEffect(() => {
         const params = new URLSearchParams();
+        params.set('fy', fiscalYear);
         if (selectedMinistryId) params.set('ministry', selectedMinistryId);
         if (selectedDepartmentId) params.set('department', selectedDepartmentId);
         if (selectedSchemeId) params.set('scheme', selectedSchemeId);
 
         const query = params.toString();
         router.replace(`/explorer${query ? `?${query}` : ''}`, { scroll: false });
-    }, [selectedMinistryId, selectedDepartmentId, selectedSchemeId, router]);
+    }, [selectedMinistryId, selectedDepartmentId, selectedSchemeId, fiscalYear, router]);
 
     // Data Fetching
     const { data: ministries, isLoading: loadingMinistries } = useQuery({
-        queryKey: ['ministries'],
-        queryFn: () => fetch('/api/ministries').then(res => res.json()),
+        queryKey: ['ministries', fiscalYear],
+        queryFn: () => fetch(`/api/ministries?fy=${fiscalYear}`).then(res => res.json()),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     const { data: ministryDetail, isLoading: loadingMinistryDetail } = useQuery({
-        queryKey: ['ministry', selectedMinistryId],
-        queryFn: () => fetch(`/api/ministries/${selectedMinistryId}`).then(res => res.json()),
+        queryKey: ['ministry', selectedMinistryId, fiscalYear],
+        queryFn: () => fetch(`/api/ministries/${selectedMinistryId}?fy=${fiscalYear}`).then(res => res.json()),
         enabled: !!selectedMinistryId,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
     const { data: schemeDetail } = useQuery({
-        queryKey: ['scheme', selectedSchemeId],
-        queryFn: () => fetch(`/api/schemes/${selectedSchemeId}`).then(res => res.json()),
+        queryKey: ['scheme', selectedSchemeId, fiscalYear],
+        queryFn: () => fetch(`/api/schemes/${selectedSchemeId}?fy=${fiscalYear}`).then(res => res.json()),
         enabled: !!selectedSchemeId,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
@@ -155,6 +159,26 @@ export default function ExplorerPage() {
                         </div>
                     </>
                 )}
+
+                <div className="ml-auto flex items-center gap-3">
+                    <select
+                        value={fiscalYear}
+                        onChange={(e) => setFiscalYear(e.target.value)}
+                        className="bg-white/5 border border-white/10 text-text-primary text-sm font-bold uppercase tracking-widest mono rounded-lg px-3 py-1.5 outline-none focus:border-accent-saffron/50 transition-colors"
+                    >
+                        <option value="2024-25" className="bg-black text-white">FY 2024-25</option>
+                        <option value="2023-24" className="bg-black text-white">FY 2023-24</option>
+                        <option value="2022-23" className="bg-black text-white">FY 2022-23</option>
+                    </select>
+
+                    <button
+                        onClick={() => window.print()}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-blue/10 border border-accent-blue/20 text-accent-blue font-bold tracking-widest uppercase text-[10px] mono hover:bg-accent-blue/20 hover:scale-105 transition-all shadow-[0_0_15px_rgba(79,158,255,0.15)] print:hidden"
+                        title="Download as PDF"
+                    >
+                        <FileDown size={14} /> PDF Report
+                    </button>
+                </div>
             </nav>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

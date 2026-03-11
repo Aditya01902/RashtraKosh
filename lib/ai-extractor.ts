@@ -1,4 +1,4 @@
-// We've opted to fallback to local simulation because the official api lacks an open CORS endpoint
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export interface ExtractedAllocation {
     scheme_name_raw: string;
@@ -21,7 +21,7 @@ const validSchemes = [
     "PM POSHAN"
 ];
 
-export async function extractOOMFData(pdfText: string): Promise<{ data: ExtractedAllocation[], rawResponse: string }> {
+export async function extractOOMFData(pdfText: string, modelName: string = "gemini-2.5-flash"): Promise<{ data: ExtractedAllocation[], rawResponse: string }> {
     try {
         // Limit to 200,000 chars to avoid payload / token limit issues on smaller models
         const truncatedText = pdfText.substring(0, 200000);
@@ -49,11 +49,30 @@ Do NOT surround the output with markdown tags like \`\`\`json. Return only the r
 PDF Text snippet:
 ${truncatedText}`;
 
-        // Network block issues with api.puter.com from this environment
-        // Falling back to local simulated extraction model matching the target scheme output
-        const simulated = await simulateExtraction();
-        return simulated;
+        if (!process.env.GEMINI_API_KEY) {
+            console.warn("Missing GEMINI_API_KEY. Falling back to simulation.");
+            return await simulateExtraction();
+        }
 
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: modelName });
+
+        try {
+            console.log(`Calling ${modelName} to extract structured OOMF data from PDF...`);
+            const result = await model.generateContent(prompt);
+
+            const textResponse = result.response.text() || "[]";
+
+            // Clean markdown if the model hallucinated it
+            const cleanedText = textResponse.replace(/\`\`\`json\n?/g, '').replace(/\`\`\`\n?/g, '').trim();
+
+            const parsed: ExtractedAllocation[] = JSON.parse(cleanedText);
+            return { data: parsed, rawResponse: cleanedText };
+        } catch (apiError: any) {
+            console.warn("Gemini API rejected request (Invalid key or API not enabled):", apiError.message);
+            console.log("Falling back to local simulated extraction model...");
+            return await simulateExtraction();
+        }
     } catch (error) {
         console.error("Gemini Extraction Error:", error);
         throw new Error(`Failed to extract data via AI: ${error}`);

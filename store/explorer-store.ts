@@ -8,9 +8,11 @@ interface ExplorerState {
     selectedMinistryId: string | null;
     selectedDepartmentId: string | null;
     selectedSchemeId: string | null;
+    fiscalYear: string;
 
     // Actions
     setLevel: (level: ExplorerLevel) => void;
+    setFiscalYear: (fy: string) => void;
     showMethodology: () => void;
     hideMethodology: () => void;
     selectMinistry: (id: string | null) => void;
@@ -25,8 +27,10 @@ export const useExplorerStore = create<ExplorerState>((set) => ({
     selectedMinistryId: null,
     selectedDepartmentId: null,
     selectedSchemeId: null,
+    fiscalYear: '2024-25',
 
     setLevel: (level) => set({ level }),
+    setFiscalYear: (fy) => set({ fiscalYear: fy }),
 
     showMethodology: () => set((state) => ({
         previousLevel: state.level,
