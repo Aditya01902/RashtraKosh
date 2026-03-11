@@ -100,6 +100,7 @@ export async function GET(request: Request) {
             };
         });
 
+        scoreCache.clear();
         scoreCache.set(cacheKey, result);
 
         return NextResponse.json(result);

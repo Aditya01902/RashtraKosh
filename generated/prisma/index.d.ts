@@ -5892,6 +5892,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | null
     surrendered: Decimal | null
     supplementaryDemands: number | null
+    revisedEstimate: Decimal | null
   }
 
   export type BudgetAllocationSumAggregateOutputType = {
@@ -5907,6 +5908,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | null
     surrendered: Decimal | null
     supplementaryDemands: number | null
+    revisedEstimate: Decimal | null
   }
 
   export type BudgetAllocationMinAggregateOutputType = {
@@ -5926,6 +5928,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | null
     surrendered: Decimal | null
     supplementaryDemands: number | null
+    revisedEstimate: Decimal | null
     anomalyFlag: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5948,6 +5951,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | null
     surrendered: Decimal | null
     supplementaryDemands: number | null
+    revisedEstimate: Decimal | null
     anomalyFlag: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -5970,6 +5974,7 @@ export namespace Prisma {
     expenditureQ4: number
     surrendered: number
     supplementaryDemands: number
+    revisedEstimate: number
     anomalyFlag: number
     createdAt: number
     updatedAt: number
@@ -5990,6 +5995,7 @@ export namespace Prisma {
     expenditureQ4?: true
     surrendered?: true
     supplementaryDemands?: true
+    revisedEstimate?: true
   }
 
   export type BudgetAllocationSumAggregateInputType = {
@@ -6005,6 +6011,7 @@ export namespace Prisma {
     expenditureQ4?: true
     surrendered?: true
     supplementaryDemands?: true
+    revisedEstimate?: true
   }
 
   export type BudgetAllocationMinAggregateInputType = {
@@ -6024,6 +6031,7 @@ export namespace Prisma {
     expenditureQ4?: true
     surrendered?: true
     supplementaryDemands?: true
+    revisedEstimate?: true
     anomalyFlag?: true
     createdAt?: true
     updatedAt?: true
@@ -6046,6 +6054,7 @@ export namespace Prisma {
     expenditureQ4?: true
     surrendered?: true
     supplementaryDemands?: true
+    revisedEstimate?: true
     anomalyFlag?: true
     createdAt?: true
     updatedAt?: true
@@ -6068,6 +6077,7 @@ export namespace Prisma {
     expenditureQ4?: true
     surrendered?: true
     supplementaryDemands?: true
+    revisedEstimate?: true
     anomalyFlag?: true
     createdAt?: true
     updatedAt?: true
@@ -6177,6 +6187,7 @@ export namespace Prisma {
     expenditureQ4: Decimal
     surrendered: Decimal
     supplementaryDemands: number
+    revisedEstimate: Decimal | null
     anomalyFlag: boolean
     createdAt: Date
     updatedAt: Date
@@ -6218,6 +6229,7 @@ export namespace Prisma {
     expenditureQ4?: boolean
     surrendered?: boolean
     supplementaryDemands?: boolean
+    revisedEstimate?: boolean
     anomalyFlag?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6242,6 +6254,7 @@ export namespace Prisma {
     expenditureQ4?: boolean
     surrendered?: boolean
     supplementaryDemands?: boolean
+    revisedEstimate?: boolean
     anomalyFlag?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6266,6 +6279,7 @@ export namespace Prisma {
     expenditureQ4?: boolean
     surrendered?: boolean
     supplementaryDemands?: boolean
+    revisedEstimate?: boolean
     anomalyFlag?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6290,12 +6304,13 @@ export namespace Prisma {
     expenditureQ4?: boolean
     surrendered?: boolean
     supplementaryDemands?: boolean
+    revisedEstimate?: boolean
     anomalyFlag?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BudgetAllocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "schemeId" | "ministryId" | "fiscalYear" | "allocated" | "allocatedCapital" | "allocatedRevenue" | "utilized" | "utilizedCapital" | "utilizedRevenue" | "expenditureQ1" | "expenditureQ2" | "expenditureQ3" | "expenditureQ4" | "surrendered" | "supplementaryDemands" | "anomalyFlag" | "createdAt" | "updatedAt", ExtArgs["result"]["budgetAllocation"]>
+  export type BudgetAllocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "schemeId" | "ministryId" | "fiscalYear" | "allocated" | "allocatedCapital" | "allocatedRevenue" | "utilized" | "utilizedCapital" | "utilizedRevenue" | "expenditureQ1" | "expenditureQ2" | "expenditureQ3" | "expenditureQ4" | "surrendered" | "supplementaryDemands" | "revisedEstimate" | "anomalyFlag" | "createdAt" | "updatedAt", ExtArgs["result"]["budgetAllocation"]>
   export type BudgetAllocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     scheme?: boolean | BudgetAllocation$schemeArgs<ExtArgs>
     ministry?: boolean | BudgetAllocation$ministryArgs<ExtArgs>
@@ -6332,6 +6347,7 @@ export namespace Prisma {
       expenditureQ4: Prisma.Decimal
       surrendered: Prisma.Decimal
       supplementaryDemands: number
+      revisedEstimate: Prisma.Decimal | null
       anomalyFlag: boolean
       createdAt: Date
       updatedAt: Date
@@ -6776,6 +6792,7 @@ export namespace Prisma {
     readonly expenditureQ4: FieldRef<"BudgetAllocation", 'Decimal'>
     readonly surrendered: FieldRef<"BudgetAllocation", 'Decimal'>
     readonly supplementaryDemands: FieldRef<"BudgetAllocation", 'Int'>
+    readonly revisedEstimate: FieldRef<"BudgetAllocation", 'Decimal'>
     readonly anomalyFlag: FieldRef<"BudgetAllocation", 'Boolean'>
     readonly createdAt: FieldRef<"BudgetAllocation", 'DateTime'>
     readonly updatedAt: FieldRef<"BudgetAllocation", 'DateTime'>
@@ -17956,6 +17973,7 @@ export namespace Prisma {
     expenditureQ4: 'expenditureQ4',
     surrendered: 'surrendered',
     supplementaryDemands: 'supplementaryDemands',
+    revisedEstimate: 'revisedEstimate',
     anomalyFlag: 'anomalyFlag',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -18632,6 +18650,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFilter<"BudgetAllocation"> | number
+    revisedEstimate?: DecimalNullableFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFilter<"BudgetAllocation"> | boolean
     createdAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
     updatedAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
@@ -18656,6 +18675,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrderInput | SortOrder
     anomalyFlag?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18684,6 +18704,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFilter<"BudgetAllocation"> | number
+    revisedEstimate?: DecimalNullableFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFilter<"BudgetAllocation"> | boolean
     createdAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
     updatedAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
@@ -18708,6 +18729,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrderInput | SortOrder
     anomalyFlag?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18738,6 +18760,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalWithAggregatesFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalWithAggregatesFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntWithAggregatesFilter<"BudgetAllocation"> | number
+    revisedEstimate?: DecimalNullableWithAggregatesFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolWithAggregatesFilter<"BudgetAllocation"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"BudgetAllocation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BudgetAllocation"> | Date | string
@@ -19823,6 +19846,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19847,6 +19871,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19867,6 +19892,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19891,6 +19917,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19913,6 +19940,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19933,6 +19961,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19955,6 +19984,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21261,6 +21291,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type DecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type SchemeNullableScalarRelationFilter = {
     is?: SchemeWhereInput | null
     isNot?: SchemeWhereInput | null
@@ -21293,6 +21334,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrder
     anomalyFlag?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21311,6 +21353,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrder
   }
 
   export type BudgetAllocationMaxOrderByAggregateInput = {
@@ -21330,6 +21373,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrder
     anomalyFlag?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21352,6 +21396,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrder
     anomalyFlag?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21370,6 +21415,7 @@ export namespace Prisma {
     expenditureQ4?: SortOrder
     surrendered?: SortOrder
     supplementaryDemands?: SortOrder
+    revisedEstimate?: SortOrder
   }
 
   export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
@@ -21402,6 +21448,22 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type SchemeScalarRelationFilter = {
@@ -22589,6 +22651,14 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableDecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string | null
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type SchemeUpdateOneWithoutBudgetAllocationsNestedInput = {
     create?: XOR<SchemeCreateWithoutBudgetAllocationsInput, SchemeUncheckedCreateWithoutBudgetAllocationsInput>
     connectOrCreate?: SchemeCreateOrConnectWithoutBudgetAllocationsInput
@@ -23189,6 +23259,17 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
+  export type NestedDecimalNullableFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+  }
+
   export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
@@ -23230,6 +23311,22 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalNullableWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedDecimalNullableFilter<$PrismaModel>
+    _sum?: NestedDecimalNullableFilter<$PrismaModel>
+    _min?: NestedDecimalNullableFilter<$PrismaModel>
+    _max?: NestedDecimalNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumKpiDirectionFilter<$PrismaModel = never> = {
@@ -23440,6 +23537,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23462,6 +23560,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23590,6 +23689,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFilter<"BudgetAllocation"> | number
+    revisedEstimate?: DecimalNullableFilter<"BudgetAllocation"> | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFilter<"BudgetAllocation"> | boolean
     createdAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
     updatedAt?: DateTimeFilter<"BudgetAllocation"> | Date | string
@@ -23808,6 +23908,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23830,6 +23931,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25504,6 +25606,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25563,6 +25666,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25585,6 +25689,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25606,6 +25711,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25737,6 +25843,7 @@ export namespace Prisma {
     expenditureQ4: Decimal | DecimalJsLike | number | string
     surrendered: Decimal | DecimalJsLike | number | string
     supplementaryDemands?: number
+    revisedEstimate?: Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25820,6 +25927,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25842,6 +25950,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25863,6 +25972,7 @@ export namespace Prisma {
     expenditureQ4?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     surrendered?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     supplementaryDemands?: IntFieldUpdateOperationsInput | number
+    revisedEstimate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     anomalyFlag?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -165,6 +165,7 @@ exports.Prisma.BudgetAllocationScalarFieldEnum = {
   expenditureQ4: 'expenditureQ4',
   surrendered: 'surrendered',
   supplementaryDemands: 'supplementaryDemands',
+  revisedEstimate: 'revisedEstimate',
   anomalyFlag: 'anomalyFlag',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

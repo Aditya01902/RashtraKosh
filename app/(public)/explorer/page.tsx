@@ -12,7 +12,7 @@ import { Stat } from '@/components/ui/stat';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     ChevronRight, ArrowLeft, Building2, Layers,
-    Target, Info, BrainCircuit, Wallet, BarChart3
+    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle
 } from 'lucide-react';
 import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
 
@@ -522,9 +522,11 @@ function SchemeDetail({ data }: {
         priorityCategory: string;
         allocation: {
             allocated: number;
+            revisedEstimate: number | null;
             utilized: number;
             capitalAllocated: number;
             revenueAllocated: number;
+            anomalyFlag: boolean;
         };
         score: {
             finalScore: number;
@@ -555,32 +557,40 @@ function SchemeDetail({ data }: {
                 <ScoreRing score={score?.finalScore || 0} size={100} strokeWidth={10} />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Stat
                     className="p-4"
                     icon={<Wallet size={16} />}
-                    label="Allocated"
+                    label="Allocated (BE)"
                     value={`₹${formatBudget(allocation?.allocated || 0)}`}
                 />
                 <Stat
                     className="p-4"
                     icon={<BarChart3 size={16} />}
+                    label="Revised (RE)"
+                    value={`₹${formatBudget(allocation?.revisedEstimate || allocation?.allocated || 0)}`}
+                />
+                <Stat
+                    className={cn("p-4", allocation?.anomalyFlag && "ring-1 ring-rose-500/50 bg-rose-500/5")}
+                    icon={<BarChart3 size={16} className={allocation?.anomalyFlag ? "text-rose-500" : ""} />}
                     label="Utilized"
                     value={`₹${formatBudget(allocation?.utilized || 0)}`}
                 />
-                <Stat
-                    className="p-4"
-                    icon={<Info size={16} />}
-                    label="Capital"
-                    value={`₹${formatBudget(allocation?.capitalAllocated || 0)}`}
-                />
-                <Stat
-                    className="p-4"
-                    icon={<Info size={16} />}
-                    label="Revenue"
-                    value={`₹${formatBudget(allocation?.revenueAllocated || 0)}`}
-                />
             </div>
+
+            {allocation?.anomalyFlag && (
+                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col sm:flex-row items-center gap-4 animate-pulse">
+                    <div className="p-2 rounded-xl bg-rose-500/20 text-rose-500">
+                        <AlertTriangle size={24} />
+                    </div>
+                    <div className="space-y-1 text-center sm:text-left">
+                        <h4 className="font-bold text-rose-500">OOMF Audit Variance Detected</h4>
+                        <p className="text-xs text-rose-400 font-medium">
+                            Automated ingestion has flagged a variance &gt; 20% between reported actuals and initial sector benchmarks. Verification required.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card className="p-6 space-y-6">
