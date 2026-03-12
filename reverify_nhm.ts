@@ -3,7 +3,13 @@ const pdf = require('pdf-parse');
 // const pdf = require('pdf-parse'); // This line is removed as per instruction
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = "AIzaSyCx1zFJ7xpW4f1EB0IIgFuPAgmJRfuqJWk";
+// GEMINI_API_KEY removed for security. Accessing via environment variables.
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+if (!GEMINI_API_KEY) {
+    console.error("FATAL ERROR: GEMINI_API_KEY is not defined in the environment.");
+    process.exit(1);
+}
 
 async function main() {
     console.log("Reading outcome.pdf...");
@@ -52,7 +58,7 @@ async function main() {
     // Limit to 200k for Flash model
     relevantSnippets = relevantSnippets.substring(0, 200000);
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY as string);
     const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
     const prompt = `
