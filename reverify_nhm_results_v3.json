@@ -1,0 +1,48 @@
+﻿Reading outcome.pdf...
+Running pdf-parse (advanced mode)...
+PDF parsed successfully. Length: 331953
+PDF START: Outcome Budget
+2024-2025
+MINISTRY OF FINANCE
+July, 2024
+GOVERNMENT OF INDIA
+┬║├ëi┬¬├ë├á├ë├ñ┬┤├ë V├ë┬¬├ëi├ë├ñ
+
+-- 1 of 278 --
+
+
+
+-- 2 of 278 --
+
+OUTPUT OUTCOME FRAMEWORK 2024-25
+(MAJOR CENTRAL SECTOR & CENTRALLY SPONSORED SCHEMES)
+
+-- 3 of 278 --
+
+
+
+-- 4 of 278 --
+
+Preface
+The Government of India has undertaken major expenditure reforms over the last few years. This not only includes simplification of appraisal
+and approval processes but also structural changes in the budget-making process itself, such as eliminating the Plan / Non-plan distinction. As a
+result, the cost centres are being treated in an integrated manner within only the statutory revenue capital framework. This enables another major
+structural reform, which is to bring public schemes and projects under a monitorable output-outcome framework.
+Since 2017-18, in addition to the financial outlays of the Ministries/Departments' schemes being indicated in the Budget document, the expected
+outputs and outcomes of the schemes are also present
+Calling Gemini 3.1 Flash Lite Preview...
+--- FINAL EXTRACTION RESULT ---
+{
+  "scheme_name": "National Health Mission",
+  "fy_2023_24": {
+    "BE": null,
+    "RE": null,
+    "Actuals": null,
+    "Capital": null,
+    "Revenue": null
+  },
+  "fy_2024_25": {
+    "BE": null
+  },
+  "source_snippet_used": "The provided text contains Output/Outcome performance indicators and specific project outlays (e.g., 28,783 Cr for Health System Strengthening under NHM), but does not contain the aggregate Budget Estimate (BE), Revised Estimate (RE), Actuals, or Capital/Revenue split data for the National Health Mission as a whole."
+}

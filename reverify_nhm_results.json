@@ -1,0 +1,19 @@
+﻿Reading outcome.pdf...
+Running pdf-parse (advanced mode)...
+PDF parsed successfully. Length: 331953
+Calling Gemini 3.1 Flash Lite Preview...
+--- FINAL EXTRACTION RESULT ---
+{
+  "scheme_name": "National Health Mission",
+  "fy_2023_24": {
+    "BE": null,
+    "RE": null,
+    "Actuals": null,
+    "Capital": null,
+    "Revenue": null
+  },
+  "fy_2024_25": {
+    "BE": null
+  },
+  "source_snippet_used": "The provided text contains Output/Outcome performance indicators and specific sub-scheme outlays (e.g., 28,783 for Health System Strengthening under NHM), but does not provide the consolidated Budget Estimate (BE), Revised Estimate (RE), Actuals, or Capital/Revenue split data for the National Health Mission as a whole."
+}

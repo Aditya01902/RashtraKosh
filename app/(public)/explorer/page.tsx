@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useExplorerStore } from '@/store/explorer-store';
@@ -11,8 +11,20 @@ import { ScoreBar } from '@/components/ui/score-bar';
 import { Stat } from '@/components/ui/stat';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-    ChevronRight, ArrowLeft, Building2, Layers,
-    Target, Info, BrainCircuit, Wallet, BarChart3, AlertTriangle, FileDown, LineChart
+    Building2,
+    ChevronRight,
+    ArrowLeft,
+    Wallet,
+    BarChart3,
+    AlertTriangle,
+    Info,
+    BrainCircuit,
+    Layers,
+    LineChart,
+    FileDown,
+    Calendar,
+    ChevronDown,
+    Target
 } from 'lucide-react';
 import { cn, formatLakhCrore, formatBudget } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -162,19 +174,12 @@ export default function ExplorerPage() {
                 )}
 
                 <div className="ml-auto flex items-center gap-3">
-                    <select
-                        value={fiscalYear}
-                        onChange={(e) => setFiscalYear(e.target.value)}
-                        className="bg-white/5 border border-white/10 text-text-primary text-sm font-bold uppercase tracking-widest mono rounded-lg px-3 py-1.5 outline-none focus:border-accent-saffron/50 transition-colors"
-                    >
-                        <option value="2024-25" className="bg-black text-white">FY 2024-25</option>
-                        <option value="2023-24" className="bg-black text-white">FY 2023-24</option>
-                        <option value="2022-23" className="bg-black text-white">FY 2022-23</option>
-                    </select>
+                    {/* Custom Styled Year Selector */}
+                    <YearSelector value={fiscalYear} onChange={setFiscalYear} />
 
                     <button
                         onClick={() => window.print()}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-blue/10 border border-accent-blue/20 text-accent-blue font-bold tracking-widest uppercase text-[10px] mono hover:bg-accent-blue/20 hover:scale-105 transition-all shadow-[0_0_15px_rgba(79,158,255,0.15)] print:hidden"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-blue/10 border border-accent-blue/20 text-accent-blue font-bold tracking-widest uppercase text-[10px] mono hover:bg-accent-blue/20 hover:scale-105 transition-all shadow-[0_0_15px_rgba(79,158,255,0.15)] animate-in fade-in zoom-in duration-500 print:hidden"
                         title="Download as PDF"
                     >
                         <FileDown size={14} /> PDF Report
@@ -554,6 +559,68 @@ function DepartmentDetail({ data, parentMinistry }: {
     );
 }
 
+function YearSelector({ value, onChange }: { value: string, onChange: (val: string) => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const years = ['2024-25', '2023-24', '2022-23'];
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 font-bold tracking-widest uppercase text-[10px] mono group backdrop-blur-md",
+                    isOpen
+                        ? "bg-accent-saffron/20 border-accent-saffron/40 text-accent-saffron shadow-[0_0_20px_rgba(var(--accent-saffron-rgb),0.15)]"
+                        : "bg-white/5 border-white/10 text-text-muted hover:text-text-primary hover:bg-white/10 hover:border-white/20 shadow-lg"
+                )}
+            >
+                <Calendar size={14} className={cn("transition-colors", isOpen ? "text-accent-saffron" : "group-hover:text-accent-saffron/70")} />
+                <span>FY {value}</span>
+                <ChevronDown size={14} className={cn("transition-transform duration-300", isOpen ? "rotate-180 text-accent-saffron" : "text-text-muted2")} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="py-2">
+                        {years.map((year) => (
+                            <button
+                                key={year}
+                                onClick={() => {
+                                    onChange(year);
+                                    setIsOpen(false);
+                                }}
+                                className={cn(
+                                    "w-full flex items-center justify-between px-4 py-3 text-[11px] font-bold tracking-widest uppercase mono transition-all",
+                                    value === year
+                                        ? "bg-accent-saffron/10 text-accent-saffron"
+                                        : "text-text-muted hover:bg-white/5 hover:text-text-primary"
+                                )}
+                            >
+                                <span>FY {year}</span>
+                                {value === year && (
+                                    <div className="w-1.5 h-1.5 rounded-full bg-accent-saffron shadow-[0_0_10px_rgba(var(--accent-saffron-rgb),1)]" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 function SchemeDetail({ data }: {
     data: {
         name: string;
@@ -639,9 +706,9 @@ function SchemeDetail({ data }: {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="p-6 space-y-6">
-                    <h3 className="font-serif font-bold text-xl">Performance Metrics</h3>
-                    <div className="space-y-6">
+                <Card className="p-6 flex flex-col h-full">
+                    <h3 className="font-serif font-bold text-xl mb-6">Performance Metrics</h3>
+                    <div className="space-y-6 flex-grow">
                         <ScoreBar label="Utilization Score (U)" value={score?.utilizationScore || 0} color="var(--accent-blue)" />
                         <ScoreBar label="Output Score (OP)" value={score?.outputScore || 0} color="var(--accent-green)" />
                         <ScoreBar label="Outcome Score (OC)" value={score?.outcomeScore || 0} color="var(--accent-purple)" />
@@ -649,71 +716,65 @@ function SchemeDetail({ data }: {
                     </div>
                 </Card>
 
-                <div className="space-y-6">
-                    {/* AI Recommendation Callout */}
-                    <div className="p-6 rounded-3xl bg-accent-saffron/5 border border-accent-saffron/20 shadow-[0_0_30px_rgba(255,153,51,0.05)] space-y-4 backdrop-blur-md relative overflow-hidden group hover:bg-accent-saffron/10 transition-colors">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-accent-saffron/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform" />
-                        <div className="flex items-center gap-3 text-accent-saffron relative z-10">
+                {/* AI Recommendation Callout */}
+                <div className="p-8 rounded-3xl bg-accent-saffron/5 border border-accent-saffron/20 shadow-[0_0_30px_rgba(255,153,51,0.05)] flex flex-col h-full justify-between backdrop-blur-md relative overflow-hidden group hover:bg-accent-saffron/10 transition-all duration-300">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent-saffron/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform" />
+                    <div className="space-y-4 relative z-10">
+                        <div className="flex items-center gap-3 text-accent-saffron">
                             <BrainCircuit size={24} className="animate-pulse" />
                             <span className="text-xs font-bold uppercase tracking-[0.2em] mono">AI Intelligence Report</span>
                         </div>
-                        <p className="text-[15px] text-text-primary leading-relaxed italic relative z-10 font-medium">
+                        <p className="text-[14px] text-text-primary leading-relaxed italic font-medium">
                             {score?.aiInsight ? `"${score.aiInsight}"` : "Executing preliminary financial analysis. Dedicated AI insights for this scheme have not been compiled for the current reporting cycle."}
                         </p>
                     </div>
-
-                    <Card className="p-6 bg-white/5 border-white/5 border-dashed rounded-3xl backdrop-blur-md group transition-all duration-300 hover:border-accent-blue/30">
-                        <div className="flex items-center gap-2 text-text-muted mb-6 group-hover:text-accent-blue transition-colors">
-                            <Layers size={18} />
-                            <span className="text-xs font-bold uppercase tracking-widest mono">Capital/Revenue Breakdown</span>
-                        </div>
-                        <div className="space-y-5">
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
-                                    <span className="text-text-muted2">Capital Contribution</span>
-                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.capitalAllocated / allocation?.allocated) * 100) : 0}%</span>
-                                </div>
-                                <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-blue shadow-[0_0_10px_rgba(79,158,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.capitalAllocated / allocation?.allocated) * 100) : 0}%` }} />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-[11px] mono uppercase tracking-wider font-bold">
-                                    <span className="text-text-muted2">Revenue Contribution</span>
-                                    <span className="text-text-primary">{allocation?.allocated > 0 ? Math.round((allocation?.revenueAllocated / allocation?.allocated) * 100) : 0}%</span>
-                                </div>
-                                <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                                    <div className="h-full bg-accent-purple shadow-[0_0_10px_rgba(164,124,255,0.4)]" style={{ width: `${allocation?.allocated > 0 ? Math.round((allocation?.revenueAllocated / allocation?.allocated) * 100) : 0}%` }} />
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {historyData.length > 0 && (
-                        <Card className="p-6 bg-white/5 border-white/5 border-dashed rounded-3xl backdrop-blur-md">
-                            <div className="flex items-center gap-2 text-text-muted mb-4">
-                                <LineChart size={18} />
-                                <span className="text-xs font-bold uppercase tracking-widest mono">Historical Trajectory</span>
-                            </div>
-                            <div className="h-[200px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={historyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                        <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val / 1000}k`} />
-                                        <Tooltip
-                                            cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                                            contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: '12px' }}
-                                        />
-                                        <Bar dataKey="allocated" name="Allocated" fill="var(--accent-blue)" radius={[4, 4, 0, 0]} barSize={20} />
-                                        <Bar dataKey="utilized" name="Utilized" fill="var(--accent-green)" radius={[4, 4, 0, 0]} barSize={20} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </Card>
-                    )}
+                    <div className="pt-6 relative z-10">
+                        <div className="h-px w-full bg-gradient-to-r from-accent-saffron/30 to-transparent mb-4" />
+                        <p className="text-[10px] text-accent-saffron/60 uppercase tracking-widest font-bold mono">Precision Analysis Engine v2.5</p>
+                    </div>
                 </div>
             </div>
+
+            {historyData.length > 0 && (
+                <Card className="p-8 bg-white/5 border-white/5 border-dashed rounded-3xl backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-2 text-text-muted">
+                            <LineChart size={18} />
+                            <span className="text-xs font-bold uppercase tracking-widest mono">Historical Trajectory (Multi-Year)</span>
+                        </div>
+                        <div className="flex gap-4 text-[10px] mono uppercase tracking-wider font-bold">
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-accent-blue" />
+                                <span className="text-text-muted2">Allocated</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-accent-green" />
+                                <span className="text-text-muted2">Utilized</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                layout="vertical"
+                                data={historyData}
+                                margin={{ top: 0, right: 30, left: 40, bottom: 0 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={true} vertical={false} />
+                                <XAxis type="number" stroke="var(--text-muted)" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${formatBudget(val)}`} />
+                                <YAxis type="category" dataKey="name" stroke="var(--text-primary)" fontSize={11} fontWeight="bold" tickLine={false} axisLine={false} />
+                                <Tooltip
+                                    cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                                    contentStyle={{ backgroundColor: 'rgba(10, 10, 10, 0.95)', border: '1px solid var(--border-default)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}
+                                    formatter={(value: number | undefined) => [value ? `₹${formatBudget(value)}` : '₹0', '']}
+                                />
+                                <Bar dataKey="allocated" fill="var(--accent-blue)" radius={[0, 4, 4, 0]} barSize={12} />
+                                <Bar dataKey="utilized" fill="var(--accent-green)" radius={[0, 4, 4, 0]} barSize={12} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </Card>
+            )}
         </div>
     );
 }

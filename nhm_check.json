@@ -1,0 +1,60 @@
+﻿Searching for National Health Mission (NHM) in the database...
+[
+  {
+    "id": "cmmm7lh0400b8v7hcqkmj1ooe",
+    "name": "National Health Mission",
+    "description": "Strengthening public health infrastructure across rural and urban India",
+    "departmentId": "cmmm7lfwc00agv7hcxw7bi6i8",
+    "isActive": true,
+    "launchYear": 2013,
+    "priorityCategory": "HUMAN_CAPITAL",
+    "createdAt": "2026-03-11T15:43:56.501Z",
+    "updatedAt": "2026-03-11T15:43:56.501Z",
+    "budgetAllocations": [
+      {
+        "id": "cmmm7lhpq00bqv7hcw1s3sjis",
+        "schemeId": "cmmm7lh0400b8v7hcqkmj1ooe",
+        "ministryId": "cmmm7lftl00aev7hcivuzaagl",
+        "fiscalYear": "2024-25",
+        "allocated": "27000",
+        "allocatedCapital": "9450",
+        "allocatedRevenue": "17550",
+        "utilized": "24300",
+        "utilizedCapital": "8505",
+        "utilizedRevenue": "15795",
+        "expenditureQ1": "4860",
+        "expenditureQ2": "6075",
+        "expenditureQ3": "6804",
+        "expenditureQ4": "6561",
+        "surrendered": "810",
+        "supplementaryDemands": 0,
+        "revisedEstimate": null,
+        "anomalyFlag": false,
+        "createdAt": "2026-03-11T15:43:57.422Z",
+        "updatedAt": "2026-03-11T15:43:57.422Z"
+      },
+      {
+        "id": "cmmm7lhec00biv7hcs9vugdwj",
+        "schemeId": "cmmm7lh0400b8v7hcqkmj1ooe",
+        "ministryId": "cmmm7lftl00aev7hcivuzaagl",
+        "fiscalYear": "2023-24",
+        "allocated": "1200",
+        "allocatedCapital": "8316",
+        "allocatedRevenue": "15444",
+        "utilized": "21384",
+        "utilizedCapital": "7484.4",
+        "utilizedRevenue": "13899.6",
+        "expenditureQ1": "4276.8",
+        "expenditureQ2": "5346",
+        "expenditureQ3": "5987.52",
+        "expenditureQ4": "5773.68",
+        "surrendered": "712.8",
+        "supplementaryDemands": 0,
+        "revisedEstimate": null,
+        "anomalyFlag": false,
+        "createdAt": "2026-03-11T15:43:57.013Z",
+        "updatedAt": "2026-03-11T15:51:54.801Z"
+      }
+    ]
+  }
+]

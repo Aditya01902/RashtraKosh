@@ -1,0 +1,21 @@
+﻿Reading outcome.pdf...
+Running pdf-parse (advanced mode)...
+PDF parsed successfully. Length: 331953
+Calling Gemini 3.1 Flash Lite Preview...
+--- FINAL EXTRACTION RESULT ---
+```json
+{
+  "scheme_name": "National Health Mission",
+  "fy_2023_24": {
+    "BE": null,
+    "RE": null,
+    "Actuals": null,
+    "Capital": null,
+    "Revenue": null
+  },
+  "fy_2024_25": {
+    "BE": 28783
+  },
+  "source_snippet_used": "Flexible Pool for RCH & Health System Strengthening, National Health Programme and National Urban Health Mission (CSS) ... 28,783 a. Health System Strengthening under NHM"
+}
+```

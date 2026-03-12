@@ -1,0 +1,250 @@
+﻿Reading outcome.pdf...
+Running pdf-parse (advanced mode)...
+PDF parsed successfully. Length: 331953
+PDF START: Outcome Budget
+2024-2025
+MINISTRY OF FINANCE
+July, 2024
+GOVERNMENT OF INDIA
+┬║├ëi┬¬├ë├á├ë├ñ┬┤├ë V├ë┬¬├ëi├ë├ñ
+
+-- 1 of 278 --
+
+
+
+-- 2 of 278 --
+
+OUTPUT OUTCOME FRAMEWORK 2024-25
+(MAJOR CENTRAL SECTOR & CENTRALLY SPONSORED SCHEMES)
+
+-- 3 of 278 --
+
+
+
+-- 4 of 278 --
+
+Preface
+The Government of India has undertaken major expenditure reforms over the last few years. This not only includes simplification of appraisal
+and approval processes but also structural changes in the budget-making process itself, such as eliminating the Plan / Non-plan distinction. As a
+result, the cost centres are being treated in an integrated manner within only the statutory revenue capital framework. This enables another major
+structural reform, which is to bring public schemes and projects under a monitorable output-outcome framework.
+Since 2017-18, in addition to the financial outlays of the Ministries/Departments' schemes being indicated in the Budget document, the expected
+outputs and outcomes of the schemes are also present
+Extracting 200 lines around NHM table start (Line 6731)...
+--- RAW PDF TEXT AROUND NHM ---
+persons)
+1,600
+f. Operation Greens
+1. Creating of post-
+harvest
+preservation/proce
+ssing facilities
+1.1 No. of processing /
+preservation facilities
+created
+25 1. No. of new
+employment
+opportunities created
+in Agri & allied
+sector
+1.1 Employment
+generated due to
+setting up of the
+processing /
+Preservation
+facilities (No. of
+persons)
+7,500
+1.2 Processing/Preservation
+Capacity of the
+2.96
+
+-- 111 of 278 --
+
+104
+FINANCIAL
+OUTLAY (Rs
+in Cr) OUTPUTS 2024-25 OUTCOMES 2024-25
+2024-25 Output Indicators Targets
+2024-25
+Outcome Indicators Targets
+2024-25
+facilities created (in
+Lakh MT)
+1.2 No. of farmers
+benefitted due to
+setting up of the
+processing /
+Preservation
+facilities
+10,000
+
+-- 112 of 278 --
+
+105
+Ministry of Health and Family Welfare Demand No. 46
+Department of Health and Family Welfare
+1. Flexible Pool for RCH & Health System Strengthening, National Health Programme and National Urban Health Mission (CSS)
+FINANCIAL
+OUTLAY
+(Rs in Cr)
+OUTPUT 2024-25 OUTCOME 2024-25
+2024-25 Output Indicators Targets
+2024-25
+Outcome Indicators Targets
+2024-25
+28,783 a. Health System Strengthening under NHM
+1. Expanded basket
+of primary care
+services provided
+by Ayushman
+Arogya Mandir
+(AAM)
+1.1 No. of functional
+AAM, SHCs,
+PHCs & UPHCs)
+(Cumulative)
+1,72,000 1. Improved utilization of
+primary care services
+and screening &
+management of NCDs
+1.1. Cumulative No. of
+persons screened for
+High Blood pressure
+(in Crore)
+20
+1.2 % Ayushman
+Arogya Mandir
+rolled out
+minimum 9
+services of
+expanded packages
+78 1.2. Cumulative No. of
+persons screened for
+High Blood Sugar (in
+Crore)
+19
+1.3 1.3 % Ayushman
+Arogya Mandir
+rolled out all 12
+services of
+expanded packages
+72 1.3. Cumulative No.
+screened patients
+people under treatment
+for Hypertension (in
+Crore)
+1.50
+1.4. Cumulative No. of
+screened people
+patients under
+treatment for Diabetes.
+(in Crore)
+0.80
+2. Implementation of
+DVDMS in PHCs
+2.1. % of PHCs
+implementing
+DVDMS
+100 2. Increased availability
+of drugs at public
+health facilities
+2.1. % of facilities
+providing 80 % or
+more essential drugs as
+per CPHC guidelines
+50
+
+-- 113 of 278 --
+
+106
+FINANCIAL
+OUTLAY
+(Rs in Cr)
+OUTPUT 2024-25 OUTCOME 2024-25
+2024-25 Output Indicators Targets
+2024-25
+Outcome Indicators Targets
+2024-25
+3. IPHS compliant
+public health
+facilities
+3.1 Total IPHS
+compliant public
+health facilities (in
+%)
+15 3. Total number of IPHS
+compliant public
+health facilities
+3.1 % Increase in number
+of specialist services
+provided under OPD at
+IPHS compliant
+facilities
+10
+4. NQAS certified
+public health
+facilities
+4.1 % of public health
+facilities that are
+NQAS certified
+20 4. Strengthening of
+public health facilities
+to provide quality
+healthcare services
+4.1 % increase in total (old
++ new) OPD patients at
+NQAS certified public
+health facilities
+annually
+10
+5. Teleconsultations
+at AAMs.
+5.1 Average number of
+teleconsultations /
+AAM / months.
+50 5. Improved utilization of
+public health facilities
+5.1 % increase in total
+number of people
+availed services at
+Ayushman Arogya
+Mandir (as compared
+to 31.03.2024)
+10
+b. Non-Communicable Disease Programme: National Mental Health Programme (CSS)
+1. Improved
+coverage of
+Mental Health
+services
+1.1 No. of districts
+with District
+Mental Health
+Programme
+743 1. Improved coverage of
+Mental Health
+Services
+1.1 % increase in
+registrations of people
+with mental disorders
+at District Mental
+Health Units
+(Previous year may be
+treated as base year)
+10
+Calling Gemini 3.1 Flash Lite Preview...
+--- FINAL EXTRACTION RESULT ---
+{
+  "scheme_name": "National Health Mission",
+  "fy_2023_24": {
+    "BE": null,
+    "RE": null,
+    "Actuals": null,
+    "Capital": null,
+    "Revenue": null
+  },
+  "fy_2024_25": {
+    "BE": null
+  },
+  "source_snippet_used": "The provided text contains Output and Outcome indicators for 2024-25 and a financial outlay figure of 28,783 Cr for 'Flexible Pool for RCH & Health System Strengthening, National Health Programme and National Urban Health Mission', but does not contain the specific budget allocation tables (BE, RE, Actuals, or Capital/Revenue split) for the National Health Mission."
+}

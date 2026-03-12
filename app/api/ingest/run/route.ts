@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '../../../../generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { extractOOMFData } from '@/lib/ai-extractor';
 import fs from 'fs';
 import path from 'path';
