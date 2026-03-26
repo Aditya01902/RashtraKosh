@@ -1,5 +1,20 @@
 "use client"
 import React, { useState } from 'react';
+interface PuterAI {
+    chat: (prompt: string, options: { model: string }) => Promise<{
+        message?: { content: string };
+    }>;
+}
+
+interface Puter {
+    ai: PuterAI;
+}
+
+declare global {
+    interface Window {
+        puter: Puter;
+    }
+}
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BrainCircuit, Loader2, CheckCircle2 } from 'lucide-react';
@@ -32,7 +47,7 @@ export default function InsightsAdminPage() {
 
         try {
             // Check if Puter is loaded
-            if (typeof (window as any).puter === 'undefined') {
+            if (typeof window.puter === 'undefined') {
                 addLog("ERROR: Puter.js is not loaded in the browser window.");
                 setIsGenerating(false);
                 return;
@@ -55,8 +70,8 @@ export default function InsightsAdminPage() {
                 }
 
                 // 2. Construct the specialized Prompt
-                const historyText = schemeData.historicalAllocations.map((a: any) => {
-                    const scoreObj = schemeData.historicalScores?.find((s: any) => s.fiscalYear === a.fiscalYear);
+                const historyText = schemeData.historicalAllocations.map((a: { fiscalYear: string; allocated: number; utilized: number }) => {
+                    const scoreObj = schemeData.historicalScores?.find((s: { fiscalYear: string; finalScore: number }) => s.fiscalYear === a.fiscalYear);
                     return `[FY ${a.fiscalYear}] Allocated: ₹${a.allocated} crore, Utilized: ₹${a.utilized} crore, Score: ${scoreObj?.finalScore || 0}`;
                 }).join(' | ');
 
@@ -74,7 +89,7 @@ Constraints:
 
                 try {
                     // 3. Call Puter AI (Claude-3.5-Sonnet / Opus equivalent free model)
-                    const aiResponse = await (window as any).puter.ai.chat(prompt, { model: 'claude-3-5-sonnet' });
+                    const aiResponse = await window.puter.ai.chat(prompt, { model: 'claude-3-5-sonnet' });
                     const insightText = aiResponse?.message?.content || String(aiResponse);
 
                     // 4. Save to Database
@@ -90,8 +105,9 @@ Constraints:
                     } else {
                         addLog(`❌ Failed to save insight for ${scheme.name}`);
                     }
-                } catch (aiErr: any) {
-                    addLog(`❌ Puter API Error on ${scheme.name}: ${aiErr.message}`);
+                } catch (aiErr: unknown) {
+                    const message = aiErr instanceof Error ? aiErr.message : String(aiErr);
+                    addLog(`❌ Puter API Error on ${scheme.name}: ${message}`);
                 }
 
                 // Update progress bar
@@ -103,8 +119,9 @@ Constraints:
 
             addLog(`🎉 Batch processing complete! Successfully generated ${successCount} insights.`);
 
-        } catch (error: any) {
-            addLog(`CRITICAL ERROR: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            addLog(`CRITICAL ERROR: ${message}`);
         } finally {
             setIsGenerating(false);
         }

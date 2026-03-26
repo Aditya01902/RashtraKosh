@@ -24,7 +24,7 @@ export function Navbar() {
         { href: '/', label: 'Overview' },
         { href: '/explorer', label: 'Budget Explorer' },
         { href: '/analytics', label: 'Analytics' },
-        { href: '/intelligence', label: 'Intelligence' },
+        { href: '/intelligence', label: 'Chanakya' },
         { href: '/ingestion', label: 'Data Hub' },
         { href: '/community', label: 'Community' },
     ];

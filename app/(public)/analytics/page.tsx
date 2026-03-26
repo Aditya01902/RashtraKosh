@@ -37,8 +37,8 @@ interface ScatterItem {
 
 export default function AnalyticsPage() {
     const [activeTab, setActiveTab] = useState<'distribution' | 'sectors' | 'utilization'>('distribution');
-    const [selectedFy, setSelectedFy] = useState<string>('2023-24'); // Assuming a default value
-    const [selectedSchemeStatus, setSelectedSchemeStatus] = useState<string>('all'); // Assuming a default value
+    const [selectedFy] = useState<string>('2023-24'); // Assuming a default value
+    const [selectedSchemeStatus] = useState<string>('all'); // Assuming a default value
 
     // Data Fetching
     const { data: ministries, isLoading: loadingMinistries } = useQuery({

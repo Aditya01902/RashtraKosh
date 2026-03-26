@@ -21,11 +21,10 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RashtraKosh | AI Policy Advisor & Intelligence",
+  title: "RashtraKosh | Chanakya AI Policy Advisor",
   description: "Advanced analytics platform for the Indian Union Budget",
 };
 
-export const dynamic = "force-dynamic";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -14,14 +14,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         redirect("/login");
     }
 
-    const role = (session.user as any)?.role as string;
+    const role = session.user.role;
 
     if (role === "GENERAL_MEMBER" || role === "EXPERT_MEMBER") {
         redirect("/");
     }
 
     let ministryName = null;
-    const ministryId = (session.user as any)?.ministryId;
+    const ministryId = session.user.ministryId;
     if (role === "MINISTRY_ADMIN" && ministryId) {
         const ministry = await db.ministry.findUnique({
             where: { id: ministryId },
@@ -35,11 +35,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-50">
             {/* Sidebar Navigation */}
-            <AdminSidebar user={session.user as any} ministryName={ministryName} />
+            <AdminSidebar user={session.user} ministryName={ministryName} />
 
             {/* Main Content */}
             <div className="flex flex-col flex-1 w-full relative h-screen">
-                <AdminTopbar user={session.user as any} />
+                <AdminTopbar user={session.user} />
 
                 {/* Page Content */}
                 <main className="flex-1 overflow-y-auto w-full p-4 md:p-6 lg:p-8">

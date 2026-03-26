@@ -56,7 +56,7 @@ Navigate through the layers of the Indian economy with surgical precision.
 
 ![Explorer](./public/docs/screenshots/explorer.png)
 
-### 🤖 2. RashtraKosh Intelligence (AI Advisor)
+### 🤖 2. RashtraKosh Chanakya (AI Advisor)
 An AI-powered policy advisor that understands the nuances of public finance.
 - **Natural Language Queries**: Ask complex questions about budget reallocations or policy impact.
 - **Context-Aware Insights**: Leverages Anthropic Claude models for deep financial reasoning.
@@ -107,7 +107,7 @@ A unified console for treasury managers and analysts.
 ### **System Requirements & Prerequisites**
 - **Node.js**: v18.17.0 or higher (Required for Next.js App Router & Server Actions)
 - **Database**: PostgreSQL (Local or Cloud, e.g., Supabase/Neon)
-- **AI Engine**: Anthropic API Key (Required for `RashtraKosh Intelligence`)
+- **Chanakya Engine**: Anthropic API Key (Required for `RashtraKosh Chanakya`)
 - **PDF Extraction Engine**: Node environment capable of buffer stream management (No external Python dependencies needed)
 - **Security Protocols**: Built-in memory limits require minimum 1GB RAM for Next Server (due to rate-limiter & pdf-parse overhead)
 

@@ -23,7 +23,7 @@ export default function Error({
             <div className="space-y-3">
                 <h2 className="text-3xl font-bold text-text-primary">Feedback Community Unavailable</h2>
                 <p className="text-text-muted max-w-lg mx-auto text-lg hover:text-white transition-colors">
-                    We're having trouble retrieving the community feedback right now. This is usually temporary.
+                    We&apos;re having trouble retrieving the community feedback right now. This is usually temporary.
                 </p>
             </div>
             <Button

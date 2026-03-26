@@ -1,11 +1,44 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, AlertTriangle, ShieldCheck, Loader2 } from "lucide-react";
+import { Download, ShieldCheck, Loader2 } from "lucide-react";
 import { ScoreRing } from "@/components/ui/score-ring";
 
+interface Summary {
+    totalCurrent: number;
+    totalProposed: number;
+    netChange: number;
+    netChangePercent: number;
+    envelopeRemaining: number;
+}
+
+interface Plan {
+    id: string;
+    name: string;
+    ministry: string;
+    score: number;
+    currentAllocation: number;
+    currentCapital: number;
+    currentRevenue: number;
+    proposedAllocation: number;
+    proposedCapital: number;
+    proposedRevenue: number;
+    deltaAmount: number;
+    deltaPercent: number;
+    scoreMultiplier: number;
+    priorityWeight: number;
+    absorptionFactor: number;
+    rationale: string;
+    isFloorApplied?: boolean;
+}
+
+interface ReallocationData {
+    summary: Summary;
+    plans: Plan[];
+}
+
 export default function NextYearClient() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<ReallocationData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [ministryFilter, setMinistryFilter] = useState("ALL");
     const ceiling = 50000;
@@ -40,9 +73,9 @@ export default function NextYearClient() {
 
     const filteredPlans = ministryFilter === "ALL"
         ? plans
-        : plans.filter((p: any) => p.ministry === ministryFilter);
+        : plans.filter((p: Plan) => p.ministry === ministryFilter);
 
-    const ministries = Array.from(new Set(plans.map((p: any) => p.ministry)));
+    const ministries = Array.from(new Set(plans.map((p: Plan) => p.ministry)));
 
     return (
         <div className="flex flex-col gap-6">
@@ -57,8 +90,8 @@ export default function NextYearClient() {
                             className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="ALL">All Ministries</option>
-                            {ministries.map((m: any) => (
-                                <option key={m} value={m}>{m}</option>
+                            {ministries.map((m) => (
+                                <option key={m as string} value={m as string}>{m as string}</option>
                             ))}
                         </select>
                     </div>
@@ -112,10 +145,10 @@ export default function NextYearClient() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                            {filteredPlans.map((plan: any) => {
+                            {filteredPlans.map((plan: Plan) => {
                                 const isPositive = plan.deltaAmount >= 0;
                                 // max bar width calculation
-                                const maxDelta = Math.max(...plans.map((p: any) => Math.abs(p.deltaAmount)));
+                                const maxDelta = Math.max(...plans.map((p: Plan) => Math.abs(p.deltaAmount)));
                                 const barWidth = `${(Math.abs(plan.deltaAmount) / maxDelta) * 100}%`;
 
                                 return (

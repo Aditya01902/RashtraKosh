@@ -87,10 +87,10 @@ export default function IntelligencePage() {
                 <div className="space-y-4">
                     <Badge color="purple" className="px-4 py-1 flex items-center gap-2 mx-auto w-fit">
                         <Sparkles size={14} className="animate-pulse" />
-                        <span>Advanced Policy Intelligence</span>
+                        <span>Chanakya AI Advisor</span>
                     </Badge>
                     <h1 className="text-5xl md:text-7xl font-serif font-bold text-text-primary">
-                        Ask <span className="text-accent-purple">RashtraKosh</span> Engine
+                        Ask <span className="text-accent-purple">Chanakya</span>
                     </h1>
                     <p className="text-xl text-text-muted max-w-2xl mx-auto">
                         Our AI analyzes live scheme outcomes, utilization spikes, and efficiency trends to provide real-time policy recommendations.
@@ -234,7 +234,7 @@ export default function IntelligencePage() {
                                         {m.content || (loading && i === messages.length - 1 ? <span className="flex gap-1"><span className="animate-bounce">.</span><span className="animate-bounce delay-100">.</span><span className="animate-bounce delay-200">.</span></span> : '')}
                                     </div>
                                     <span className="text-[10px] mono text-text-muted uppercase px-1">
-                                        {m.role === 'user' ? 'Local Terminal' : 'Advisor Engine'}
+                                        {m.role === 'user' ? 'Local Terminal' : 'Chanakya AI'}
                                     </span>
                                 </div>
                             ))

@@ -128,7 +128,7 @@ export default function OverviewPage() {
                             </Link>
                             <Link href="/intelligence">
                                 <Button variant="outline" className="glass-button px-10 h-14 text-lg font-bold border-white/20 hover:bg-white/5 transition-all">
-                                    Ask AI Advisor
+                                    Ask Chanakya
                                 </Button>
                             </Link>
                         </div>

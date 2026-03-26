@@ -21,9 +21,9 @@ const CATEGORIES = ['ALL', 'SCHEME_PERFORMANCE', 'POLICY_SUGGESTION', 'ANOMALY_F
 export default function CommunityPage() {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
-    const [statusFilter, setStatusFilter] = useState('ALL'); // New state for status filter
+    const [statusFilter] = useState('ALL'); // New state for status filter
     const [categoryFilter, setCategoryFilter] = useState('ALL'); // Renamed from activeCategory
-    const [sortBy, setSortBy] = useState('newest'); // New state for sort by
+    const [sortBy] = useState('newest'); // New state for sort by
     const [showForm, setShowForm] = useState(false);
 
     // Data Fetching

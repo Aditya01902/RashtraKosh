@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, Clock, CheckCircle, ShieldAlert, BadgeCheck, FileText, ChevronDown, ChevronUp, MoreVertical, Plus } from "lucide-react";
+import { MessageSquare, Clock, CheckCircle, ShieldAlert, BadgeCheck, FileText, ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { FeedbackCategory, FeedbackStatus, MembershipTier } from "@prisma/client";
 
 interface FeedbackItemProps {
@@ -23,7 +23,14 @@ interface FeedbackItemProps {
     } | null;
 }
 
-export default function FeedbackClient({ initialData, stats }: { initialData: FeedbackItemProps[], stats: any }) {
+interface FeedbackStats {
+    newCount: number;
+    reviewCount: number;
+    incorporatedCount: number;
+    expertCount: number;
+}
+
+export default function FeedbackClient({ initialData, stats }: { initialData: FeedbackItemProps[], stats: FeedbackStats }) {
     const [items, setItems] = useState<FeedbackItemProps[]>(initialData);
     const [briefingQueue, setBriefingQueue] = useState<string[]>([]);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -182,9 +189,9 @@ export default function FeedbackClient({ initialData, stats }: { initialData: Fe
                                                     value={item.status}
                                                     onChange={(e) => handleStatusChange(item.id, e.target.value as FeedbackStatus)}
                                                     className={`text-xs font-bold px-2 py-1 rounded border outline-none ${item.status === 'NEW' ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400' :
-                                                            item.status === 'UNDER_REVIEW' ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
-                                                                item.status === 'INCORPORATED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
-                                                                    'bg-slate-100 border-slate-300 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400'
+                                                        item.status === 'UNDER_REVIEW' ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400' :
+                                                            item.status === 'INCORPORATED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400' :
+                                                                'bg-slate-100 border-slate-300 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400'
                                                         }`}
                                                 >
                                                     <option value="NEW">NEW</option>
@@ -221,8 +228,8 @@ export default function FeedbackClient({ initialData, stats }: { initialData: Fe
                                         <button
                                             onClick={() => toggleBriefingQueue(item.id)}
                                             className={`shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border ${inQueue
-                                                    ? 'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40'
-                                                    : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                                                ? 'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-900/20 dark:border-rose-800 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40'
+                                                : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                                                 }`}
                                         >
                                             {inQueue ? 'Remove from Briefing' : <><Plus className="h-4 w-4" /> Include in Policy Briefing</>}

@@ -70,7 +70,7 @@ export default function Step1Upload() {
             if (!data) return;
 
             try {
-                let parsedData: any[] = [];
+                let parsedData: Record<string, unknown>[] = [];
                 let columns: string[] = [];
 
                 if (localFile.name.endsWith(".csv")) {
@@ -78,7 +78,7 @@ export default function Step1Upload() {
                         header: true,
                         skipEmptyLines: true,
                         complete: (results) => {
-                            parsedData = results.data;
+                            parsedData = results.data as Record<string, unknown>[];
                             columns = results.meta.fields || [];
                             setFileData(localFile, parsedData, columns);
                             setStep(2);
@@ -111,8 +111,8 @@ export default function Step1Upload() {
                     <div
                         {...getRootProps()}
                         className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${isDragActive
-                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                                : "border-slate-300 dark:border-slate-700 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                            : "border-slate-300 dark:border-slate-700 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                             }`}
                     >
                         <input {...getInputProps()} />

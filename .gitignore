@@ -38,6 +38,7 @@ next-env.d.ts
 
 # logs and temporary files
 *.log
+build_log.txt
 build_output*.txt
 ts_err*.txt
 ts_errors*.txt
@@ -53,14 +54,42 @@ eslint.json
 eslint2.json
 eslint3.json
 eslint_report.json
-ts_errors_new.txt
-ts_errors_debug.txt
-ts_errors_final.txt
-ts_errors_utf8.txt
-ts_err2.txt
-ts_errors_2.txt
-ts_errors2.txt
-ts_errors.log
-verify_output.txt
+temp_log.txt
+temp_readme_log.txt
+fix_error.txt
+fix_output.txt
+tsc.log
+tsc_out.log
+tsc_errors.log
+debug_build.log
+insights_list.txt
+
+# Audit / temp data files
+audit_nhm_final.ts
+check_nhm_budget.ts
+reverify_nhm.ts
+reverify_nhm_results*.json
+reverify_output.json
+nhm_audit_final_verified.json
+nhm_audit_results.json
+nhm_check.json
+scheme_fix_check.json
+scheme_response.json
+
+# Test/scratch files
+test-puter.js
 test-login.ts
 test-scoring.js
+
+# Large data files
+budget22.html
+budget23.html
+outcome.pdf
+tmp_err*.html
+
+# Daemon scripts (not needed for Vercel)
+generate-insights-daemon.js
+generate-insights-daemon.ts
+
+# Verification scripts
+verify-phase4.mjs

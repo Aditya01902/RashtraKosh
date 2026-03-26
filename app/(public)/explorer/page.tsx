@@ -274,7 +274,7 @@ export default function ExplorerPage() {
                                                             </Badge>
                                                             {item.aiInsight && (
                                                                 <p className="text-xs text-text-muted italic line-clamp-2 leading-relaxed mt-1 group-hover:text-text-primary/80 transition-colors">
-                                                                    "{item.aiInsight}"
+                                                                    &quot;{item.aiInsight}&quot;
                                                                 </p>
                                                             )}
                                                         </div>
@@ -533,7 +533,7 @@ function DepartmentDetail({ data, parentMinistry }: {
                                             </div>
                                             {scheme.aiInsight && (
                                                 <p className="text-xs text-text-muted italic line-clamp-1 ml-6 leading-relaxed">
-                                                    "{scheme.aiInsight}"
+                                                    &quot;{scheme.aiInsight}&quot;
                                                 </p>
                                             )}
                                         </div>
@@ -722,7 +722,7 @@ function SchemeDetail({ data }: {
                     <div className="space-y-4 relative z-10">
                         <div className="flex items-center gap-3 text-accent-saffron">
                             <BrainCircuit size={24} className="animate-pulse" />
-                            <span className="text-xs font-bold uppercase tracking-[0.2em] mono">AI Intelligence Report</span>
+                            <span className="text-xs font-bold uppercase tracking-[0.2em] mono">Chanakya AI Report</span>
                         </div>
                         <p className="text-[14px] text-text-primary leading-relaxed italic font-medium">
                             {score?.aiInsight ? `"${score.aiInsight}"` : "Executing preliminary financial analysis. Dedicated AI insights for this scheme have not been compiled for the current reporting cycle."}

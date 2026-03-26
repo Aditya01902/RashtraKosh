@@ -1,11 +1,10 @@
-import { auth } from "@/lib/auth";
+import { IdleScheme, ReallocationCandidate } from "@/store/reallocation";
 import QuadrantMap from "./_components/quadrant-map";
 import IdleScanner from "./_components/idle-scanner";
 import ReallocationWizard from "./_components/reallocation-wizard";
 import ReallocationInit from "./_components/reallocation-init";
 
 export default async function ReallocationEnginePage() {
-    const session = await auth();
 
     // Make fetch request using full URL for the server component
     // Assuming the user is running dev server on localhost:3000
@@ -14,7 +13,7 @@ export default async function ReallocationEnginePage() {
     // or use full URL. Since Next.js `fetch` requires absolute URL on server:
 
     // I will directly invoke the mock logic here to avoid absolute URL fetch issues in Next.js app router
-    const idleSchemes = [
+    const idleSchemes: IdleScheme[] = [
         {
             id: "scheme_1",
             name: "National Highway Expansion Phase II",
@@ -27,8 +26,8 @@ export default async function ReallocationEnginePage() {
             revenueIdle: 100,
             totalIdle: 4100,
             rootCause: "Land Acquisition Delay",
-            risk: "MEDIUM",
-            quadrant: "FAILING",
+            risk: "MEDIUM" as const,
+            quadrant: "FAILING" as const,
         },
         {
             id: "scheme_2",
@@ -42,8 +41,8 @@ export default async function ReallocationEnginePage() {
             revenueIdle: 800,
             totalIdle: 1100,
             rootCause: "Procurement Bottleneck",
-            risk: "HIGH",
-            quadrant: "OVERFUNDED",
+            risk: "HIGH" as const,
+            quadrant: "OVERFUNDED" as const,
         },
         {
             id: "scheme_3",
@@ -57,12 +56,12 @@ export default async function ReallocationEnginePage() {
             revenueIdle: 500,
             totalIdle: 2500,
             rootCause: "Vendor onboarding",
-            risk: "LOW",
-            quadrant: "FAILING",
+            risk: "LOW" as const,
+            quadrant: "FAILING" as const,
         }
     ];
 
-    const efficientSchemes = [
+    const efficientSchemes: (IdleScheme & ReallocationCandidate)[] = [
         {
             id: "scheme_4",
             name: "Pradhan Mantri Awas Yojana (Urban)",
@@ -76,8 +75,9 @@ export default async function ReallocationEnginePage() {
             totalIdle: 0,
             rootCause: "None",
             risk: "LOW",
-            quadrant: "EFFICIENT",
+            quadrant: "EFFICIENT" as const,
             absorptionCapacity: 5000, // Important
+            currentScore: 88, // Added
             capitalNeed: 4000,
             revenueNeed: 1000,
         },
@@ -94,8 +94,9 @@ export default async function ReallocationEnginePage() {
             totalIdle: 0,
             rootCause: "None",
             risk: "LOW",
-            quadrant: "STARVED",
+            quadrant: "STARVED" as const,
             absorptionCapacity: 8000, // Important
+            currentScore: 82, // Added
             capitalNeed: 6000,
             revenueNeed: 2000,
         }
@@ -112,7 +113,7 @@ export default async function ReallocationEnginePage() {
 
     return (
         <div className="flex flex-col gap-8 max-w-[1400px] mx-auto w-full pb-10">
-            <ReallocationInit idleSchemes={idleSchemes as any} recipientCandidates={efficientSchemes as any} />
+            <ReallocationInit idleSchemes={idleSchemes} recipientCandidates={efficientSchemes} />
 
             <div>
                 <h1 className="text-3xl font-bold tracking-tight mb-2">Reallocation Engine</h1>
@@ -143,12 +144,12 @@ export default async function ReallocationEnginePage() {
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                <QuadrantMap schemes={allSchemes as any} />
+                <QuadrantMap schemes={allSchemes} />
                 <ReallocationWizard />
             </div>
 
             <div className="w-full">
-                <IdleScanner schemes={idleSchemes as any} />
+                <IdleScanner schemes={idleSchemes} />
             </div>
 
         </div>

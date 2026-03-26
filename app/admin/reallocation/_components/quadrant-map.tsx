@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+
 import { IdleScheme } from "@/store/reallocation";
 
 interface QuadrantMapProps {
@@ -8,9 +8,7 @@ interface QuadrantMapProps {
 }
 
 export default function QuadrantMap({ schemes }: QuadrantMapProps) {
-    // Axes: X = Utilization Score (0-100), Y = Final Score (0-100). Midpoint at 70/70.
-    const MIDPOINT_X = 70;
-    const MIDPOINT_Y = 70;
+
 
     const getPosition = (xVal: number, yVal: number) => {
         // Return % for left and top

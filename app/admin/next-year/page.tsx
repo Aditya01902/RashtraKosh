@@ -17,7 +17,7 @@ export default function NextYearPlanPage() {
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 </div>
-                <p className="text-blue-400 font-bold mb-2">// RashtraKosh Budget Projection Formula</p>
+                <p className="text-blue-400 font-bold mb-2">{"// RashtraKosh Budget Projection Formula"}</p>
                 <p>
                     <span className="text-amber-300">ProposedAllocation</span> = max(
                 </p>
@@ -29,7 +29,7 @@ export default function NextYearPlanPage() {
                     ),
                 </p>
                 <p className="pl-6">
-                    <span className="text-emerald-300">CurrentAllocation</span> × 0.85 <span className="text-slate-500 italic">/* 15% Floor protection */</span>
+                    <span className="text-emerald-300">CurrentAllocation</span> × 0.85 <span className="text-slate-500 italic">{"/* 15% Floor protection */"}</span>
                 </p>
                 <p>
                     )
