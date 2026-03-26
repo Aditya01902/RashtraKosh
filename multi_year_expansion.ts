@@ -13,7 +13,10 @@ const PDF_JOBS = [
     { year: "2020-21", path: "outcome_20_21.pdf" },
     { year: "2021-22", path: "outcome_21_22.pdf" },
     { year: "2022-23", path: "outcome_22_23.pdf" },
-    { year: "2023-24", path: "outcome_23_24.pdf" }
+    { year: "2023-24", path: "outcome_23_24.pdf" },
+    { year: "2024-25", path: "outcome_24_25.pdf" },
+    { year: "2025-26", path: "outcome_25_26.pdf" },
+    { year: "2026-27", path: "outcome_26_27.pdf" }
 ];
 
 async function ingestData(data: any[]) {
