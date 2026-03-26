@@ -105,7 +105,11 @@ export async function GET(request: Request) {
 
         return NextResponse.json(result);
     } catch (error) {
-        console.error('[MINISTRIES_GET]', error);
+        const errMsg = error instanceof Error ? error.message : String(error);
+        const errStack = error instanceof Error ? error.stack : '';
+        console.error('[MINISTRIES_GET] Error:', errMsg);
+        console.error('[MINISTRIES_GET] Stack:', errStack);
+        console.error('[MINISTRIES_GET] DATABASE_URL set:', !!process.env.DATABASE_URL);
         return handleApiError(error);
     }
 }
