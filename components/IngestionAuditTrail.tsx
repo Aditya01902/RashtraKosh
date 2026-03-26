@@ -158,7 +158,7 @@ export default function IngestionAuditTrail() {
                     {/* Mapping Confidence */}
                     <div className="glass-panel p-6 rounded-3xl border-transparent bg-white/30 dark:bg-white/5 space-y-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-xl bg-accent-blue/10 text-accent-blue ring-1 ring-accent-blue/20">
+                            <div className="p-2 rounded-xl bg-accent-saffron/10 text-accent-saffron ring-1 ring-accent-saffron/20">
                                 <ShieldCheck size={18} />
                             </div>
                             <span className="text-xs font-bold text-text-primary uppercase tracking-[0.2em]">Confidence Engine</span>
@@ -168,11 +168,11 @@ export default function IngestionAuditTrail() {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-end">
                                     <span className="text-sm font-bold text-text-primary tracking-tight">{activeLog?.scheme_name_mapped}</span>
-                                    <span className="text-xl font-serif font-bold text-accent-blue">{(activeLog?.confidence_score * 100).toFixed(0)}%</span>
+                                    <span className="text-xl font-serif font-bold text-accent-saffron">{(activeLog?.confidence_score * 100).toFixed(0)}%</span>
                                 </div>
-                                <div className="h-2.5 w-full bg-white/40 dark:bg-black/40 rounded-full overflow-hidden p-[1px] ring-1 ring-white/20">
+                                <div className="h-2.5 w-full bg-black/10 dark:bg-black/60 rounded-full overflow-hidden p-[1px] ring-1 ring-white/10">
                                     <div
-                                        className="h-full bg-gradient-to-r from-accent-blue/60 via-accent-blue to-accent-blue transition-all duration-1000 ease-out rounded-full shadow-[0_0_15px_rgba(79,158,255,0.3)]"
+                                        className="h-full bg-gradient-to-r from-accent-saffron via-accent-gold to-accent-saffron transition-all duration-1000 ease-out rounded-full shadow-[0_0_20px_rgba(255,153,51,0.5)]"
                                         style={{ width: `${activeLog?.confidence_score * 100}%` }}
                                     />
                                 </div>
