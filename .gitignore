@@ -38,6 +38,7 @@ next-env.d.ts
 
 # logs and temporary files
 *.log
+*.txt
 build_log.txt
 build_output*.txt
 ts_err*.txt
@@ -64,32 +65,26 @@ tsc_errors.log
 debug_build.log
 insights_list.txt
 
-# Audit / temp data files
-audit_nhm_final.ts
-check_nhm_budget.ts
-reverify_nhm.ts
+# Audit / temp data / one-off output files
 reverify_nhm_results*.json
 reverify_output.json
-nhm_audit_final_verified.json
-nhm_audit_results.json
+nhm_audit*.json
 nhm_check.json
 scheme_fix_check.json
 scheme_response.json
+*_out.txt
+*_output.txt
+*_results.json
+*_results_v*.json
 
-# Test/scratch files
-test-puter.js
-test-login.ts
-test-scoring.js
-
-# Large data files
-budget22.html
-budget23.html
-outcome.pdf
+# Large source data files (PDFs, HTML dumps)
+*.pdf
+budget*.html
 tmp_err*.html
 
 # Daemon scripts (not needed for Vercel)
 generate-insights-daemon.js
 generate-insights-daemon.ts
 
-# Verification scripts
+# Verification / one-off scripts
 verify-phase4.mjs
