@@ -160,6 +160,9 @@ export default function CommunityPage() {
                         <h2 className="text-2xl font-serif font-bold text-text-primary flex items-center gap-3">
                             <TrendingUp className="text-accent-gold" size={24} />
                             Recent Feedback
+                            <Badge className="bg-accent-blue/10 text-accent-blue border-accent-blue/20 text-[9px] font-bold uppercase tracking-wider ml-2">
+                                Prototype
+                            </Badge>
                         </h2>
                         <div className="relative group/search">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within/search:text-accent-saffron transition-colors" size={16} />
