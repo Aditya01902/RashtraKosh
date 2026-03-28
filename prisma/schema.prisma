@@ -7,7 +7,258 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== ENUMS ====================
+model Ministry {
+  id                String             @id @default(cuid())
+  name              String             @unique
+  shortCode         String             @unique
+  color             String
+  description       String?
+  sector            Sector
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  budgetAllocations BudgetAllocation[]
+  departments       Department[]
+  users             User[]
+}
+
+model Department {
+  id         String   @id @default(cuid())
+  name       String
+  ministryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  ministry   Ministry @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+  schemes    Scheme[]
+
+  @@unique([name, ministryId])
+  @@index([ministryId])
+}
+
+model Scheme {
+  id                String             @id @default(cuid())
+  name              String
+  description       String?
+  departmentId      String
+  isActive          Boolean            @default(true)
+  launchYear        Int?
+  priorityCategory  PriorityCategory
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  budgetAllocations BudgetAllocation[]
+  feedbackItems     FeedbackItem[]
+  outcomeData       OutcomeData[]
+  outputData        OutputData[]
+  department        Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  scores            SchemeScore[]
+
+  @@index([departmentId])
+}
+
+model BudgetAllocation {
+  id                   String    @id @default(cuid())
+  schemeId             String?
+  ministryId           String?
+  fiscalYear           String
+  allocated            Decimal   @db.Decimal(18, 2)
+  allocatedCapital     Decimal   @db.Decimal(18, 2)
+  allocatedRevenue     Decimal   @db.Decimal(18, 2)
+  utilized             Decimal   @db.Decimal(18, 2)
+  utilizedCapital      Decimal   @db.Decimal(18, 2)
+  utilizedRevenue      Decimal   @db.Decimal(18, 2)
+  expenditureQ1        Decimal   @db.Decimal(18, 2)
+  expenditureQ2        Decimal   @db.Decimal(18, 2)
+  expenditureQ3        Decimal   @db.Decimal(18, 2)
+  expenditureQ4        Decimal   @db.Decimal(18, 2)
+  surrendered          Decimal   @db.Decimal(18, 2)
+  supplementaryDemands Int       @default(0)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  anomalyFlag          Boolean   @default(false)
+  revisedEstimate      Decimal?  @db.Decimal(18, 2)
+  ministry             Ministry? @relation(fields: [ministryId], references: [id], onDelete: Cascade)
+  scheme               Scheme?   @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([ministryId])
+  @@index([fiscalYear])
+}
+
+model OutputData {
+  id                     String   @id @default(cuid())
+  schemeId               String
+  fiscalYear             String
+  physicalTargetValue    Decimal  @db.Decimal(18, 2)
+  physicalAchievedValue  Decimal  @db.Decimal(18, 2)
+  physicalUnit           String
+  beneficiaryTarget      Int
+  beneficiaryAchieved    Int
+  timelinessScore        Decimal  @db.Decimal(5, 2)
+  qualityComplianceScore Decimal  @db.Decimal(5, 2)
+  geoDistributionIndex   Decimal  @db.Decimal(5, 2)
+  dataSource             String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  scheme                 Scheme   @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
+}
+
+model OutcomeData {
+  id                       String       @id @default(cuid())
+  schemeId                 String
+  fiscalYear               String
+  sectorKpiName            String
+  sectorKpiBaseline        Decimal      @db.Decimal(18, 2)
+  sectorKpiCurrent         Decimal      @db.Decimal(18, 2)
+  sectorKpiDirection       KpiDirection
+  baselineVsCurrentIndex   Decimal      @db.Decimal(5, 2)
+  beneficiaryReportedScore Decimal      @db.Decimal(5, 2)
+  attributionScore         Decimal      @db.Decimal(5, 2)
+  sustainabilityIndex      Decimal      @db.Decimal(5, 2)
+  dataSource               String?
+  surveyYear               Int?
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+  scheme                   Scheme       @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
+}
+
+model SchemeScore {
+  id                   String   @id @default(cuid())
+  schemeId             String
+  fiscalYear           String
+  utilizationScore     Decimal  @db.Decimal(5, 2)
+  utilizationBreakdown Json
+  outputScore          Decimal  @db.Decimal(5, 2)
+  outputBreakdown      Json
+  outcomeScore         Decimal  @db.Decimal(5, 2)
+  outcomeBreakdown     Json
+  finalScore           Decimal  @db.Decimal(5, 2)
+  scoreVersion         String   @default("v1.0")
+  calculatedAt         DateTime @default(now())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  aiInsight            String?
+  scheme               Scheme   @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([schemeId, fiscalYear])
+  @@index([schemeId])
+  @@index([fiscalYear])
+}
+
+model User {
+  id                 String         @id @default(cuid())
+  name               String
+  email              String         @unique
+  emailVerified      DateTime?
+  password           String?
+  role               UserRole       @default(GENERAL_MEMBER)
+  membershipTier     MembershipTier @default(NONE)
+  institution        String?
+  credentials        String?
+  credentialVerified Boolean        @default(false)
+  ministryId         String?
+  image              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  feedbackItems      FeedbackItem[]
+  feedbackVotes      FeedbackVote[]
+  reallocPlans       ReallocPlan[]
+  uploadLogs         UploadLog[]
+  ministry           Ministry?      @relation(fields: [ministryId], references: [id])
+
+  @@index([email])
+  @@index([ministryId])
+}
+
+model FeedbackItem {
+  id            String           @id @default(cuid())
+  title         String
+  body          String
+  category      FeedbackCategory
+  schemeId      String?
+  authorId      String
+  isAnonymous   Boolean          @default(false)
+  status        FeedbackStatus   @default(NEW)
+  adminNote     String?
+  weightedScore Decimal          @default(1.0) @db.Decimal(5, 2)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  author        User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  scheme        Scheme?          @relation(fields: [schemeId], references: [id])
+  votes         FeedbackVote[]
+
+  @@index([schemeId])
+  @@index([authorId])
+  @@index([status])
+  @@index([category])
+}
+
+model FeedbackVote {
+  id             String       @id @default(cuid())
+  feedbackItemId String
+  userId         String
+  createdAt      DateTime     @default(now())
+  feedbackItem   FeedbackItem @relation(fields: [feedbackItemId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([feedbackItemId, userId])
+  @@index([feedbackItemId])
+  @@index([userId])
+}
+
+model UploadLog {
+  id               String       @id @default(cuid())
+  uploadedBy       String
+  fileName         String
+  fiscalYear       String
+  rowsTotal        Int
+  rowsValid        Int
+  rowsRejected     Int
+  validationErrors Json
+  status           UploadStatus @default(UPLOADED)
+  committedAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  uploader         User         @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([uploadedBy])
+  @@index([status])
+}
+
+model ReallocPlan {
+  id                      String     @id @default(cuid())
+  fiscalYear              String
+  createdBy               String
+  status                  PlanStatus @default(DRAFT)
+  totalCapitalReallocated Decimal    @db.Decimal(18, 2)
+  totalRevenueReallocated Decimal    @db.Decimal(18, 2)
+  planData                Json
+  submittedAt             DateTime?
+  approvedAt              DateTime?
+  notes                   String?
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+  creator                 User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+  @@index([fiscalYear])
+  @@index([status])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 enum Sector {
   FINANCE
@@ -75,271 +326,3 @@ enum PlanStatus {
   APPROVED
   REJECTED
 }
-
-// ==================== MODELS ====================
-
-model Ministry {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  shortCode   String   @unique
-  color       String   // hex color for UI
-  description String?
-  sector      Sector
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  departments       Department[]
-  budgetAllocations BudgetAllocation[]
-  users             User[]
-}
-
-model Department {
-  id         String   @id @default(cuid())
-  name       String
-  ministryId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  ministry Ministry  @relation(fields: [ministryId], references: [id], onDelete: Cascade)
-  schemes  Scheme[]
-
-  @@unique([name, ministryId])
-  @@index([ministryId])
-}
-
-model Scheme {
-  id               String           @id @default(cuid())
-  name             String
-  description      String?
-  departmentId     String
-  isActive         Boolean          @default(true)
-  launchYear       Int?
-  priorityCategory PriorityCategory
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-
-  department        Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  budgetAllocations BudgetAllocation[]
-  scores            SchemeScore[]
-  outputData        OutputData[]
-  outcomeData       OutcomeData[]
-  feedbackItems     FeedbackItem[]
-
-  @@index([departmentId])
-}
-
-model BudgetAllocation {
-  id                   String   @id @default(cuid())
-  schemeId             String?
-  ministryId           String?
-  fiscalYear           String   // format "2024-25"
-  allocated            Decimal  @db.Decimal(18, 2)
-  allocatedCapital     Decimal  @db.Decimal(18, 2)
-  allocatedRevenue     Decimal  @db.Decimal(18, 2)
-  utilized             Decimal  @db.Decimal(18, 2)
-  utilizedCapital      Decimal  @db.Decimal(18, 2)
-  utilizedRevenue      Decimal  @db.Decimal(18, 2)
-  expenditureQ1        Decimal  @db.Decimal(18, 2)
-  expenditureQ2        Decimal  @db.Decimal(18, 2)
-  expenditureQ3        Decimal  @db.Decimal(18, 2)
-  expenditureQ4        Decimal  @db.Decimal(18, 2)
-  surrendered          Decimal  @db.Decimal(18, 2)
-  supplementaryDemands Int      @default(0)
-  revisedEstimate      Decimal? @db.Decimal(18, 2)
-  anomalyFlag          Boolean  @default(false)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  scheme   Scheme?   @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-  ministry Ministry? @relation(fields: [ministryId], references: [id], onDelete: Cascade)
-
-  @@unique([schemeId, fiscalYear])
-  @@index([schemeId])
-  @@index([ministryId])
-  @@index([fiscalYear])
-}
-
-model OutputData {
-  id                    String   @id @default(cuid())
-  schemeId              String
-  fiscalYear            String
-  physicalTargetValue   Decimal  @db.Decimal(18, 2)
-  physicalAchievedValue Decimal  @db.Decimal(18, 2)
-  physicalUnit          String   // e.g. "km", "hospitals", "beneficiaries"
-  beneficiaryTarget     Int
-  beneficiaryAchieved   Int
-  timelinessScore       Decimal  @db.Decimal(5, 2) // 0 to 100
-  qualityComplianceScore Decimal @db.Decimal(5, 2) // 0 to 100
-  geoDistributionIndex  Decimal  @db.Decimal(5, 2) // 0 to 100, Gini-adjusted
-  dataSource            String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-
-  @@unique([schemeId, fiscalYear])
-  @@index([schemeId])
-  @@index([fiscalYear])
-}
-
-model OutcomeData {
-  id                       String       @id @default(cuid())
-  schemeId                 String
-  fiscalYear               String
-  sectorKpiName            String       // e.g. "Maternal Mortality Rate"
-  sectorKpiBaseline        Decimal      @db.Decimal(18, 2)
-  sectorKpiCurrent         Decimal      @db.Decimal(18, 2)
-  sectorKpiDirection       KpiDirection
-  baselineVsCurrentIndex   Decimal      @db.Decimal(5, 2) // 0 to 100
-  beneficiaryReportedScore Decimal      @db.Decimal(5, 2) // 0 to 100 from surveys
-  attributionScore         Decimal      @db.Decimal(5, 2) // 0 to 100
-  sustainabilityIndex      Decimal      @db.Decimal(5, 2) // 0 to 100
-  dataSource               String?
-  surveyYear               Int?
-  createdAt                DateTime     @default(now())
-  updatedAt                DateTime     @updatedAt
-
-  scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-
-  @@unique([schemeId, fiscalYear])
-  @@index([schemeId])
-  @@index([fiscalYear])
-}
-
-model SchemeScore {
-  id                   String   @id @default(cuid())
-  schemeId             String
-  fiscalYear           String
-  utilizationScore     Decimal  @db.Decimal(5, 2)
-  utilizationBreakdown Json     // stores sub-component scores
-  outputScore          Decimal  @db.Decimal(5, 2)
-  outputBreakdown      Json
-  outcomeScore         Decimal  @db.Decimal(5, 2)
-  outcomeBreakdown     Json
-  finalScore           Decimal  @db.Decimal(5, 2)
-  aiInsight            String?  @db.Text
-  scoreVersion         String   @default("v1.0")
-  calculatedAt         DateTime @default(now())
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  scheme Scheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-
-  @@unique([schemeId, fiscalYear])
-  @@index([schemeId])
-  @@index([fiscalYear])
-}
-
-model User {
-  id                 String         @id @default(cuid())
-  name               String
-  email              String         @unique
-  emailVerified      DateTime?
-  password           String?        // hashed
-  role               UserRole       @default(GENERAL_MEMBER)
-  membershipTier     MembershipTier @default(NONE)
-  institution        String?
-  credentials        String?        // LinkedIn or credential URL
-  credentialVerified Boolean        @default(false)
-  ministryId         String?
-  image              String?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-
-  ministry      Ministry?      @relation(fields: [ministryId], references: [id])
-  feedbackItems FeedbackItem[]
-  feedbackVotes FeedbackVote[]
-  uploadLogs    UploadLog[]
-  reallocPlans  ReallocPlan[]
-
-  @@index([email])
-  @@index([ministryId])
-}
-
-model FeedbackItem {
-  id            String           @id @default(cuid())
-  title         String
-  body          String
-  category      FeedbackCategory
-  schemeId      String?
-  authorId      String
-  isAnonymous   Boolean          @default(false)
-  status        FeedbackStatus   @default(NEW)
-  adminNote     String?          // internal note from policymaker
-  weightedScore Decimal          @db.Decimal(5, 2) @default(1.0)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  scheme Scheme?        @relation(fields: [schemeId], references: [id], onDelete: SetNull)
-  author User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  votes  FeedbackVote[]
-
-  @@index([schemeId])
-  @@index([authorId])
-  @@index([status])
-  @@index([category])
-}
-
-model FeedbackVote {
-  id             String   @id @default(cuid())
-  feedbackItemId String
-  userId         String
-  createdAt      DateTime @default(now())
-
-  feedbackItem FeedbackItem @relation(fields: [feedbackItemId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([feedbackItemId, userId])
-  @@index([feedbackItemId])
-  @@index([userId])
-}
-
-model UploadLog {
-  id               String       @id @default(cuid())
-  uploadedBy       String
-  fileName         String
-  fiscalYear       String
-  rowsTotal        Int
-  rowsValid        Int
-  rowsRejected     Int
-  validationErrors Json
-  status           UploadStatus @default(UPLOADED)
-  committedAt      DateTime?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-
-  uploader User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
-
-  @@index([uploadedBy])
-  @@index([status])
-}
-
-model ReallocPlan {
-  id                      String     @id @default(cuid())
-  fiscalYear              String
-  createdBy               String
-  status                  PlanStatus @default(DRAFT)
-  totalCapitalReallocated Decimal    @db.Decimal(18, 2)
-  totalRevenueReallocated Decimal    @db.Decimal(18, 2)
-  planData                Json       // stores the full plan array
-  submittedAt             DateTime?
-  approvedAt              DateTime?
-  notes                   String?
-  createdAt               DateTime   @default(now())
-  updatedAt               DateTime   @updatedAt
-
-  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-
-  @@index([createdBy])
-  @@index([fiscalYear])
-  @@index([status])
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  title     String
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-

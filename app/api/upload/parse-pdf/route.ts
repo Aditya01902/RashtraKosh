@@ -14,8 +14,12 @@ export async function POST(req: NextRequest) {
         
         // Use pdf-parse (dynamically imported to avoid issues in some environments)
         // Note: pdf-parse is already in package.json
-        const PDFParse = require('pdf-parse');
-        const data = await PDFParse(buffer);
+        const PDFParseModule = require('pdf-parse');
+        const PDFParse = PDFParseModule.PDFParse || PDFParseModule.default || PDFParseModule;
+        
+        const parser = new PDFParse({ data: buffer });
+        const data = await parser.getText();
+        await parser.destroy();
         const pdfText = data.text;
 
         console.log(`[PDFParser] Extracted ${pdfText.length} characters from ${file.name}`);

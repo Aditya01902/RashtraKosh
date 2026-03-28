@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileUp, Replace, CalendarClock, MessageSquare, LogOut } from "lucide-react";
+import { LayoutDashboard, FileUp, Replace, CalendarClock, MessageSquare, LogOut, Database } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 interface AdminSidebarProps {
@@ -19,6 +19,7 @@ export default function AdminSidebar({ user, ministryName }: AdminSidebarProps) 
 
     const links = [
         { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+        { name: "Data Hub", href: "/admin/ingestion", icon: Database },
         { name: "Data Upload", href: "/admin/upload", icon: FileUp },
         { name: "Reallocation Engine", href: "/admin/reallocation", icon: Replace },
         { name: "FY 2025-26 Plan", href: "/admin/next-year", icon: CalendarClock },
