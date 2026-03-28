@@ -18,6 +18,33 @@ import { FeedbackItemWithAuthor } from '@/lib/types';
 
 const CATEGORIES = ['ALL', 'SCHEME_PERFORMANCE', 'POLICY_SUGGESTION', 'ANOMALY_FLAG', 'REALLOCATION_SUGGESTION', 'DATA_QUALITY'];
 
+const PROTOTYPE_REVIEWS = [
+    {
+        id: 'rev-1',
+        author: 'Dr. Arvinder Singh',
+        role: 'Economic Policy Analyst',
+        content: 'The depth of data available for OOMF framework analysis is unprecedented. This platform could revolutionize how we track capital expenditure efficiency.',
+        rating: 5,
+        date: '2026-03-15'
+    },
+    {
+        id: 'rev-2',
+        author: 'Meera Deshmukh',
+        role: 'Social Impact Researcher',
+        content: 'I love how easy it is to flag anomalies in scheme allocations. The community-driven approach to fiscal transparency is exactly what we need.',
+        rating: 4,
+        date: '2026-03-20'
+    },
+    {
+        id: 'rev-3',
+        author: 'Rahul Verma',
+        role: 'FinTech Entrepreneur',
+        content: 'The AI-driven insights (Chanakya) combined with citizen feedback creates a powerful hybrid for governance monitoring. A great prototype!',
+        rating: 5,
+        date: '2026-03-25'
+    }
+];
+
 export default function CommunityPage() {
     const { data: session } = useSession();
     const queryClient = useQueryClient();
@@ -165,6 +192,9 @@ export default function CommunityPage() {
                     )}
                 </div>
             </div>
+
+            {/* Reviews Section - PROTOTYPE VERSION */}
+            <ReviewsSection />
 
             {/* Submission Modal (Simulated for this implementation) */}
             {showForm && (
@@ -396,6 +426,72 @@ function FeedbackFormModal({ onClose }: { onClose: () => void }) {
                 </CardContent>
             </Card >
         </div >
+    );
+}
+
+function ReviewsSection() {
+    return (
+        <section className="space-y-8 pt-12 border-t border-white/5">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="space-y-2">
+                    <Badge color="saffron" className="px-3 py-0.5 bg-accent-saffron/10 text-accent-saffron border-accent-saffron/20 text-[10px] font-bold tracking-widest uppercase mb-2">
+                        Citizen Voices
+                    </Badge>
+                    <h2 className="text-3xl font-serif font-bold text-text-primary">
+                        User <span className="text-accent-gold">Reviews</span>
+                    </h2>
+                    <p className="text-sm text-text-muted max-w-xl">
+                        See what the community is saying about RashtraKosh and its impact on financial transparency.
+                    </p>
+                </div>
+                <div className="bg-accent-blue/10 border border-accent-blue/20 rounded-2xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center text-accent-blue">
+                        <ShieldCheck size={20} />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold text-accent-blue uppercase tracking-wider">Prototype Version</p>
+                        <p className="text-[10px] text-text-muted2">Showing how the review system will work in production.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {PROTOTYPE_REVIEWS.map((review) => (
+                    <ReviewCard key={review.id} review={review} />
+                ))}
+            </div>
+        </section>
+    );
+}
+
+function ReviewCard({ review }: { review: typeof PROTOTYPE_REVIEWS[0] }) {
+    return (
+        <Card className="glass-card p-6 border-white/5 hover:border-accent-saffron/20 transition-all duration-300 group">
+            <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-1 text-accent-gold">
+                        {Array(5).fill(0).map((_, i) => (
+                            <ThumbsUp key={i} size={12} className={cn(i < review.rating ? "fill-accent-gold" : "opacity-20")} />
+                        ))}
+                    </div>
+                    <span className="text-[10px] mono text-text-muted2">{new Date(review.date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                </div>
+                
+                <p className="text-sm text-text-muted leading-relaxed italic">
+                    &quot;{review.content}&quot;
+                </p>
+
+                <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-saffron/20 to-accent-gold/20 flex items-center justify-center text-accent-saffron border border-white/10 group-hover:border-accent-saffron/30 transition-colors">
+                        <UserCircle2 size={24} />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-text-primary group-hover:text-accent-saffron transition-colors">{review.author}</p>
+                        <p className="text-[10px] text-text-muted2 mono uppercase tracking-wider">{review.role}</p>
+                    </div>
+                </div>
+            </div>
+        </Card>
     );
 }
 
