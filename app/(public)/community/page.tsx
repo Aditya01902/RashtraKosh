@@ -42,6 +42,123 @@ const PROTOTYPE_REVIEWS = [
         content: 'The AI-driven insights (Chanakya) combined with citizen feedback creates a powerful hybrid for governance monitoring. A great prototype!',
         rating: 5,
         date: '2026-03-25'
+    },
+    {
+        id: 'rev-4',
+        author: 'Priya Narayanan',
+        role: 'Public Policy Student',
+        content: 'This platform makes complex budget documents so accessible. The visualization of capital vs revenue expenditure is brilliant and easy to understand.',
+        rating: 5,
+        date: '2026-03-26'
+    },
+    {
+        id: 'rev-5',
+        author: 'Vikram Sethi',
+        role: 'Journalist',
+        content: 'I have used RashtraKosh to uncover significant misallocations that traditional reporting missed. The data integrity is commendable.',
+        rating: 4,
+        date: '2026-03-27'
+    },
+    {
+        id: 'rev-6',
+        author: 'Ananya Gupta',
+        role: 'NGO Director',
+        content: 'Being able to track real-time utilization of rural healthcare funds allows us to direct our ground efforts much more effectively.',
+        rating: 5,
+        date: '2026-03-28'
+    }
+];
+
+const FALLBACK_FEEDBACK_ITEMS: FeedbackItemWithAuthor[] = [
+    {
+        id: 'fb-demo-1',
+        title: 'Discrepancy in rural healthcare utilization',
+        body: 'The Q3 expenditure report for NHM shows a spike, but local ground reports do not reflect corresponding physical outputs.',
+        category: 'ANOMALY_FLAG',
+        status: 'UNDER_REVIEW',
+        weightedScore: 2.5,
+        isAnonymous: false,
+        schemeId: 'dummy',
+        schemeName: 'National Health Mission',
+        author: { id: 'auth-1', name: 'Dr. Ramesh Kumar', membershipTier: 'EXPERT', institution: null, credentialVerified: false },
+        createdAt: new Date().toISOString(),
+        voteCount: 42,
+        hasCurrentUserVoted: false
+    },
+    {
+        id: 'fb-demo-2',
+        title: 'Consider re-allocating idle road infrastructure funds',
+        body: 'Certain infrastructure projects in the northern sector have been stalled for 18 months, leaving funds idle. A 10% reallocation could boost PMGSY.',
+        category: 'REALLOCATION_SUGGESTION',
+        status: 'NEW',
+        weightedScore: 1.8,
+        isAnonymous: false,
+        schemeId: 'dummy2',
+        schemeName: 'Bharatmala Pariyojana',
+        author: { id: 'auth-2', name: 'Sanjay Dutt', membershipTier: 'GENERAL', institution: null, credentialVerified: false },
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        voteCount: 15,
+        hasCurrentUserVoted: false
+    },
+    {
+        id: 'fb-demo-3',
+        title: 'Excellent progress on PM-Kisan data integration',
+        body: 'The real-time synchronization with state-level land records has significantly reduced the delay in direct benefit transfers. This is a huge win for transparency.',
+        category: 'SCHEME_PERFORMANCE',
+        status: 'INCORPORATED',
+        weightedScore: 2.5,
+        isAnonymous: false,
+        schemeId: 'dummy3',
+        schemeName: 'PM-Kisan',
+        author: { id: 'auth-1', name: 'Dr. Ramesh Kumar', membershipTier: 'EXPERT', institution: null, credentialVerified: false },
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        voteCount: 56,
+        hasCurrentUserVoted: false
+    },
+    {
+        id: 'fb-demo-4',
+        title: 'Potential overlap in skill development schemes',
+        body: "I've noticed that both the Ministry of Skill Development and the Ministry of Electronics have overlapping funding for 'Digital Literacy' in rural blocks. We should consolidate these to avoid duplication.",
+        category: 'REALLOCATION_SUGGESTION',
+        status: 'NEW',
+        weightedScore: 3.0,
+        isAnonymous: false,
+        schemeId: 'dummy4',
+        schemeName: 'Skill India Digital',
+        author: { id: 'auth-3', name: 'Prof. Sunita Desai', membershipTier: 'EXPERT', institution: 'IIM Ahmedabad', credentialVerified: true },
+        createdAt: new Date(Date.now() - 259200000).toISOString(),
+        voteCount: 89,
+        hasCurrentUserVoted: false
+    },
+    {
+        id: 'fb-demo-5',
+        title: 'Missing GPS coordinates for 15% of PMAY-G houses',
+        body: 'While the financial data for Pradhan Mantri Awas Yojana (Gramin) is complete, about 15% of the entries in the eastern sector lack GPS-tagged photos and coordinates. This needs to be flagged for data quality.',
+        category: 'DATA_QUALITY',
+        status: 'UNDER_REVIEW',
+        weightedScore: 1.5,
+        isAnonymous: false,
+        schemeId: 'dummy5',
+        schemeName: 'PMAY-Gramin',
+        author: { id: 'auth-4', name: 'Arjun Patel', membershipTier: 'GENERAL', institution: null, credentialVerified: false },
+        createdAt: new Date(Date.now() - 345600000).toISOString(),
+        voteCount: 23,
+        hasCurrentUserVoted: false
+    },
+    {
+        id: 'fb-demo-6',
+        title: 'Suggestion: Dynamic dashboard for localized budget tracking',
+        body: 'Citizens would benefit greatly if they could see the budget utilization of specifically their district or block rather than just state-level aggregates.',
+        category: 'POLICY_SUGGESTION',
+        status: 'NEW',
+        weightedScore: 2.0,
+        isAnonymous: false,
+        schemeId: 'dummy6',
+        schemeName: 'Dashboard Integration',
+        author: { id: 'auth-5', name: 'Meera Deshmukh', membershipTier: 'GENERAL', institution: null, credentialVerified: false },
+        createdAt: new Date(Date.now() - 432000000).toISOString(),
+        voteCount: 134,
+        hasCurrentUserVoted: false
     }
 ];
 
@@ -54,11 +171,13 @@ export default function CommunityPage() {
     const [showForm, setShowForm] = useState(false);
 
     // Data Fetching
-    const { data: feedbackItems, isLoading } = useQuery({
+    const { data: feedbackData, isLoading } = useQuery({
         queryKey: ['feedback', statusFilter, categoryFilter, sortBy],
         queryFn: () => fetch(`/api/feedback?status=${statusFilter}&category=${categoryFilter}&sort=${sortBy}`).then(res => res.json()),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
+
+    const feedbackItems = feedbackData?.length > 0 ? feedbackData : FALLBACK_FEEDBACK_ITEMS;
 
     // Mutations
     const { mutate: vote, isPending: isVoting } = useMutation({

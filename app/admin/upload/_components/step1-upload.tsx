@@ -56,50 +56,79 @@ export default function Step1Upload() {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
             "application/vnd.ms-excel": [".xls"],
             "text/csv": [".csv"],
+            "application/pdf": [".pdf"],
         },
         maxFiles: 1,
     });
 
-    const handleProcess = () => {
+    const handleProcess = async () => {
         if (!localFile) return;
         setIsProcessing(true);
 
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const data = e.target?.result;
-            if (!data) return;
+        try {
+            if (localFile.name.endsWith(".pdf")) {
+                // For PDFs, we use a server-side parser
+                const formData = new FormData();
+                formData.append('file', localFile);
 
-            try {
-                let parsedData: Record<string, unknown>[] = [];
-                let columns: string[] = [];
+                const response = await fetch('/api/upload/parse-pdf', {
+                    method: 'POST',
+                    body: formData,
+                });
 
-                if (localFile.name.endsWith(".csv")) {
-                    Papa.parse(localFile, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: (results) => {
-                            parsedData = results.data as Record<string, unknown>[];
-                            columns = results.meta.fields || [];
+                if (!response.ok) throw new Error("Failed to parse PDF on server");
+                
+                const result = await response.json();
+                if (result.success) {
+                    const columns = result.data.length > 0 ? Object.keys(result.data[0]) : [];
+                    setFileData(localFile, result.data, columns);
+                    setStep(2);
+                } else {
+                    throw new Error(result.error || "Parsing failed");
+                }
+            } else {
+                // Existing spreadsheet logic
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const data = e.target?.result;
+                    if (!data) return;
+
+                    try {
+                        let parsedData: Record<string, unknown>[] = [];
+                        let columns: string[] = [];
+
+                        if (localFile.name.endsWith(".csv")) {
+                            Papa.parse(localFile, {
+                                header: true,
+                                skipEmptyLines: true,
+                                complete: (results) => {
+                                    parsedData = results.data as Record<string, unknown>[];
+                                    columns = results.meta.fields || [];
+                                    setFileData(localFile, parsedData, columns);
+                                    setStep(2);
+                                },
+                            });
+                        } else {
+                            const workbook = XLSX.read(data, { type: "binary" });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            parsedData = XLSX.utils.sheet_to_json(firstSheet);
+                            if (parsedData.length > 0) {
+                                columns = Object.keys(parsedData[0]);
+                            }
                             setFileData(localFile, parsedData, columns);
                             setStep(2);
-                        },
-                    });
-                } else {
-                    const workbook = XLSX.read(data, { type: "binary" });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    parsedData = XLSX.utils.sheet_to_json(firstSheet);
-                    if (parsedData.length > 0) {
-                        columns = Object.keys(parsedData[0]);
+                        }
+                    } catch (err) {
+                        setErrorData("Failed to process spreadsheet.");
+                        setIsProcessing(false);
                     }
-                    setFileData(localFile, parsedData, columns);
-                    setStep(2);
-                }
-            } catch (err) {
-                setErrorData("Failed to process file.");
-                setIsProcessing(false);
+                };
+                reader.readAsBinaryString(localFile);
             }
-        };
-        reader.readAsBinaryString(localFile);
+        } catch (err: any) {
+            setErrorData(err.message || "Failed to process file.");
+            setIsProcessing(false);
+        }
     };
 
     return (
